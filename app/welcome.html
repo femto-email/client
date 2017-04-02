@@ -1,0 +1,39 @@
+<div class="wrapper">
+  <div class="row">
+    <div class="input-field col s12 m8 l6 offset-m2 l5 offset-l3">
+      <h1 id="greet">Welcome to Maily</h1>
+      <p class="subtitle">
+        We just need you to fill in these five boxes and you'll be able to view your email.
+        <div id="error"></div>
+      </p>
+    </div>
+    <form class="subtitle" id="login-form">
+      <div class="input-field col s10 m6 offset-m2 l5 offset-l3">
+        <input type="text" name="host" id="domain">
+        <label for="domain">Domain</label>
+      </div>
+      <div class="input-field col s2 m2 l1">
+        <input type="number" name="port" id="port">
+        <label for="port">Port</label>
+      </div>
+      <div class="input-field col s12 m8 l6 offset-m2 offset-l3">
+        <input id="email" type="email" class="validate" name="user">
+        <label for="email" data-error="Not Valid" data-success="Valid">Email</label>
+      </div>
+      <div class="input-field col s12 m8 l6 offset-m2 offset-l3">
+        <input type="password" name="password" id="password">
+        <label for="password">Password</label>
+      </div>
+      <div class="input-field col s6 m4 l3 offset-m2 offset-l3">
+        <input type="checkbox" name="tls" id="secure">
+        <label for="secure">Secure</label>
+      </div>
+      <div class="col s12 m8 l6 offset-m2 offset-l3 break"></div>
+      <div class="input-field col s12 m8 l6 offset-m2 offset-l3">
+        <button class="btn waves-effect waves-light" type="submit" name="login" value="Login">
+          <span class="mdi mdi-send right mdi-24px"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
