@@ -5,7 +5,6 @@ const { welcome } = require('./modules/welcome')
 const { mail } = require('./modules/mail')
 const Navigo = require('navigo')
 
-global.logger = require('./helpers/logger')
 global.mailer = require('./modules/mailer')
 global.app = remote.app
 global.router = new Navigo(null, true, '#')

@@ -126,4 +126,4 @@ Logger.prototype.print = function(args, level) {
   }
 }
 
-module.exports = new Logger()
+global.logger = new Logger()

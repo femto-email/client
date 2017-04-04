@@ -2,6 +2,7 @@ const imap = require('imap')
 const Promise = require('bluebird')
 const inspect = require('util').inspect
 const simpleParser = require('mailparser').simpleParser
+const util = require('util')
 
 /**
  * Logs in a user to their preferred mailing server.
@@ -11,7 +12,8 @@ const simpleParser = require('mailparser').simpleParser
  */
 function login(details) {
   return new Promise((resolve, reject) => {
-    let client = Promise.promisifyAll(new imap(details))
+    let imapLogger = function(string) { logger.debug(string) }
+    let client = Promise.promisifyAll(new imap(Object.assign(details, { debug: imapLogger })))
 
     client.once('ready', () => { resolve(client) })
     client.once('error', reject)
@@ -69,21 +71,34 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
         // logger.debug(`#${seqno} Attributes: ${inspect(attrs, false, 4)}`)
       })
       msg.once('end', async () => {
-        logger.log(`#${seqno} Finished`)
+        logger.debug(`#${seqno} Finished`)
         let parsedContent = await simpleParser(content)
         loadedMessage(seqno, parsedContent, attributes)
       })
     })
     f.once('error', (err) => {
-      logger.log(`Fetch error: ${err}`)
+      logger.error(`Fetch error: ${err}`)
       reject(err)
     })
     f.once('end', () => {
-      logger.log(`Done fetching all messages!`)
+      logger.success(`Done fetching all messages!`)
       client.end()
       resolve()
     })
   })
+}
+
+function removeCircular(object) {
+  str = util.inspect(object, { depth: null })
+  str = str
+    .replace(/<Buffer[ \w\.]+>/ig, '"buffer"')
+    .replace(/\[Function]/ig, 'function(){}')
+    .replace(/\[Circular]/ig, '"Circular"')
+    .replace(/\{ \[Function: ([\w]+)]/ig, '{ $1: function $1 () {},')
+    .replace(/\[Function: ([\w]+)]/ig, 'function $1(){}')
+    .replace(/(\w+): ([\w :]+GMT\+[\w \(\)]+),/ig, '$1: new Date("$2"),')
+    .replace(/(\S+): ,/ig, '$1: null,')
+  return JSON.parse(JSON.stringify((new Function('return ' + str + ';'))()))
 }
 
 global.saveMail = (email, hash, seqno, msg, attributes) => {
@@ -91,9 +106,9 @@ global.saveMail = (email, hash, seqno, msg, attributes) => {
     setupMailDB(email)
   }
 
-  mailStore[hash].insertAsync(Object.assign({ seqno: seqno }, msg, attributes)).catch(function mailError(reason) {
+  return mailStore[hash].insertAsync(Object.assign({ seqno: seqno }, msg, attributes)).catch(function mailError(reason) {
     logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
   })
 }
 
-module.exports = { login, getMailboxes, getNewEmails }
+module.exports = { login, getMailboxes, getNewEmails, removeCircular }

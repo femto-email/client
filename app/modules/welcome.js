@@ -22,14 +22,16 @@ function welcome() {
 
     try {
       $('#doing').text('saving your account for the furture.')
-      let doc = await accounts.insertAsync(details)
+      let doc = await accounts.insertAsync(Object.assign(details, { hash: hash, date: +new Date() }))
       logger.log(`Added ${details.user} to the accounts database.`)
     } catch(e) {
       logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
     }
     
     $('#doing').text('grabbing your mailboxes.')
-    let mailboxes = await mailer.getMailboxes(client)
+    let mailboxes = mailer.removeCircular(await mailer.getMailboxes(client))
+    let update = await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
+
     logger.log(`Retrieved all mailboxes from ${details.user}`)
     $('#doing').text('getting your emails.')
     let total = 0
@@ -44,11 +46,12 @@ function welcome() {
       $('#number').text(`(${total})`)
     })
 
-    await accounts.updateAsync({ user: details.user }, { $set: { highest: highest }}, {})
     await Promise.all(promises)
+    await accounts.updateAsync({ user: details.user }, { $set: { highest: highest }}, {})
     $('#number').text('')
     $('#doing').text('getting your inbox setup.')
 
+    stateSet('account', { hash, user: details.user })
     stateSet('state', 'mail')
     stateCheck()
   })
