@@ -16,9 +16,18 @@ var defaults = {
     success:  chalk.green,  // (2)
     log:      chalk.gray,   // (3)
     info:     chalk.gray,   // (4)
+    debug:    chalk.gray,   // (5)
     date:     chalk.cyan,
     file:     chalk.yellow,
     function: chalk.green
+  },
+  'clientColour': {
+    error:   'Red',
+    warning: 'OrangeRed',
+    success: 'Green',
+    log:     'Black',
+    info:    'DodgerBlue',
+    debug:   'DarkGray'
   }
 }
 
@@ -93,11 +102,6 @@ Logger.prototype.print = function(args, level) {
   message = message.join(' ')
   if (message.charAt(0) == '\n') message = message.slice(1)
 
-  if (this.client) {
-    console.log(date, message)
-    return
-  }
-
   var func, file
 
   if (this.customName) {
@@ -106,13 +110,20 @@ Logger.prototype.print = function(args, level) {
     var stack = stacktrace.get()[2]
     if (stack.getFunctionName()) {
       func = this.pad(stack.getFunctionName() + '()')
-    } else {
+      if (func.includes('global.')) func = this.pad(func.substring(7))
+    } else if (stack.getFileName()) {
       file = this.pad(path.basename(stack.getFileName()))
+    } else {
+      func = this.pad('console()')
     }
   }
 
   log = level == 'error' ? console.error : console.log
-  log(`${this.colour.date(date)} [${func ? this.colour.function(func) : this.colour.file(file)}] ${this.colour[level](message)}`)
+  if (this.client) {
+    log(`%c${date} %c[${func ? func : file}] %c${message}`, `color:blue;`, func ? `color:green` : `color:orange`, `color:${this.clientColour[level]}`)
+  } else {
+    log(`${this.colour.date(date)} [${func ? this.colour.function(func) : this.colour.file(file)}] ${this.colour[level](message)}`)
+  }
 }
 
 module.exports = new Logger()

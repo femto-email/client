@@ -2,6 +2,7 @@ const { os } = require('os')
 const { remote } = require('electron')
 const { setup } = require('./modules/setup')
 const { welcome } = require('./modules/welcome')
+const { mail } = require('./modules/mail')
 const Navigo = require('navigo')
 
 global.logger = require('./helpers/logger')

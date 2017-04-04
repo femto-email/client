@@ -1,13 +1,13 @@
 {
-  "name": "mailclient",
-  "productName": "MailClient",
-  "version": "0.0.0",
-  "description": "My gnarly app",
+  "name": "Maily",
+  "productName": "Maily",
+  "version": "0.1.0",
+  "description": "An open source email client.",
   "license": "MIT",
   "repository": "popey456963/mailclient",
   "author": {
-    "name": "Popey Gilbert",
-    "email": "popey@debenclipper.com",
+    "name": "Alexander Craggs",
+    "email": "alexander@debenclipper.com",
     "url": "github.com/popey456963/mailclient"
   },
   "scripts": {
@@ -15,14 +15,10 @@
     "start": "electron .",
     "build": "electron-packager . --out=dist --asar --overwrite --all"
   },
-  "files": [
-    "index.js",
-    "index.html",
-    "index.css"
-  ],
   "keywords": [
     "electron-app",
-    "electron"
+    "electron",
+    "maily"
   ],
   "dependencies": {
     "bluebird": "^3.5.0",

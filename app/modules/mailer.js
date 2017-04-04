@@ -31,39 +31,68 @@ async function getMailboxes(client) {
   return await client.getBoxesAsync()
 }
 
-async function getNewEmails(client, readOnly, lowestUID, loadedMessage) {
-  lowestUID = lowestUID || '1'
-  loadedMessage = loadedMessage || function(seqno, msg) {}
+/**
+ * Retrieves all emails past a point from a client.
+ * Every time a message is loaded, loadedMessage is called
+ * with the message number, the contents and attributes of the message.
+ * 
+ * @param  {object} client        
+ * @param  {boolean} readOnly      
+ * @param  {integer} lowestSeq     
+ * @param  {function} loadedMessage 
+ * @return {promise}               
+ */
+async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
+  lowestSeq = lowestSeq || '1'
+  loadedMessage = loadedMessage || function(seqno, msg, attributes) {}
   let box = await client.openBoxAsync('INBOX', readOnly)
-  let f = client.seq.fetch(`${lowestUID}:2`, {
-    bodies: 'HEADER'
-  })
-  f.on('message', (msg, seqno) => {
-    logger.log(`Message #${seqno}`)
-    msg.on('body', (stream, info) => {
-      var buffer = ''
-      stream.on('data', (chunk) => {
-        buffer += chunk.toString('utf8')
+  return new Promise((resolve, reject) => {
+    let f = client.seq.fetch(`${lowestSeq}:2`, {
+      bodies: 'HEADER'
+    })
+    f.on('message', (msg, seqno) => {
+      let content
+      let attributes
+      // logger.log(`Message #${seqno}`)
+      msg.on('body', (stream, info) => {
+        let buffer = ''
+        stream.on('data', (chunk) => {
+          buffer += chunk.toString('utf8')
+        })
+        stream.once('end', () => {
+          content = buffer
+          // logger.debug(`#${seqno} Parsed header: ${JSON.stringify(parsedContent)}`)
+        })
       })
-      stream.once('end', async () => {
-        let parsedContent = await simpleParser(buffer)
-        logger.log(`#${seqno} Parsed header: ${JSON.stringify(parsedContent)}`)
+      msg.once('attributes', (attrs) => {
+        attributes = attrs
+        // logger.debug(`#${seqno} Attributes: ${inspect(attrs, false, 4)}`)
+      })
+      msg.once('end', async () => {
+        logger.log(`#${seqno} Finished`)
+        let parsedContent = await simpleParser(content)
+        loadedMessage(seqno, parsedContent, attributes)
       })
     })
-    msg.once('attributes', (attrs) => {
-      logger.log(`#${seqno} Attributes: ${inspect(attrs, false, 4)}`)
+    f.once('error', (err) => {
+      logger.log(`Fetch error: ${err}`)
+      reject(err)
     })
-    msg.once('end', () => {
-      logger.log(`#${seqno} Finished`)
-      loadedMessage()
+    f.once('end', () => {
+      logger.log(`Done fetching all messages!`)
+      client.end()
+      resolve()
     })
   })
-  f.once('error', (err) => {
-    logger.log(`Fetch error: ${err}`)
-  })
-  f.once('end', () => {
-    logger.log(`Done fetching all messages!`)
-    client.end()
+}
+
+global.saveMail = (email, hash, seqno, msg, attributes) => {
+  if (typeof mailStore[hash] == 'undefined') {
+    setupMailDB(email)
+  }
+
+  mailStore[hash].insertAsync(Object.assign({ seqno: seqno }, msg, attributes)).catch(function mailError(reason) {
+    logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
   })
 }
 
