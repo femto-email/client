@@ -49,8 +49,10 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
   loadedMessage = loadedMessage || function(seqno, msg, attributes) {}
   let box = await client.openBoxAsync('INBOX', readOnly)
   return new Promise((resolve, reject) => {
-    let f = client.seq.fetch(`${lowestSeq}:2`, {
-      bodies: 'HEADER'
+    let f = client.seq.fetch(`${lowestSeq}:1`, {
+      bodies: '',
+      struct: true,
+      envelope: true
     })
     f.on('message', (msg, seqno) => {
       let content
@@ -72,6 +74,7 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
       })
       msg.once('end', async () => {
         logger.debug(`#${seqno} Finished`)
+        logger.log(content)
         let parsedContent = await simpleParser(content)
         loadedMessage(seqno, parsedContent, attributes)
       })
@@ -108,6 +111,9 @@ global.saveMail = (email, hash, seqno, msg, attributes) => {
 
   return mailStore[hash].insertAsync(Object.assign({ seqno: seqno }, msg, attributes)).catch(function mailError(reason) {
     logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
+    if (String(reason).indexOf('it violates the unique constraint') != -1) {
+      return mailStore[hash].updateAsync({ seqno: seqno }, Object.assign({ seqno: seqno }, msg, attributes))
+    }
   })
 }
 
