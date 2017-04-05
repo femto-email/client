@@ -70,4 +70,8 @@ customElements.define('e-mail', class extends HTMLElement {
   }
 })
 
+$(document).scroll(() => {
+
+})
+
 module.exports = { mail }

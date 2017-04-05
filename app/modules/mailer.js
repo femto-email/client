@@ -12,7 +12,16 @@ const util = require('util')
  */
 function login(details) {
   return new Promise((resolve, reject) => {
-    let imapLogger = function(string) { logger.debug(string) }
+    let imapLogger = process.env.NODE_END == 'production' ? function(string) {} : function(string) {
+      if (string.includes('=> \'A1 LOGIN')) {
+        let array = string.split('"')
+        for (let i = 1; i < array.length; i+=2) {
+          array[i] = array[i].replace(/./g, '*')
+        }
+        string = array.join('"')
+      }
+      logger.debug(string) 
+    }
     let client = Promise.promisifyAll(new imap(Object.assign(details, { debug: imapLogger })))
 
     client.once('ready', () => { resolve(client) })
@@ -49,10 +58,10 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
   loadedMessage = loadedMessage || function(seqno, msg, attributes) {}
   let box = await client.openBoxAsync('INBOX', readOnly)
   return new Promise((resolve, reject) => {
-    let f = client.seq.fetch(`${lowestSeq}:1`, {
-      bodies: '',
-      struct: true,
-      envelope: true
+    let f = client.seq.fetch(`${lowestSeq}:*`, {
+      bodies: 'HEADER.FIELDS (TO FROM SUBJECT)',
+      struct: false,
+      envelope: false
     })
     f.on('message', (msg, seqno) => {
       let content
