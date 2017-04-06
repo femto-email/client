@@ -1,6 +1,6 @@
 const $ = require('jquery')
 
-function welcome() {
+async function welcome() {
   if (!testLoaded('welcome')) return
 
   logger.debug(`We're loading up the welcome page now.`)
@@ -31,22 +31,30 @@ function welcome() {
     $('#doing').text('grabbing your mailboxes.')
     let mailboxes = mailer.removeCircular(await mailer.getMailboxes(client))
     let update = await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
+    let linearFolders = findFolders(mailboxes)
 
     logger.log(`Retrieved all mailboxes from ${details.user}`)
     $('#doing').text('getting your emails.')
     let total = 0
-    let highest = 0
-    let promises = []
-    let emails = await mailer.getNewEmails(client, true, '1', (seqno, msg, attributes) => {
-      if (seqno > highest) {
-        highest = seqno
-      }
-      promises.push(saveMail(details.user, hash, seqno, msg, attributes))
-      total++
-      $('#number').text(`(${total})`)
-    })
 
-    await Promise.all(promises)
+    for (let i = 0; i < linearFolders.length; i++) {
+      let mailbox = await openMailbox(client, linearFolders[i])
+
+      let highest = 0
+      let promises = []
+      let emails = await mailer.getNewEmails(client, true, '1', (seqno, msg, attributes) => {
+        if (seqno > highest) {
+          highest = seqno
+        }
+        promises.push(saveMail(details.user, hash, linearFolders[i], seqno, msg, attributes))
+        total++
+        $('#number').text(`(${total})`)
+      })
+
+      await Promise.all(promises)
+    }
+
+    // TODO: Update to work with multiple folders.
     await accounts.updateAsync({ user: details.user }, { $set: { highest: highest }}, {})
     $('#number').text('')
     $('#doing').text('getting your inbox setup.')

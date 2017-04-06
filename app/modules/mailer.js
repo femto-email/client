@@ -43,6 +43,16 @@ async function getMailboxes(client) {
 }
 
 /**
+ * Opens a mailbox given it's path.
+ *
+ * @param {object} client
+ * @return {object}
+ */
+async function openMailbox(client, path) {
+  return client.openBoxAsync(path)
+}
+
+/**
  * Retrieves all emails past a point from a client.
  * Every time a message is loaded, loadedMessage is called
  * with the message number, the contents and attributes of the message.
@@ -113,7 +123,7 @@ function removeCircular(object) {
   return JSON.parse(JSON.stringify((new Function('return ' + str + ';'))()))
 }
 
-global.saveMail = (email, hash, seqno, msg, attributes) => {
+global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
   if (typeof mailStore[hash] == 'undefined') {
     setupMailDB(email)
   }
@@ -121,7 +131,7 @@ global.saveMail = (email, hash, seqno, msg, attributes) => {
   return mailStore[hash].insertAsync(Object.assign({ seqno: seqno }, msg, attributes)).catch(function mailError(reason) {
     logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
     if (String(reason).indexOf('it violates the unique constraint') != -1) {
-      return mailStore[hash].updateAsync({ seqno: seqno }, Object.assign({ seqno: seqno }, msg, attributes))
+      return mailStore[hash].updateAsync({ seqno: seqno }, Object.assign({ seqno: seqno, folder: folder }, msg, attributes))
     }
   })
 }

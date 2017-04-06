@@ -23,8 +23,10 @@ async function mail() {
 
   let account = (await accounts.findAsync({ user: state.account.user }, {}))[0]
   let folders = htmlFolders(organiseFolders(account.folders))
+  let linearFolders = findFolders(account.folders)
 
   $('#folders').html(folders)
+  $('#linear-folders').html(JSON.stringify(linearFolders))
 
   if (typeof mailStore[state.account.hash] == 'undefined') {
     setupMailDB(state.account.user)
@@ -56,22 +58,42 @@ function htmlFolders(tree) {
   return html
 }
 
+global.findFolders = (folders, path) => {
+  let keys = folders ? Object.getOwnPropertyNames(folders) : []
+  let results = []
+  path = path || []
+  for (let i = 0; i < keys.length; i++) {
+    let tempPath = JSON.parse(JSON.stringify(path))
+    tempPath.push({ delimiter: folders[keys[i]].delimiter, name: keys[i]})
+    results = results.concat(findFolders(folders[keys[i]].children, tempPath))
+  }
+  results.push(path)
+  return results
+}
+
+global.findSeperator = (folders) => {
+  // We assume they use one delimiter for the entire inbox, otherwise...
+  // Well, I worry for their health..
+  return folders.INBOX.delimiter
+}
+
 // Possibly also document.registerElement()?
 customElements.define('e-mail', class extends HTMLElement {
   constructor() {
     super()
 
-    // Attach a shadow root to <fancy-tabs>.
+    // Attach a shadow root to <e-mail>.
     const shadowRoot = this.attachShadow({mode: 'open'})
     shadowRoot.innerHTML = `
-      <div id="tabs">...</div>
-      <div id="panels">...</div>
+      <div id="email">This is a random email item... :)</div>
     `
   }
 })
 
 $(document).scroll(() => {
-
+  // this = some random div object, gained from something like:
+  // $('e-mail').each(function(){
+  // if($(this).offset().top + $(this).height() > cutoff){
 })
 
 module.exports = { mail }
