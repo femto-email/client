@@ -49,7 +49,20 @@ async function getMailboxes(client) {
  * @return {object}
  */
 async function openMailbox(client, path) {
-  return client.openBoxAsync(path)
+  if (typeof path != 'string') path = compilePath(path)
+  return client.openBoxAsync(path).catch((error) => {
+    console.log(error)
+  })
+}
+
+function compilePath(path) {
+  // We have to compile it ourselves.
+  let compiledPath = ''
+  for (let i = 0; i < path.length - 1; i++) {
+    compiledPath += path[i].name + path[i].delimiter
+  }
+  compiledPath += path[path.length - 1].name
+  return compiledPath
 }
 
 /**
@@ -127,13 +140,18 @@ global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
   if (typeof mailStore[hash] == 'undefined') {
     setupMailDB(email)
   }
+  if (typeof folder != 'string') folder = compilePath(folder)
 
-  return mailStore[hash].insertAsync(Object.assign({ seqno: seqno }, msg, attributes)).catch(function mailError(reason) {
+  // Here, we use folder + seqno as our unique identifier between each mail item.  It is guarenteed to be unique
+  // unless UIDValidity changes, whereupon I believe our only option is to purge the database and regather all
+  // the information we need.
+  // (This is yet to be implemented, we just hope it doesn't change for now)
+  return mailStore[hash].insertAsync(Object.assign({ uid: folder + seqno, folder: folder }, msg, attributes)).catch(function mailError(reason) {
     logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
     if (String(reason).indexOf('it violates the unique constraint') != -1) {
-      return mailStore[hash].updateAsync({ seqno: seqno }, Object.assign({ seqno: seqno, folder: folder }, msg, attributes))
+      return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign({ seqno: seqno, folder: folder, uid: folder + seqno }, msg, attributes))
     }
   })
 }
 
-module.exports = { login, getMailboxes, getNewEmails, removeCircular }
+module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox }

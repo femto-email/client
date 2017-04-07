@@ -74,6 +74,7 @@ global.findFolders = (folders, path) => {
 global.findSeperator = (folders) => {
   // We assume they use one delimiter for the entire inbox, otherwise...
   // Well, I worry for their health..
+  // Try not to use this function too much, at some point I intend to deprecate it.
   return folders.INBOX.delimiter
 }
 

@@ -115,7 +115,7 @@ global.setupMailDB = async (email) => {
 
   let pause = await mailStore[hash].loadDatabaseAsync()
 
-  mailStore[hash].ensureIndex({ fieldName: 'seqno', unique: true })
+  mailStore[hash].ensureIndex({ fieldName: 'uid', unique: true })
 
   return hash
 }

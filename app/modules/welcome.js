@@ -1,4 +1,5 @@
 const $ = require('jquery')
+const _ = require('lodash')
 
 async function welcome() {
   if (!testLoaded('welcome')) return
@@ -38,7 +39,13 @@ async function welcome() {
     let total = 0
 
     for (let i = 0; i < linearFolders.length; i++) {
-      let mailbox = await openMailbox(client, linearFolders[i])
+      try {
+        let mailbox = await mailer.openMailbox(client, linearFolders[i]).catch((error) => {
+          console.log(error)
+        })
+      } catch(e) {
+        console.log(e)
+      }
 
       let highest = 0
       let promises = []
@@ -52,10 +59,16 @@ async function welcome() {
       })
 
       await Promise.all(promises)
+
+      let location = []
+      for (let j = 0; j < linearFolders[i].length; j++) {
+        location.push(linearFolders[i][j].name)
+      }
+      location.push('highest')
+      _.set(mailboxes, location, highest)
     }
 
-    // TODO: Update to work with multiple folders.
-    await accounts.updateAsync({ user: details.user }, { $set: { highest: highest }}, {})
+    await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
     $('#number').text('')
     $('#doing').text('getting your inbox setup.')
 
