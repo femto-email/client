@@ -39,7 +39,9 @@ async function welcome() {
     let total = 0
 
     for (let i = 0; i < linearFolders.length; i++) {
+      $('#mailboxes').append(JSON.stringify(linearFolders[i]))
       try {
+        if (client.state == 'disconnected') client = await mailer.login(client._config)
         let mailbox = await mailer.openMailbox(client, linearFolders[i]).catch((error) => {
           console.log(error)
         })

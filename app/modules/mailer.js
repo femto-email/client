@@ -4,6 +4,18 @@ const inspect = require('util').inspect
 const simpleParser = require('mailparser').simpleParser
 const util = require('util')
 
+let imapLogger = process.env.NODE_END == 'production' ? function(string) {} : function(string) {
+  // Obfuscate passwords.
+  if (string.includes('=> \'A1 LOGIN')) {
+    let array = string.split('"')
+    for (let i = 1; i < array.length; i+=2) {
+      array[i] = array[i].replace(/./g, '*')
+    }
+    string = array.join('"')
+  }
+  logger.debug(string) 
+}
+
 /**
  * Logs in a user to their preferred mailing server.
  * 
@@ -12,16 +24,6 @@ const util = require('util')
  */
 function login(details) {
   return new Promise((resolve, reject) => {
-    let imapLogger = process.env.NODE_END == 'production' ? function(string) {} : function(string) {
-      if (string.includes('=> \'A1 LOGIN')) {
-        let array = string.split('"')
-        for (let i = 1; i < array.length; i+=2) {
-          array[i] = array[i].replace(/./g, '*')
-        }
-        string = array.join('"')
-      }
-      logger.debug(string) 
-    }
     let client = Promise.promisifyAll(new imap(Object.assign(details, { debug: imapLogger })))
 
     client.once('ready', () => { resolve(client) })
@@ -50,8 +52,13 @@ async function getMailboxes(client) {
  */
 async function openMailbox(client, path) {
   if (typeof path != 'string') path = compilePath(path)
+  if (client.state == 'disconnected') client = await login(client._config)
+  console.log(client.state)
   return client.openBoxAsync(path).catch((error) => {
-    console.log(error)
+    console.log(client.state)
+    console.log(client)
+    console.log("TEST")
+    throw error
   })
 }
 
@@ -106,7 +113,7 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
       })
       msg.once('end', async () => {
         logger.debug(`#${seqno} Finished`)
-        logger.log(content)
+        // logger.log(content)
         let parsedContent = await simpleParser(content)
         loadedMessage(seqno, parsedContent, attributes)
       })
