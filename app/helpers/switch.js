@@ -13,7 +13,7 @@ global.style = (titles) => {
 
     document.styleSheets[i].disabled = !shouldEnable
 
-    if (shouldEnable) {
+    if (titles.includes(document.styleSheets[i].title)) {
       titles.splice(titles.indexOf(document.styleSheets[i].title), 1)
     }
   }

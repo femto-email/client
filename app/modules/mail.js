@@ -83,10 +83,12 @@ customElements.define('e-mail', class extends HTMLElement {
   constructor() {
     super()
 
+    let uid = this.getAttribute('data-uid')
+
     // Attach a shadow root to <e-mail>.
     const shadowRoot = this.attachShadow({mode: 'open'})
     shadowRoot.innerHTML = `
-      <div id="email">This is a random email item... :)</div>
+      <div id="email">This is a random email item... ${uid}</div>
     `
   }
 })

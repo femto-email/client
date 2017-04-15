@@ -22,7 +22,7 @@ async function welcome() {
     logger.log(`Successfully created a database account for ${details.user}`)
 
     try {
-      $('#doing').text('saving your account for the furture.')
+      $('#doing').text('saving your account for the future.')
       let doc = await accounts.insertAsync(Object.assign(details, { hash: hash, date: +new Date() }))
       logger.log(`Added ${details.user} to the accounts database.`)
     } catch(e) {
@@ -38,16 +38,24 @@ async function welcome() {
     $('#doing').text('getting your emails.')
     let total = 0
 
+    console.log(linearFolders)
+
+    // TODO: FIX THIS STUPID LINE
+    // BUT GOD DAMN IS IT ANNOYING.
+    linearFolders = [linearFolders[0]]
+
     for (let i = 0; i < linearFolders.length; i++) {
-      $('#mailboxes').append(JSON.stringify(linearFolders[i]))
-      try {
-        if (client.state == 'disconnected') client = await mailer.login(client._config)
-        let mailbox = await mailer.openMailbox(client, linearFolders[i]).catch((error) => {
-          console.log(error)
-        })
-      } catch(e) {
-        console.log(e)
+      console.log("Loop called...")
+
+      $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
+      if (client.state == 'disconnected') {
+        console.log("We're going to have to reconnect the client...")
+        client = await mailer.login(client._config)
       }
+      let mailbox = await mailer.openMailbox(client, linearFolders[i])
+      console.log("Opened " + JSON.stringify(linearFolders[i]))
+      logger.log("Opened Mailbox...")
+      console.log(mailbox)
 
       let highest = 0
       let promises = []
@@ -62,12 +70,16 @@ async function welcome() {
 
       await Promise.all(promises)
 
+      console.log("Does this ever run?")
+
       let location = []
       for (let j = 0; j < linearFolders[i].length; j++) {
         location.push(linearFolders[i][j].name)
       }
       location.push('highest')
       _.set(mailboxes, location, highest)
+
+      console.log("What about this?")
     }
 
     await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
@@ -80,6 +92,12 @@ async function welcome() {
   })
 }
 
+/**
+ * When we're not in production, we can keep user information in a
+ * .env file so that we don't have to enter it every time.
+ * 
+ * @return {[type]} [description]
+ */
 function fillFields() {
   $('#domain').val(process.env.DOMAIN)
   $('#port').val(process.env.PORT)

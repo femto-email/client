@@ -4,7 +4,7 @@ const inspect = require('util').inspect
 const simpleParser = require('mailparser').simpleParser
 const util = require('util')
 
-let imapLogger = process.env.NODE_END == 'production' ? function(string) {} : function(string) {
+let imapLogger = process.env.NODE_END == 'production' || 1 ? function(string) {} : function(string) {
   // Obfuscate passwords.
   if (string.includes('=> \'A1 LOGIN')) {
     let array = string.split('"')
@@ -51,15 +51,12 @@ async function getMailboxes(client) {
  * @return {object}
  */
 async function openMailbox(client, path) {
+  console.log("1")
   if (typeof path != 'string') path = compilePath(path)
+  console.log("2")
   if (client.state == 'disconnected') client = await login(client._config)
-  console.log(client.state)
-  return client.openBoxAsync(path).catch((error) => {
-    console.log(client.state)
-    console.log(client)
-    console.log("TEST")
-    throw error
-  })
+  console.log("3")
+  return client.openBoxAsync(path)
 }
 
 function compilePath(path) {
@@ -112,7 +109,7 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
         // logger.debug(`#${seqno} Attributes: ${inspect(attrs, false, 4)}`)
       })
       msg.once('end', async () => {
-        logger.debug(`#${seqno} Finished`)
+        // logger.debug(`#${seqno} Finished`)
         // logger.log(content)
         let parsedContent = await simpleParser(content)
         loadedMessage(seqno, parsedContent, attributes)
@@ -153,10 +150,10 @@ global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
   // unless UIDValidity changes, whereupon I believe our only option is to purge the database and regather all
   // the information we need.
   // (This is yet to be implemented, we just hope it doesn't change for now)
-  return mailStore[hash].insertAsync(Object.assign({ uid: folder + seqno, folder: folder }, msg, attributes)).catch(function mailError(reason) {
-    logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
+  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { uid: folder + seqno, folder: folder })).catch(function mailError(reason) {
+    // logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
     if (String(reason).indexOf('it violates the unique constraint') != -1) {
-      return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign({ seqno: seqno, folder: folder, uid: folder + seqno }, msg, attributes))
+      return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign(msg, attributes, { seqno: seqno, folder: folder, uid: folder + seqno }))
     }
   })
 }
