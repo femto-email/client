@@ -36,7 +36,7 @@ This command runs the 'start' function defined within `package.json`.  It is a u
 ### Build
 
 ```
-$ npm run build
+$ npm run dist
 ```
 
 ### Layout
