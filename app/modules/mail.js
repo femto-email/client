@@ -1,4 +1,5 @@
 const $ = require('jquery')
+const crypto = require('crypto')
 
 async function mail() {
   if (!testLoaded('mail')) return
@@ -83,13 +84,39 @@ customElements.define('e-mail', class extends HTMLElement {
   constructor() {
     super()
 
-    let uid = this.getAttribute('data-uid')
-
-    // Attach a shadow root to <e-mail>.
+    // Shadow root is it's *own* entire DOM.  This makes it impact less when
+    // we change and search through other parts of the DOM, *hopefully* making it
+    // slightly quicker.  It also allows us to use the cool <e-mail> tags.
     const shadowRoot = this.attachShadow({mode: 'open'})
+
     shadowRoot.innerHTML = `
-      <div id="email">This is a random email item... ${uid}</div>
+      <div>Loading...</div>
     `
+
+    // We're able to assume some values from the current state.
+    // However, we don't rely on it, preferring instead to find it in the email itself.
+    let email = this.getAttribute('data-email') || 
+                state.account.user
+    let hash  = this.getAttribute('data-hash') || 
+                crypto.createHash('md5').update(email).digest('hex') || 
+                state.account.hash
+    let uid   = this.getAttribute('data-uid')
+
+    let message = loadMail(email, hash, uid).then((mail) => {
+      // Attach a shadow root to <e-mail>.
+      // NOTE: All of these *have* to be HTML escaped.  Consider using `escapeHTML(string)` which
+      // is globally accessible.
+      shadowRoot.innerHTML = `
+        <div class="email" style="border: 1px solid black;">
+          UID: ${escapeHTML(mail.uid)}<br />
+          Subject: ${escapeHTML(mail.subject)}<br />
+          From: ${escapeHTML(mail.from.text)}<br />
+          Flags: ${escapeHTML(JSON.stringify(mail.flags))}<br />
+          Folder: ${escapeHTML(mail.folder)}<br />
+          ModSeq: ${mail.modseq}
+        </div>
+      `
+    })
   }
 })
 

@@ -158,4 +158,12 @@ global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
   })
 }
 
+global.loadMail = (email, hash, uid) => {
+  if (typeof mailStore[hash] == 'undefined') {
+    setupMailDB(email)
+  }
+
+  return mailStore[hash].findOneAsync({ uid: uid })
+}
+
 module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox }

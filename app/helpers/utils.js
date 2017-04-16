@@ -1,4 +1,3 @@
-
 /**
  * Grab all the values from a form and returns them as an object.
  * 
@@ -18,4 +17,22 @@ global.getItemsFromForm = (id) => {
   }
 
   return values
+}
+
+/**
+ * HTML escapes a string.  More efficient than a naive replacement.
+ *
+ * @param  {string} string
+ * @return {string}
+ */
+global.escapeHTML = (string) => {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }
+
+  return string.replace(/[&<>"']/g, function(m) { return map[m] })
 }

@@ -2,13 +2,24 @@
 
 > A cross-platform mail-client with the intent to be fast, reliable and easy to use.
 
+This is an attempt to see how *simple* a Node.JS app can be yet still have the full functionality a user can expect.  It aims to be a good training project for people to start working on, even if they have very little knowledge on contributing to Node.JS projects, or open source projects in general.
+
+At the moment of writing, we don't have any external build tools, `gulpfile.js` is simply included in case we wish to use any `*.scss` files.  Setting up the development environment is a single command, as is starting the application.  
+
 ## Production
 
 We're very sorry, at the moment no production builds are available!  Please stand-by as we get our monkeys typing as fast as we can.
 
 ## Dev
 
-Looking to get started?  We've kept things as simple as possible, right now there are only three commands required for this project.
+Looking to get started?  We've kept things as simple as possible, right now there are only three commands required to setup this project.  If you get any problems, feel free to contact me on Discord, we have a [dedicated channel here](https://discord.gg/dnbQx6X) or create an issue within Github.
+
+Before getting started, please make sure you have the following installed:
+
+ - Node V7+ (check with `node -v`, install from [here](https://nodejs.org/en/download/))
+ - NPM (check with `npm -v`, comes pre-installed with Node)
+ - Git (check with `git --version`, install from [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
+ - Electron (check with `electron -v`, install with `npm i -g electron`)
 
 ```
 $ npm install
@@ -19,6 +30,8 @@ $ npm install
 ```
 $ npm start
 ```
+
+This command runs the 'start' function defined within `package.json`.  It is a universal way to run programs, and in this project is simply runs `electron .`.
 
 ### Build
 
