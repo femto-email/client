@@ -53,6 +53,10 @@ function setup() {
   global.appDir = jetpack.cwd(app.getAppPath())
   global.storeDir = jetpack.cwd(app.getPath('userData'))
 
+  $(() => {
+    $('#content').html(appDir.read(`./app/header.html`))
+  })
+
   logger.log(`Application Paths Found:
     App Dir   - ${app.getAppPath()}
     Store Dir - ${app.getPath('userData')}
