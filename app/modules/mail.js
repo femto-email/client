@@ -7,7 +7,7 @@ async function mail() {
   logger.debug(`We're loading up the mail page now.`)
   page('mail', ['basic', 'mail'])
 
-  if (typeof state.account == 'undefined' || 1) {
+  if (typeof state.account == 'undefined') {
     // I have no idea when this happens, but just in case
     let doc = await new Promise((resolve, reject) => {
       accounts.find({}).sort({ date: 0 }).limit(1).exec((err, docs) => {
@@ -15,16 +15,19 @@ async function mail() {
         resolve(docs[0])
       })
     })
-    stateSet('account', { hash: doc.hash, user: doc.user })
-  }
-
-  if (typeof state.account.folder == 'undefined') {
-    stateSet('account', Object.assign(state.account, { folder: 'INBOX' }))
+    stateSet('account', Object.assign(state.account, { hash: doc.hash, user: doc.user }))
   }
 
   let account = (await accounts.findAsync({ user: state.account.user }, {}))[0]
   let folders = htmlFolders(organiseFolders(account.folders))
   let linearFolders = findFolders(account.folders)
+
+  if (typeof state.account.folder == 'undefined') {
+    // Here, we somewhat fake the folder tree for the inbox folder.
+    // We don't really need the seperator, in this instance it should never be used,
+    // but we keep it just in case.
+    stateSet('account', Object.assign(state.account, { folder: [{ name: 'INBOX', delimiter: findSeperator(account.folders) }]}))
+  }
 
   $('#folders').html(folders)
   $('#linear-folders').html(JSON.stringify(linearFolders))
@@ -33,7 +36,14 @@ async function mail() {
     setupMailDB(state.account.user)
   }
 
-  $('#mail').text(JSON.stringify((await mailStore[state.account.hash].findAsync({}))[0]))
+  // $('#mail').text(JSON.stringify((await mailStore[state.account.hash].findAsync({}))[0]))
+  let mail = await mailStore[state.account.hash].findAsync({ folder: mailer.compilePath(state.account.folder) })
+  
+  for (let i = 0; i < mail.length; i++) {
+    // We need to escape the folder system here before release.
+    $('#mail').append($(`<e-mail data-uid="${mail[i].uid}"></e-mail>`))
+  }
+  console.log(mail)
 
   logger.log(`Loading mail window complete.`)
 }
@@ -110,7 +120,7 @@ customElements.define('e-mail', class extends HTMLElement {
         <div class="email" style="border: 1px solid black;">
           UID: ${escapeHTML(mail.uid)}<br />
           Subject: ${escapeHTML(mail.subject)}<br />
-          From: ${escapeHTML(mail.from.text)}<br />
+          From: ${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}<br />
           Flags: ${escapeHTML(JSON.stringify(mail.flags))}<br />
           Folder: ${escapeHTML(mail.folder)}<br />
           ModSeq: ${mail.modseq}

@@ -166,4 +166,4 @@ global.loadMail = (email, hash, uid) => {
   return mailStore[hash].findOneAsync({ uid: uid })
 }
 
-module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox }
+module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox, compilePath }

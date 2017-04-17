@@ -42,7 +42,9 @@ async function welcome() {
 
     // TODO: FIX THIS STUPID LINE
     // BUT GOD DAMN IS IT ANNOYING.
-    linearFolders = [linearFolders[0]]
+    linearFolders = [linearFolders[linearFolders.length - 2]]
+
+    console.log(linearFolders)
 
     for (let i = 0; i < linearFolders.length; i++) {
       console.log("Loop called...")

@@ -34,5 +34,9 @@ global.escapeHTML = (string) => {
     "'": '&#039;'
   }
 
-  return string.replace(/[&<>"']/g, function(m) { return map[m] })
+  if (string) {
+    return string.replace(/[&<>"']/g, function(m) { return map[m] })
+  } else {
+    return undefined
+  }
 }
