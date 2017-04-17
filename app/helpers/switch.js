@@ -9,12 +9,12 @@ const $ = require('jquery')
  */
 global.style = (titles) => {
   for (let i = 0; i < document.styleSheets.length; i++) {
-    let shouldEnable = titles.includes(document.styleSheets[i].title) || document.styleSheets[i].title.includes('all-')
+    let shouldEnable = titles.includes(document.styleSheets[i].ownerNode.getAttribute('data-name')) || document.styleSheets[1].ownerNode.getAttribute('data-name').includes('all-')
 
     document.styleSheets[i].disabled = !shouldEnable
 
-    if (titles.includes(document.styleSheets[i].title)) {
-      titles.splice(titles.indexOf(document.styleSheets[i].title), 1)
+    if (titles.includes(document.styleSheets[i].ownerNode.getAttribute('data-name'))) {
+      titles.splice(titles.indexOf(document.styleSheets[i].ownerNode.getAttribute('data-name')), 1)
     }
   }
   if (titles.length) {
