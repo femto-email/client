@@ -127,7 +127,7 @@ customElements.define('e-mail', class extends HTMLElement {
           Flags: ${escapeHTML(JSON.stringify(mail.flags))}<br />
           Folder: ${escapeHTML(mail.folder)}<br />
           ModSeq: ${mail.modseq}<br />
-          Date: ${formatDate(mail.date)} or ${mail.date}
+          Date: ${formatDate(mail.date)}
         </div>
       `
     })
