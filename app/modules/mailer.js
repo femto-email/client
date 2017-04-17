@@ -156,10 +156,10 @@ global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
   // unless UIDValidity changes, whereupon I believe our only option is to purge the database and regather all
   // the information we need.
   // (This is yet to be implemented, we just hope it doesn't change for now)
-  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { uid: folder + seqno, folder: folder })).catch(function mailError(reason) {
+  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { seqno: seqno, uid: folder + seqno, folder: folder, date: +new Date(attributes.date) })).catch(function mailError(reason) {
     // logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
     if (String(reason).indexOf('it violates the unique constraint') != -1) {
-      return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign(msg, attributes, { seqno: seqno, folder: folder, uid: folder + seqno }))
+      return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign(msg, attributes, { seqno: seqno, folder: folder, uid: folder + seqno, date: +new Date(attributes.date) }))
     }
   })
 }

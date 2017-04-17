@@ -2,6 +2,8 @@
 
 > A cross-platform mail-client with the intent to be fast, reliable and easy to use.
 
+![](https://puu.sh/vmtT6/b803a88da5.png)
+
 This is an attempt to see how *simple* a Node.JS app can be yet still have the full functionality a user can expect.  It aims to be a good training project for people to start working on, even if they have very little knowledge on contributing to Node.JS projects, or open source projects in general.
 
 At the moment of writing, we don't have any external build tools, `gulpfile.js` is simply included in case we wish to use any `*.scss` files.  Setting up the development environment is a single command, as is starting the application.  

@@ -1,5 +1,6 @@
 const $ = require('jquery')
 const crypto = require('crypto')
+const formatDate = require('../helpers/date.js')
 
 async function mail() {
   if (!testLoaded('mail')) return
@@ -37,8 +38,12 @@ async function mail() {
   }
 
   // $('#mail').text(JSON.stringify((await mailStore[state.account.hash].findAsync({}))[0]))
-  let mail = await mailStore[state.account.hash].findAsync({ folder: mailer.compilePath(state.account.folder) })
-  
+  let mail = await new Promise((resolve) => {
+    mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: 0 }).exec((err, docs) => {
+      resolve(docs)
+    })
+  })
+    
   for (let i = 0; i < mail.length; i++) {
     $('#mail').append($(`<e-mail data-uid="${escape(mail[i].uid)}"></e-mail>`))
   }
@@ -121,7 +126,8 @@ customElements.define('e-mail', class extends HTMLElement {
           From: ${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}<br />
           Flags: ${escapeHTML(JSON.stringify(mail.flags))}<br />
           Folder: ${escapeHTML(mail.folder)}<br />
-          ModSeq: ${mail.modseq}
+          ModSeq: ${mail.modseq}<br />
+          Date: ${formatDate(mail.date)} or ${mail.date}
         </div>
       `
     })
