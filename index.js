@@ -30,7 +30,8 @@ app.on('activate', () => {
 app.on('ready', () => {
   mainWindow = createWindow('main', {
     width: 600,
-    height: 400
+    height: 400,
+    icon: 'build/128x128.png'
   })
 
   mainWindow.loadURL(`file://${__dirname}/app/main.html`)
