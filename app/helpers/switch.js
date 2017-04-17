@@ -37,4 +37,3 @@ global.page = (page, css) => {
   $('body').html(appDir.read(`./app/${page}.html`))
   style(css)
 }
-
