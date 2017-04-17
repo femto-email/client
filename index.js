@@ -31,7 +31,8 @@ app.on('ready', () => {
   mainWindow = createWindow('main', {
     width: 600,
     height: 400,
-    icon: 'build/128x128.png'
+    icon: 'build/128x128.png',
+    frame: false
   })
 
   mainWindow.loadURL(`file://${__dirname}/app/main.html`)

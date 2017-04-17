@@ -127,6 +127,12 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
   })
 }
 
+/**
+ * Removes any circular elements from an object, replacing them with "Circular".
+ * 
+ * @param  {object} object
+ * @return {object}
+ */
 function removeCircular(object) {
   str = util.inspect(object, { depth: null })
   str = str
