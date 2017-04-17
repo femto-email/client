@@ -1,17 +1,18 @@
 const { os } = require('os')
 const { remote } = require('electron')
-const { setup } = require('./modules/setup')
-const { welcome } = require('./modules/welcome')
-const { mail } = require('./modules/mail')
 const Navigo = require('navigo')
-
-global.mailer = require('./modules/mailer')
-global.app = remote.app
-global.router = new Navigo(null, true, '#')
 
 require('dotenv').config()
 require('./helpers/switch')
 require('./helpers/utils')
+
+const { setup } = require('./modules/setup')
+const { welcome } = require('./modules/welcome')
+const { mail } = require('./modules/mail')
+
+global.mailer = require('./modules/mailer')
+global.app = remote.app
+global.router = new Navigo(null, true, '#')
 
 router.on({
   '/setup': () => { timeFunc(setup) },

@@ -37,6 +37,14 @@ async function mail() {
     setupMailDB(state.account.user)
   }
 
+  updateMailDiv()
+
+  logger.log(`Loading mail window complete.`)
+}
+
+async function updateMailDiv() {
+  $('#mail').html('')
+
   // $('#mail').text(JSON.stringify((await mailStore[state.account.hash].findAsync({}))[0]))
   let mail = await new Promise((resolve) => {
     mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: -1 }).exec((err, docs) => {
@@ -47,8 +55,6 @@ async function mail() {
   for (let i = 0; i < mail.length; i++) {
     $('#mail').append($(`<e-mail data-uid="${escape(mail[i].uid)}"></e-mail>`))
   }
-
-  logger.log(`Loading mail window complete.`)
 }
 
 function organiseFolders(tree) {
@@ -132,12 +138,6 @@ customElements.define('e-mail', class extends HTMLElement {
       `
     })
   }
-})
-
-$(document).scroll(() => {
-  // this = some random div object, gained from something like:
-  // $('e-mail').each(function(){
-  // if($(this).offset().top + $(this).height() > cutoff){
 })
 
 module.exports = { mail }
