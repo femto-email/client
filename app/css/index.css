@@ -68,6 +68,9 @@ header h1 {
   height: 30px;
   padding: none;
   margin: 0px;
+  position: fixed;
+  top: 0px;
+  width:100vw;
 }
 
 #title {
@@ -106,4 +109,8 @@ header h1 {
 
 .breadcrumb:first-child{
 font-weight: bold;
+}
+
+#content{
+  margin-top: 30px;
 }
