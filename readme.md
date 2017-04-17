@@ -74,6 +74,20 @@ if (!testLoaded(<pageName>)) return
 
 Which makes sure this page isn't being called from a `reload` operation, but instead is being routed from the router.  If the page has not loaded, it is likely the setup function has not run yet and variables you may normally have access to are no longer defined.
 
+## Contributing
+
+This is an OPEN open source project, which means that any individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.  Noting this however, please do not change the git history, commit on-going work (which is unfinished) to the master branch or push major design changes without at least opening an issue for debate.
+
+### Coding Style Tests
+
+We enforce several code standards in order to keep the codebase maintainable, the full list can be found [here](http://standardjs.com/rules.html) but the key points are:
+
+- We use two spaces for indentation.
+- Always handle errors.
+- Never have unused variables.
+- Don't define multiple variables in one statement
+- No semicolons at the end of lines
+
 ## License
 
 MIT © [Codefined](http://github.com/popey456963/maily)

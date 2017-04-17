@@ -1,3 +1,30 @@
 p {
 	background-color: red !important;
 }
+
+body {
+ padding: 0px;
+ margin: 0px; 
+}
+
+#title-bar {
+ -webkit-app-region: drag;
+ height: 24px; 
+ background-color: darkviolet;
+ padding: none;
+ margin: 0px; 
+}
+
+#title {
+ position: fixed;
+ top: 0px;
+ left: 6px; 
+ width:50px;
+}
+
+#title-bar-btns {
+ -webkit-app-region: no-drag;
+ position: fixed;
+ top: 0px;
+ right: 6px;
+}

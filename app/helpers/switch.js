@@ -18,8 +18,8 @@ global.style = (titles) => {
     }
   }
   if (titles.length) {
-    console.error(`Warning, ${titles} was/were not found within the list of stylesheets.`)
-    console.log(document.styleSheets)
+    logger.error(`Warning, ${titles} was/were not found within the list of stylesheets.`)
+    logger.log(document.styleSheets)
   }
 }
 
