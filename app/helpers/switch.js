@@ -34,6 +34,6 @@ global.style = (titles) => {
  */
 global.page = (page, css) => {
   logger.debug(`Switching page to ${page}`)
-  $('body').html(appDir.read(`./app/header.html`) + appDir.read(`./app/${page}.html`))
+  $('#content').html(appDir.read(`./app/${page}.html`))
   style(css)
 }

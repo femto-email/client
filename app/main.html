@@ -1,22 +1,38 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Maily</title>
+<head>
+	<meta charset="utf-8">
+	<title>Maily</title>
 
-		<script src="./helpers/logger.js"></script>
-		<script src="./helpers/jquery.min.js"></script>
-		<script src="./helpers/hammer.min.js"></script>
-		<script src="./helpers/materialize.min.js"></script>
-		<script src="app.js"></script>
+	<script src="./helpers/logger.js"></script>
+	<script src="./helpers/jquery.min.js"></script>
+	<script src="./helpers/hammer.min.js"></script>
+	<script src="./helpers/materialize.min.js"></script>
+	<script src="app.js"></script>
 
-		<!-- Stylesheets prefixed with 'all-' aren't disabled during CSS check-->
-		<link rel="stylesheet" type="text/css" data-name="all-material" href="./css/lib/materialize.min.css">
-		<link rel="stylesheet" type="text/css" data-name="all-materialicons" href="./css/lib/materialdesignicons.min.css">
+	<!-- Stylesheets prefixed with 'all-' aren't disabled during CSS check-->
+	<link rel="stylesheet" type="text/css" data-name="all-material" href="./css/lib/materialize.min.css">
+	<link rel="stylesheet" type="text/css" data-name="all-materialicons" href="./css/lib/materialdesignicons.min.css">
 
-		<link rel="stylesheet" type="text/css" data-name="basic" href="./css/index.css">
-		<link rel="stylesheet" type="text/css" data-name="welcome" href="./css/welcome.css">
-		<link rel="stylesheet" type="text/css" data-name="mail" href="./css/mail.css">
-	</head>
-	<body></body>
+	<link rel="stylesheet" type="text/css" data-name="basic" href="./css/index.css">
+	<link rel="stylesheet" type="text/css" data-name="welcome" href="./css/welcome.css">
+	<link rel="stylesheet" type="text/css" data-name="mail" href="./css/mail.css">
+</head>
+<body>
+	<div id="title-bar" class="grey lighten-2">
+		<div id="title" class="window-button">
+			<a href="#!" class="breadcrumb">Maily</a>
+			<a href="#!" class="breadcrumb">popey@debenclipper.com</a>
+			<a href="#!" class="breadcrumb">INBOX</a>
+			<a href="#!" class="breadcrumb">Programming</a>
+			<a href="#!" class="breadcrumb">Other</a>
+		</div>
+		<div id="title-bar-btns">
+			<button id="min-btn" class="window-button waves-effect waves-teal btn-flat grey lighten-2"><i class="material-icons">expand_more</i></button>
+			<button id="max-btn" class="window-button waves-effect waves-teal btn-flat grey lighten-2"><i class="material-icons">fullscreen</i></button>
+			<button id="close-btn" class="window-button waves-effect waves-red btn-flat grey lighten-2"><i class="material-icons">close</i></button>
+		</div>
+	</div>
+	<div id="content"></div>
+</body>
 </html>
