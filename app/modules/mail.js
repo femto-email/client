@@ -39,7 +39,7 @@ async function mail() {
 
   // $('#mail').text(JSON.stringify((await mailStore[state.account.hash].findAsync({}))[0]))
   let mail = await new Promise((resolve) => {
-    mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: 0 }).exec((err, docs) => {
+    mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: -1 }).exec((err, docs) => {
       resolve(docs)
     })
   })
