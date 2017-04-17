@@ -7,10 +7,10 @@ async function mail() {
   logger.debug(`We're loading up the mail page now.`)
   page('mail', ['basic', 'mail'])
 
-  await new Promise(resolve => setTimeout(resolve, 1000))
-
   if (typeof state.account == 'undefined') {
     // I have no idea when this happens, but just in case
+    // Perhaps this could happen if someone deleted their state.json file?
+    // Or it was unreadable.
     let doc = await new Promise((resolve, reject) => {
       accounts.find({}).sort({ date: 0 }).limit(1).exec((err, docs) => {
         if (err) return reject(err)
@@ -40,8 +40,7 @@ async function mail() {
   let mail = await mailStore[state.account.hash].findAsync({ folder: mailer.compilePath(state.account.folder) })
   
   for (let i = 0; i < mail.length; i++) {
-    // We need to escape the folder system here before release.
-    $('#mail').append($(`<e-mail data-uid="${mail[i].uid}"></e-mail>`))
+    $('#mail').append($(`<e-mail data-uid="${escape(mail[i].uid)}"></e-mail>`))
   }
 
   logger.log(`Loading mail window complete.`)
@@ -109,7 +108,7 @@ customElements.define('e-mail', class extends HTMLElement {
     let hash  = this.getAttribute('data-hash') || 
                 crypto.createHash('md5').update(email).digest('hex') || 
                 state.account.hash
-    let uid   = this.getAttribute('data-uid')
+    let uid   = unescape(this.getAttribute('data-uid'))
 
     let message = loadMail(email, hash, uid).then((mail) => {
       // Attach a shadow root to <e-mail>.
