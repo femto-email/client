@@ -7,6 +7,8 @@ async function mail() {
   logger.debug(`We're loading up the mail page now.`)
   page('mail', ['basic', 'mail'])
 
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
   if (typeof state.account == 'undefined') {
     // I have no idea when this happens, but just in case
     let doc = await new Promise((resolve, reject) => {
@@ -20,7 +22,6 @@ async function mail() {
 
   let account = (await accounts.findAsync({ user: state.account.user }, {}))[0]
   let folders = htmlFolders(organiseFolders(account.folders))
-  let linearFolders = findFolders(account.folders)
 
   if (typeof state.account.folder == 'undefined') {
     // Here, we somewhat fake the folder tree for the inbox folder.
@@ -30,7 +31,6 @@ async function mail() {
   }
 
   $('#folders').html(folders)
-  $('#linear-folders').html(JSON.stringify(linearFolders))
 
   if (typeof mailStore[state.account.hash] == 'undefined') {
     setupMailDB(state.account.user)
@@ -43,7 +43,6 @@ async function mail() {
     // We need to escape the folder system here before release.
     $('#mail').append($(`<e-mail data-uid="${mail[i].uid}"></e-mail>`))
   }
-  console.log(mail)
 
   logger.log(`Loading mail window complete.`)
 }

@@ -22,12 +22,12 @@ var defaults = {
     function: chalk.green
   },
   'clientColour': {
-    error:   'Red',
-    warning: 'OrangeRed',
-    success: 'Green',
-    log:     'Black',
-    info:    'DodgerBlue',
-    debug:   'DarkGray'
+    error:   'color: Red; font-weight: bold;',
+    warning: 'color: Salmon; font-weight: bold;',
+    success: 'color: Green',
+    log:     'color: Black',
+    info:    'color: DodgerBlue',
+    debug:   'color: DarkGray'
   }
 }
 
@@ -120,7 +120,7 @@ Logger.prototype.print = function(args, level) {
 
   log = level == 'error' ? console.error : console.log
   if (this.client) {
-    log(`%c${date} %c[${func ? func : file}] %c${message}`, `color:blue;`, func ? `color:green` : `color:orange`, `color:${this.clientColour[level]}`)
+    log(`%c${date} %c[${func ? func : file}] %c${message}`, `color:blue;`, func ? `color:green` : `color:orange`, this.clientColour[level])
   } else {
     log(`${this.colour.date(date)} [${func ? this.colour.function(func) : this.colour.file(file)}] ${this.colour[level](message)}`)
   }

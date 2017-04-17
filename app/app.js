@@ -14,9 +14,9 @@ require('./helpers/switch')
 require('./helpers/utils')
 
 router.on({
-  '/setup': () => { setup() },
-  '/welcome': () => { welcome() },
-  '/mail': () => { mail() }
+  '/setup': () => { timeFunc(setup) },
+  '/welcome': () => { timeFunc(welcome) },
+  '/mail': () => { timeFunc(mail) }
 }).resolve()
 
 router.navigate('/setup')

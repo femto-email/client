@@ -40,3 +40,24 @@ global.escapeHTML = (string) => {
     return undefined
   }
 }
+
+/**
+ * Time the runtime of a function, waits for a promise to end if it is a promise.
+ *
+ * @param {function} func
+ * @return {undefined}
+ */
+global.timeFunc = async (func) => {
+  let start = performance.now()
+  let promise = func()
+  if (promise instanceof Promise) {
+    await promise
+  }
+  let end = performance.now()
+  let run = end - start
+  if (run < 1000) {
+    logger.log(`The ${func.name}() function took ${parseFloat(run.toFixed(4))} milliseconds to run.`)
+  } else {
+    logger.warning(`Alert, running ${func.name}() took a long time, ${parseFloat(run.toFixed(4))} milliseconds.`)
+  }
+}
