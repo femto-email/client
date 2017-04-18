@@ -90,6 +90,43 @@ We enforce several code standards in order to keep the codebase maintainable, th
 - Don't define multiple variables in one statement
 - No semicolons at the end of lines
 
+## Roadmap
+
+### Functionality
+
+- [ ] Allow people to use the service online.
+- [ ] List folders from an account.
+- [x] List emails from an account (one inbox at a time at the moment).
+- [ ] Add an account/edit an account.
+- [ ] Send emails via SMTP.
+- [ ] Compile multiple emails into one thread.
+- [ ] Render HTML and plaintext.
+- [ ] Implement anti-spam.
+- [ ] Test an account with a specific email.
+- [x] Persistant caches for emails and folders from a user.
+- [ ] Ability to snooze emails.
+- [ ] Delay email sending.
+- [ ] Contacts list.
+- [ ] Implement a method of searching.
+- [ ] Add a settings page for hotkeys & etc.
+- [ ] Allow people to create their own plugins.
+- [ ] Unified email account.
+- [ ] Add "topics" and "attributes" to emails that can be sorted from.
+- [ ] Template responses for many different things.
+- [ ] Placeholders in response templates ( like {{ source.to.firstName }} ).
+- [ ] Inbuilt PGP support.
+- [ ] Automatic folder rules & actions (perhaps based on Regex or something?)
+
+### Styling
+- [ ] Login page redesign (in progress).
+- [ ] Settings page.
+- [ ] Account testing page (in progress).
+- [ ] Email list.
+- [ ] Compose email page.
+- [ ] List of contacts page.
+- [ ] Customisable layouts.
+- [ ] Image effects in the email editor. 
+
 ## License
 
 MIT © [Codefined](http://github.com/popey456963/maily)
