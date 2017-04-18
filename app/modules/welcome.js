@@ -12,7 +12,10 @@ async function welcome() {
   $('#login-form').on('submit', async function onLogin(e) {
     e.preventDefault()
     let details = getItemsFromForm('login-form')
-
+    $('.wrapper').html(`
+    <span id="doing"></span> <span id="number"></span><br>
+    <span id="mailboxes"></span>
+    `)
     $('#doing').text('logging you in.')
     let client = await mailer.login(details)
     logger.log(`Successfully logged in to user ${details.user}.`)
@@ -48,7 +51,7 @@ async function welcome() {
 
     for (let i = 0; i < linearFolders.length; i++) {
       console.log("Loop called...")
-
+      $('.wrapper').html('')
       $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
       if (client.state == 'disconnected') {
         console.log("We're going to have to reconnect the client...")
