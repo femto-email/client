@@ -30,8 +30,8 @@ async function welcome() {
     }
     
     $('#doing').text('grabbing your mailboxes.')
-    let mailboxes = mailer.removeCircular(await mailer.getMailboxes(client))
-    let update = await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
+    let mailboxes = await mailer.getMailboxes(client)
+    let update = await accounts.updateAsync({ user: details.user }, { $set: { folders: mailer.removeCircular(mailboxes) }})
     let linearFolders = findFolders(mailboxes)
 
     logger.log(`Retrieved all mailboxes from ${details.user}`)
@@ -40,24 +40,15 @@ async function welcome() {
 
     console.log(linearFolders)
 
-    // TODO: FIX THIS STUPID LINE
-    // BUT GOD DAMN IS IT ANNOYING.
-    linearFolders = [linearFolders[linearFolders.length - 2]]
+    linearFolders.reverse()
 
-    console.log(linearFolders)
+    linearFolders = linearFolders.filter(function(n){ return n != undefined && JSON.stringify(n) != '[]' })
+
+    console.log(mailboxes)
 
     for (let i = 0; i < linearFolders.length; i++) {
-      console.log("Loop called...")
-
-      $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
-      if (client.state == 'disconnected') {
-        console.log("We're going to have to reconnect the client...")
-        client = await mailer.login(client._config)
-      }
+      $('#mailboxes').html(JSON.stringify(linearFolders[i]))
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
-      console.log("Opened " + JSON.stringify(linearFolders[i]))
-      logger.log("Opened Mailbox...")
-      console.log(mailbox)
 
       let highest = 0
       let promises = []
@@ -72,17 +63,70 @@ async function welcome() {
 
       await Promise.all(promises)
 
-      console.log("Does this ever run?")
+      console.log(mailbox)
 
       let location = []
       for (let j = 0; j < linearFolders[i].length; j++) {
         location.push(linearFolders[i][j].name)
+        location.push('children')
       }
-      location.push('highest')
-      _.set(mailboxes, location, highest)
+      
+      _.set(mailboxes, location.concat(['highest']), highest)
 
-      console.log("What about this?")
+      let data = Object.keys(mailbox)
+
+      for (let j = 0; j < data.length; j++) {
+        _.set(mailboxes, location.concat(data[j]), mailbox[data[j]])
+      }
     }
+
+    console.log(mailboxes)
+
+    greag
+
+    // console.log(linearFolders)
+
+    // // TODO: FIX THIS STUPID LINE
+    // // BUT GOD DAMN IS IT ANNOYING.
+    // // linearFolders = [linearFolders[linearFolders.length - 2]]
+
+    // for (let i = 0; i < linearFolders.length; i++) {
+    //   console.log("Loop called...")
+
+    //   $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
+    //   if (client.state == 'disconnected') {
+    //     console.log("We're going to have to reconnect the client...")
+    //     client = await mailer.login(client._config)
+    //   }
+    //   let mailbox = await mailer.openMailbox(client, linearFolders[i])
+    //   console.log("Opened " + JSON.stringify(linearFolders[i]))
+    //   logger.log("Opened Mailbox...")
+    //   console.log(mailbox)
+
+    //   let highest = 0
+    //   let promises = []
+    //   let emails = await mailer.getNewEmails(client, true, '1', (seqno, msg, attributes) => {
+    //     if (seqno > highest) {
+    //       highest = seqno
+    //     }
+    //     promises.push(saveMail(details.user, hash, linearFolders[i], seqno, msg, attributes))
+    //     total++
+    //     $('#number').text(`(${total})`)
+    //   })
+
+    //   await Promise.all(promises)
+
+    //   console.log("Does this ever run?")
+
+    //   let location = []
+    //   for (let j = 0; j < linearFolders[i].length; j++) {
+    //     location.push(linearFolders[i][j].name)
+    //   }
+    //   location.push('highest')
+    //   _.set(mailboxes, location, highest)
+
+    //   console.log("What about this?")
+    // }
 
     await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
     $('#number').text('')

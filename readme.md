@@ -94,8 +94,8 @@ We enforce several code standards in order to keep the codebase maintainable, th
 
 ### Functionality
 
-- [ ] Allow people to use the service online.
-- [ ] List folders from an account.
+- [ ] Allow people to use the service online. (major parts: db, page changes)
+- [x] List folders from an account.
 - [x] List emails from an account (one inbox at a time at the moment).
 - [ ] Add an account/edit an account.
 - [ ] Send emails via SMTP.
