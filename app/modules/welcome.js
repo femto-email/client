@@ -46,9 +46,12 @@ async function welcome() {
 
     console.log(mailboxes)
 
+    linearFolders = [linearFolders[0]]
+
     for (let i = 0; i < linearFolders.length; i++) {
       $('#mailboxes').html(JSON.stringify(linearFolders[i]))
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
+      logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
 
       let highest = 0
       let promises = []
@@ -71,6 +74,7 @@ async function welcome() {
         location.push('children')
       }
       
+      location.pop()
       _.set(mailboxes, location.concat(['highest']), highest)
 
       let data = Object.keys(mailbox)
@@ -82,7 +86,6 @@ async function welcome() {
 
     console.log(mailboxes)
 
-    greag
 
     // console.log(linearFolders)
 

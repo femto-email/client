@@ -24,6 +24,10 @@ async function mail() {
   let account = (await accounts.findAsync({ user: state.account.user }, {}))[0]
   let folders = htmlFolders(organiseFolders(account.folders))
 
+  if (typeof mailStore[state.account.hash] == 'undefined') {
+    setupMailDB(state.account.user)
+  }
+
   if (typeof state.account.folder == 'undefined') {
     // Here, we somewhat fake the folder tree for the inbox folder.
     // We don't really need the seperator, in this instance it should never be used,
@@ -31,11 +35,11 @@ async function mail() {
     stateSet('account', Object.assign(state.account, { folder: [{ name: 'INBOX', delimiter: findSeperator(account.folders) }]}))
   }
 
-  $('#folders').html(folders)
-
-  if (typeof mailStore[state.account.hash] == 'undefined') {
-    setupMailDB(state.account.user)
+  if (typeof state.folders[state.account.folder[0].name] == 'undefined') {
+    stateSet('account', Object.assign(state.account, { folder: [{ name: 'Inbox', delimiter: findSeperator(account.folders) }]}))
   }
+
+  $('#folders').html(folders)
 
   updateMailDiv()
 
@@ -95,7 +99,7 @@ global.findSeperator = (folders) => {
   // We assume they use one delimiter for the entire inbox, otherwise...
   // Well, I worry for their health..
   // Try not to use this function too much, at some point I intend to deprecate it.
-  return folders.INBOX.delimiter
+  return typeof folders.INBOX == 'undefined' ? folders.Inbox.delimiter : folders.INBOX.delimiter
 }
 
 // Possibly also document.registerElement()?
