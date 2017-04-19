@@ -9,7 +9,7 @@ const $ = require('jquery')
  */
 global.style = (titles) => {
   for (let i = 0; i < document.styleSheets.length; i++) {
-    let shouldEnable = titles.includes(document.styleSheets[i].ownerNode.getAttribute('data-name')) || document.styleSheets[1].ownerNode.getAttribute('data-name').includes('all-')
+    let shouldEnable = titles.includes(document.styleSheets[i].ownerNode.getAttribute('data-name')) || document.styleSheets[i].ownerNode.getAttribute('data-name').includes('all-')
 
     document.styleSheets[i].disabled = !shouldEnable
 
