@@ -10,3 +10,7 @@
 .break{
     height:2em;
 }
+
+html, body{
+	overflow: hidden;
+}

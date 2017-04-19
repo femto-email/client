@@ -66,6 +66,7 @@ header h1 {
 }
 
 #title-bar {
+  z-index: 1000;
   -webkit-app-region: drag;
   height: 30px;
   padding: none;
@@ -76,12 +77,14 @@ header h1 {
 }
 
 #title {
+  z-index: 1001;
   position: fixed;
   top: 0px;
   left: 6px;
 }
 
 #title-bar-btns {
+  z-index: 1002;
   -webkit-app-region: no-drag;
   position: fixed;
   top: 0px;
