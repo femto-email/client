@@ -129,4 +129,4 @@ We enforce several code standards in order to keep the codebase maintainable, th
 
 ## License
 
-MIT © [Codefined](http://github.com/popey456963/maily)
+MIT © [Codefined](http://github.com/popey456963/maily) & [Miles Budden](http://github.com/pbexe)
