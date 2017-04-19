@@ -28,7 +28,12 @@ async function mail() {
     // Here, we somewhat fake the folder tree for the inbox folder.
     // We don't really need the seperator, in this instance it should never be used,
     // but we keep it just in case.
-    stateSet('account', Object.assign(state.account, { folder: [{ name: 'INBOX', delimiter: findSeperator(account.folders) }]}))
+    stateSet('account', Object.assign(state.account, { 
+      folder: [{ 
+        name: 'INBOX', 
+        delimiter: findSeperator(account.folders) 
+      }]
+    }))
   }
 
   $('#folders').html(folders)

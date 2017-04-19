@@ -47,16 +47,16 @@ async function welcome() {
     console.log(linearFolders)
 
     for (let i = 0; i < linearFolders.length; i++) {
-      console.log("Loop called...")
+      console.log('Loop called...')
 
       $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
       if (client.state == 'disconnected') {
-        console.log("We're going to have to reconnect the client...")
+        console.log('We\'re going to have to reconnect the client...')
         client = await mailer.login(client._config)
       }
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
-      console.log("Opened " + JSON.stringify(linearFolders[i]))
-      logger.log("Opened Mailbox...")
+      console.log('Opened ' + JSON.stringify(linearFolders[i]))
+      logger.log('Opened Mailbox...')
       console.log(mailbox)
 
       let highest = 0
@@ -72,7 +72,7 @@ async function welcome() {
 
       await Promise.all(promises)
 
-      console.log("Does this ever run?")
+      console.log('Does this ever run?')
 
       let location = []
       for (let j = 0; j < linearFolders[i].length; j++) {
@@ -81,7 +81,7 @@ async function welcome() {
       location.push('highest')
       _.set(mailboxes, location, highest)
 
-      console.log("What about this?")
+      console.log('What about this?')
     }
 
     await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
