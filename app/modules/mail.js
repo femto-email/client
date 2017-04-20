@@ -35,7 +35,10 @@ async function mail() {
     stateSet('account', Object.assign(state.account, { folder: [{ name: 'INBOX', delimiter: findSeperator(account.folders) }]}))
   }
 
-  if (typeof state.folders[state.account.folder[0].name] == 'undefined') {
+  console.log(account.folders)
+  console.log(state.account.folder[0].name)
+
+  if (typeof account.folders[state.account.folder[0].name] == 'undefined') {
     stateSet('account', Object.assign(state.account, { folder: [{ name: 'Inbox', delimiter: findSeperator(account.folders) }]}))
   }
 

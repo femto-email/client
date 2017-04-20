@@ -46,7 +46,7 @@ async function welcome() {
 
     console.log(mailboxes)
 
-    linearFolders = [linearFolders[0]]
+    // linearFolders = [linearFolders[0]]
 
     for (let i = 0; i < linearFolders.length; i++) {
       $('#mailboxes').html(JSON.stringify(linearFolders[i]))
