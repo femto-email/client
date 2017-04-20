@@ -55,15 +55,24 @@ async function mail() {
 }
 
 async function updateMailDiv() {
-  $('#mail').html('')
-
   // $('#mail').text(JSON.stringify((await mailStore[state.account.hash].findAsync({}))[0]))
   let mail = await new Promise((resolve) => {
     mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: -1 }).exec((err, docs) => {
       resolve(docs)
     })
   })
-    
+
+  $('#mail').html('')
+
+  $('#title').html(`
+    <a href="#!" class="breadcrumb">Maily</a>
+    <a href="#!" class="breadcrumb">${state.account.user}</a>
+  `)
+
+  for (let i = 0; i < state.account.folder.length; i++) {
+    $('#title').append(`<a href="#!" class="breadcrumb">${state.account.folder[i].name}</a>`)
+  }
+
   for (let i = 0; i < mail.length; i++) {
     $('#mail').append($(`<e-mail data-uid="${escape(mail[i].uid)}"></e-mail>`))
   }
