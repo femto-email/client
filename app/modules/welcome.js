@@ -31,36 +31,32 @@ async function welcome() {
     } catch(e) {
       logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
     }
-    
+
     $('#doing').text('grabbing your mailboxes.')
-    let mailboxes = mailer.removeCircular(await mailer.getMailboxes(client))
-    let update = await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
+    let mailboxes = await mailer.getMailboxes(client)
+    let update = await accounts.updateAsync({ user: details.user }, { $set: { folders: mailer.removeCircular(mailboxes) }})
     let linearFolders = findFolders(mailboxes)
 
     logger.log(`Retrieved all mailboxes from ${details.user}`)
     $('#doing').text('getting your emails.')
     let total = 0
 
-    console.log(linearFolders)
+    logger.log(JSON.stringify(linearFolders))
 
-    // TODO: FIX THIS STUPID LINE
-    // BUT GOD DAMN IS IT ANNOYING.
-    linearFolders = [linearFolders[linearFolders.length - 2]]
+    linearFolders.reverse()
 
-    console.log(linearFolders)
+    linearFolders = linearFolders.filter(function(n){ return n != undefined && JSON.stringify(n) != '[]' })
+
+    console.log(mailboxes)
+
+    linearFolders = [linearFolders[0]]
 
     for (let i = 0; i < linearFolders.length; i++) {
-      console.log("Loop called...")
-      $('.wrapper').html('')
       $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
-      if (client.state == 'disconnected') {
-        console.log('We\'re going to have to reconnect the client...')
-        client = await mailer.login(client._config)
-      }
+      $('.wrapper').html('') 
+      console.log("Opening folder: " + JSON.stringify(linearFolders[i]))
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
-      console.log('Opened ' + JSON.stringify(linearFolders[i]))
-      logger.log('Opened Mailbox...')
-      console.log(mailbox)
+      logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
 
       let highest = 0
       let promises = []
@@ -75,17 +71,23 @@ async function welcome() {
 
       await Promise.all(promises)
 
-      console.log('Does this ever run?')
-
       let location = []
       for (let j = 0; j < linearFolders[i].length; j++) {
         location.push(linearFolders[i][j].name)
+        location.push('children')
       }
-      location.push('highest')
-      _.set(mailboxes, location, highest)
 
-      console.log('What about this?')
+      location.pop()
+      _.set(mailboxes, location.concat(['highest']), highest)
+
+      let data = Object.keys(mailbox)
+
+      for (let j = 0; j < data.length; j++) {
+        _.set(mailboxes, location.concat(data[j]), mailbox[data[j]])
+      }
     }
+
+    logger.log(mailboxes)
 
     await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
     $('#number').text('')

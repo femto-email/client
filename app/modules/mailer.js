@@ -51,12 +51,20 @@ async function getMailboxes(client) {
  * @return {object}
  */
 async function openMailbox(client, path) {
-  console.log("1")
   if (typeof path != 'string') path = compilePath(path)
-  console.log("2")
   if (client.state == 'disconnected') client = await login(client._config)
-  console.log("3")
-  return client.openBoxAsync(path)
+  logger.log(`Opening mailbox: ${path}`)
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      client.openBox(path, false, (err, mailbox) => {
+        if (err) logger.error(err)
+        else {
+          logger.log('We got the mailbox!')
+          resolve(mailbox)
+        }
+      })
+    })
+  })
 }
 
 function compilePath(path) {
