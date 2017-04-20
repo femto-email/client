@@ -51,9 +51,11 @@ async function welcome() {
 
     linearFolders = [linearFolders[0]]
 
+    console.log(linearFolders)
+
     for (let i = 0; i < linearFolders.length; i++) {
-      $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
-      $('.wrapper').html('') 
+      $('#doing').text(`grabbing ${linearFolders[i][linearFolders[i].length - 1].name}.`)
+      // $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
       console.log("Opening folder: " + JSON.stringify(linearFolders[i]))
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
       logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
@@ -87,9 +89,10 @@ async function welcome() {
       }
     }
 
-    logger.log(mailboxes)
+    // logger.log(mailboxes)
 
-    await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})
+    await accounts.updateAsync({ user: details.user }, { $set: { folders: mailer.removeCircular(mailboxes) }})
+
     $('#number').text('')
     $('#doing').text('getting your inbox setup.')
 
