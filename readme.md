@@ -127,6 +127,19 @@ We enforce several code standards in order to keep the codebase maintainable, th
 - [ ] Customisable layouts.
 - [ ] Image effects in the email editor. 
 
+### Various Useful Commands
+
+```javascript
+// Reset Current Account
+(async () => { let y = await mailStore[state.accounts.hash].removeAsync({}, { multi: true }); console.log(y); stateSet('state', 'new'); location.reload(); })()
+// List All Emails on Current Account
+(async () => { let y = await mailStore[state.account.hash].findAsync({}, {}); console.log(y); })()
+// Change Current State (available: 'new', 'mail')
+stateSet('state', 'new')
+// See Loaded CSS Files
+(() => { for (let i = 0; i < document.styleSheets.length; i++) { console.log(document.styleSheets[i].ownerNode.getAttribute('data-name') + ": " + (document.styleSheets[i].disabled ? 'disabled' : 'enabled')) }})()
+```
+
 ## License
 
 MIT © [Codefined](http://github.com/popey456963/maily)
