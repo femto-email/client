@@ -28,7 +28,7 @@ async function welcome() {
     } catch(e) {
       logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
     }
-    
+
     $('#doing').text('grabbing your mailboxes.')
     let mailboxes = await mailer.getMailboxes(client)
     let update = await accounts.updateAsync({ user: details.user }, { $set: { folders: mailer.removeCircular(mailboxes) }})
@@ -38,7 +38,7 @@ async function welcome() {
     $('#doing').text('getting your emails.')
     let total = 0
 
-    console.log(linearFolders)
+    logger.log(JSON.stringify(linearFolders))
 
     linearFolders.reverse()
 
@@ -50,6 +50,7 @@ async function welcome() {
 
     for (let i = 0; i < linearFolders.length; i++) {
       $('#mailboxes').html(JSON.stringify(linearFolders[i]))
+      console.log("Opening folder: " + JSON.stringify(linearFolders[i]))
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
       logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
 
@@ -73,7 +74,7 @@ async function welcome() {
         location.push(linearFolders[i][j].name)
         location.push('children')
       }
-      
+
       location.pop()
       _.set(mailboxes, location.concat(['highest']), highest)
 
@@ -84,27 +85,27 @@ async function welcome() {
       }
     }
 
-    console.log(mailboxes)
+    logger.log(mailboxes)
 
 
-    // console.log(linearFolders)
+    // logger.log(linearFolders)
 
     // // TODO: FIX THIS STUPID LINE
     // // BUT GOD DAMN IS IT ANNOYING.
     // // linearFolders = [linearFolders[linearFolders.length - 2]]
 
     // for (let i = 0; i < linearFolders.length; i++) {
-    //   console.log("Loop called...")
+    //   logger.log("Loop called...")
 
     //   $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
     //   if (client.state == 'disconnected') {
-    //     console.log("We're going to have to reconnect the client...")
+    //     logger.log("We're going to have to reconnect the client...")
     //     client = await mailer.login(client._config)
     //   }
     //   let mailbox = await mailer.openMailbox(client, linearFolders[i])
-    //   console.log("Opened " + JSON.stringify(linearFolders[i]))
+    //   logger.log("Opened " + JSON.stringify(linearFolders[i]))
     //   logger.log("Opened Mailbox...")
-    //   console.log(mailbox)
+    //   logger.log(mailbox)
 
     //   let highest = 0
     //   let promises = []
@@ -119,7 +120,7 @@ async function welcome() {
 
     //   await Promise.all(promises)
 
-    //   console.log("Does this ever run?")
+    //   logger.log("Does this ever run?")
 
     //   let location = []
     //   for (let j = 0; j < linearFolders[i].length; j++) {
@@ -128,7 +129,7 @@ async function welcome() {
     //   location.push('highest')
     //   _.set(mailboxes, location, highest)
 
-    //   console.log("What about this?")
+    //   logger.log("What about this?")
     // }
 
     await accounts.updateAsync({ user: details.user }, { $set: { folders: mailboxes }})

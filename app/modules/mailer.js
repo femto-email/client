@@ -4,7 +4,7 @@ const inspect = require('util').inspect
 const simpleParser = require('mailparser').simpleParser
 const util = require('util')
 
-let imapLogger = process.env.NODE_END == 'production' || 1 ? function(string) {} : function(string) {
+let imapLogger = process.env.NODE_END == 'production' || 0 ? function(string) {} : function(string) {
   // Obfuscate passwords.
   if (string.includes('=> \'A1 LOGIN')) {
     let array = string.split('"')
@@ -54,7 +54,17 @@ async function openMailbox(client, path) {
   if (typeof path != 'string') path = compilePath(path)
   if (client.state == 'disconnected') client = await login(client._config)
   logger.log(`Opening mailbox: ${path}`)
-  return client.openBoxAsync(path)
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      client.openBox(path, false, (err, mailbox) => {
+        if (err) logger.error(err)
+        else {
+          logger.log('We got the mailbox!')
+          resolve(mailbox)
+        }
+      })
+    })
+  })
 }
 
 function compilePath(path) {
