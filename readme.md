@@ -142,4 +142,4 @@ stateSet('state', 'new')
 
 ## License
 
-MIT © [Codefined](http://github.com/popey456963/maily)
+MIT © [Codefined](http://github.com/popey456963/maily) & [Miles Budden](http://github.com/pbexe)

@@ -1,7 +1,7 @@
 <div class="wrapper">
   <div class="row">
     <div class="input-field col s12 m8 l6 offset-m2 l5 offset-l3">
-      <h1 id="greet">Welcome to Maily</h1>
+      <h1 id="greet" class="center-align">Welcome to Maily</h1>
       <p class="subtitle">
         We just need you to fill in these five boxes and you'll be able to view your email.
         <div id="error"></div>
@@ -29,14 +29,11 @@
         <label for="secure">Secure</label>
       </div>
       <div class="col s12 m8 l6 offset-m2 offset-l3 break"></div>
-      <div class="input-field col s12 m8 l6 offset-m2 offset-l3">
+      <div class="input-field col s12 m8 l6 offset-m2 offset-l3 center-align">
         <button class="btn waves-effect waves-light" type="submit" name="login" value="Login">
-          <span class="mdi mdi-send right mdi-24px"></span>
+          <i class="material-icons">send</i>
         </button>
       </div>
     </form>
-    <p>We are currently <span id="doing">waiting for user input</span> <span id="number"></span></p>
-    <p>Retrieving mail from...:</p>
-    <span id="mailboxes"></span>
   </div>
 </div>

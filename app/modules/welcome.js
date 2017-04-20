@@ -12,7 +12,10 @@ async function welcome() {
   $('#login-form').on('submit', async function onLogin(e) {
     e.preventDefault()
     let details = getItemsFromForm('login-form')
-
+    $('.wrapper').html(`
+    <span id="doing"></span> <span id="number"></span><br>
+    <span id="mailboxes"></span>
+    `)
     $('#doing').text('logging you in.')
     let client = await mailer.login(details)
     logger.log(`Successfully logged in to user ${details.user}.`)
@@ -49,7 +52,8 @@ async function welcome() {
     linearFolders = [linearFolders[0]]
 
     for (let i = 0; i < linearFolders.length; i++) {
-      $('#mailboxes').html(JSON.stringify(linearFolders[i]))
+      $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
+      $('.wrapper').html('') 
       console.log("Opening folder: " + JSON.stringify(linearFolders[i]))
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
       logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
@@ -66,8 +70,6 @@ async function welcome() {
       })
 
       await Promise.all(promises)
-
-      console.log(mailbox)
 
       let location = []
       for (let j = 0; j < linearFolders[i].length; j++) {

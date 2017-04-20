@@ -10,6 +10,11 @@
     "email": "alexander@debenclipper.com",
     "url": "github.com/popey456963/mailclient"
   },
+  "contributors": [
+    {"name": "Miles Budden",
+      "url": "https://milesbudden.com",
+    "email": "miles@budden.net"}
+  ],
   "scripts": {
     "test": "xo",
     "start": "electron .",
