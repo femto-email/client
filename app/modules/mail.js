@@ -22,7 +22,7 @@ async function mail() {
   }
 
   let account = (await accounts.findAsync({ user: state.account.user }, {}))[0]
-  let folders = htmlFolders(organiseFolders(account.folders))
+  let folders = htmlFolders(account.folders)
 
   if (typeof mailStore[state.account.hash] == 'undefined') {
     setupMailDB(state.account.user)
@@ -32,16 +32,13 @@ async function mail() {
     // Here, we somewhat fake the folder tree for the inbox folder.
     // We don't really need the seperator, in this instance it should never be used,
     // but we keep it just in case.
-    stateSet('account', Object.assign(state.account, { 
-      folder: [{ 
-        name: 'INBOX', 
-        delimiter: findSeperator(account.folders) 
+    stateSet('account', Object.assign(state.account, {
+      folder: [{
+        name: 'INBOX',
+        delimiter: findSeperator(account.folders)
       }]
     }))
   }
-
-  console.log(account.folders)
-  console.log(state.account.folder[0].name)
 
   if (typeof account.folders[state.account.folder[0].name] == 'undefined') {
     stateSet('account', Object.assign(state.account, { folder: [{ name: 'Inbox', delimiter: findSeperator(account.folders) }]}))
@@ -49,13 +46,13 @@ async function mail() {
 
   $('#folders').html(folders)
 
+  linkFolders($('#folders').children())
   updateMailDiv()
 
   logger.log(`Loading mail window complete.`)
 }
 
 async function updateMailDiv() {
-  // $('#mail').text(JSON.stringify((await mailStore[state.account.hash].findAsync({}))[0]))
   let mail = await new Promise((resolve) => {
     mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: -1 }).exec((err, docs) => {
       resolve(docs)
@@ -91,12 +88,30 @@ function organiseFolders(tree) {
   return results
 }
 
-function htmlFolders(tree) {
+function htmlFolders(tree, journey) {
+  journey = journey || []
   let html = ''
   for (let prop in tree) {
-    html += `<div>${prop} ${htmlFolders(tree[prop])}</div>`
+    temp = journey.concat({ name: prop, delimiter: tree[prop].delimiter })
+    html += `<div id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>`
   }
   return html
+}
+
+function linkFolders(children) {
+  children.each((index, item) => {
+    $(`#${item.id.replace(/=/g, '\\=')}`).click((element) => {
+      stateSet('account', Object.assign(state.account, {
+        folder: JSON.parse(atob(element.target.id))
+      }))
+      updateMailDiv()
+    })
+
+    let items = $(`#${item.id.replace(/=/g, '\\=')}`).children()
+    if (items.length) {
+      linkFolders(items)
+    }
+  })
 }
 
 global.findFolders = (folders, path) => {
