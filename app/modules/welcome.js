@@ -56,20 +56,23 @@ async function welcome() {
       // $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
       console.log("Opening folder: " + JSON.stringify(linearFolders[i]))
       let mailbox = await mailer.openMailbox(client, linearFolders[i])
+      console.log(mailbox)
       logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
 
       let highest = 0
-      let promises = []
-      let emails = await mailer.getNewEmails(client, true, undefined, (seqno, msg, attributes) => {
-        if (seqno > highest) {
-          highest = seqno
-        }
-        promises.push(saveMail(details.user, hash, linearFolders[i], seqno, msg, attributes))
-        total++
-        $('#number').text(`(${total})`)
-      })
+      if (mailbox.messages.total) {
+        let promises = []
+        let emails = await mailer.getNewEmails(client, true, undefined, (seqno, msg, attributes) => {
+          if (seqno > highest) {
+            highest = seqno
+          }
+          promises.push(saveMail(details.user, hash, linearFolders[i], seqno, msg, attributes))
+          total++
+          $('#number').text(`(${total})`)
+        })
 
-      await Promise.all(promises)
+        await Promise.all(promises)
+      }
 
       let location = []
       for (let j = 0; j < linearFolders[i].length; j++) {
@@ -78,7 +81,7 @@ async function welcome() {
       }
 
       location.pop()
-      _.set(mailboxes, location.concat(['highest']), highest)
+      if (mailbox.messages.total) _.set(mailboxes, location.concat(['highest']), highest)
 
       let data = Object.keys(mailbox)
 

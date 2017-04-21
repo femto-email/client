@@ -89,10 +89,10 @@ function compilePath(path) {
  * @return {promise}               
  */
 async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
-  console.log(`${lowestSeq ? `${lowestSeq}:` : ``}*`)
+  lowestSeq = lowestSeq || 1
   loadedMessage = loadedMessage || function(seqno, msg, attributes) {}
   return new Promise((resolve, reject) => {
-    let f = client.seq.fetch(`${lowestSeq ? `${lowestSeq}:` : ``}*`, {
+    let f = client.seq.fetch(`${lowestSeq}:*`, {
       bodies: 'HEADER.FIELDS (TO FROM SUBJECT)',
       struct: false,
       envelope: true
@@ -124,7 +124,7 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
     })
     f.once('error', (err) => {
       logger.error(`Fetch error: ${err}`)
-      // reject(err)
+      reject(err)
     })
     f.once('end', () => {
       logger.success(`Done fetching all messages!`)
