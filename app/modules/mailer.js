@@ -89,14 +89,13 @@ function compilePath(path) {
  * @return {promise}               
  */
 async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
-  lowestSeq = lowestSeq || '1'
+  console.log(`${lowestSeq ? `${lowestSeq}:` : ``}*`)
   loadedMessage = loadedMessage || function(seqno, msg, attributes) {}
-  let box = await client.openBoxAsync('INBOX', readOnly)
   return new Promise((resolve, reject) => {
-    let f = client.seq.fetch(`${lowestSeq}:*`, {
+    let f = client.seq.fetch(`${lowestSeq ? `${lowestSeq}:` : ``}*`, {
       bodies: 'HEADER.FIELDS (TO FROM SUBJECT)',
       struct: false,
-      envelope: false
+      envelope: true
     })
     f.on('message', (msg, seqno) => {
       let content
@@ -125,11 +124,10 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
     })
     f.once('error', (err) => {
       logger.error(`Fetch error: ${err}`)
-      reject(err)
+      // reject(err)
     })
     f.once('end', () => {
       logger.success(`Done fetching all messages!`)
-      client.end()
       resolve()
     })
   })
@@ -152,6 +150,20 @@ function removeCircular(object) {
     .replace(/(\w+): ([\w :]+GMT\+[\w \(\)]+),/ig, '$1: new Date("$2"),')
     .replace(/(\S+): ,/ig, '$1: null,')
   return JSON.parse(JSON.stringify((new Function('return ' + str + ';'))()))
+}
+
+function checkTrash(folder) {
+  let exists = false
+  for (let i = 0; i < folder.length; i++) {
+    if (folder[i].name.toLowerCase() == 'trash') {
+      exists = true
+      continue
+    }
+    if (exists) {
+      return true
+    }
+  }
+  return false
 }
 
 global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
@@ -180,4 +192,4 @@ global.loadMail = (email, hash, uid) => {
   return mailStore[hash].findOneAsync({ uid: uid })
 }
 
-module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox, compilePath }
+module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox, compilePath, checkTrash }

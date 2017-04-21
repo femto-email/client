@@ -41,19 +41,17 @@ async function welcome() {
     $('#doing').text('getting your emails.')
     let total = 0
 
-    logger.log(JSON.stringify(linearFolders))
-
     linearFolders.reverse()
-
     linearFolders = linearFolders.filter(function(n){ return n != undefined && JSON.stringify(n) != '[]' })
-
-    console.log(mailboxes)
-
-    linearFolders = [linearFolders[0]]
+    logger.log(JSON.stringify(linearFolders))
+    // linearFolders = [linearFolders[26]]
 
     console.log(linearFolders)
 
     for (let i = 0; i < linearFolders.length; i++) {
+      // Fix Outlook being able to chuck folders in the trash, not in RFC.
+      // if (mailer.checkTrash(linearFolders[i])) continue
+
       $('#doing').text(`grabbing ${linearFolders[i][linearFolders[i].length - 1].name}.`)
       // $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
       console.log("Opening folder: " + JSON.stringify(linearFolders[i]))
@@ -62,7 +60,7 @@ async function welcome() {
 
       let highest = 0
       let promises = []
-      let emails = await mailer.getNewEmails(client, true, '1', (seqno, msg, attributes) => {
+      let emails = await mailer.getNewEmails(client, true, undefined, (seqno, msg, attributes) => {
         if (seqno > highest) {
           highest = seqno
         }
