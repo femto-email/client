@@ -11,9 +11,11 @@
     "url": "github.com/popey456963/mailclient"
   },
   "contributors": [
-    {"name": "Miles Budden",
+    {
+      "name": "Miles Budden",
       "url": "https://milesbudden.com",
-    "email": "miles@budden.net"}
+      "email": "miles@budden.net"
+    }
   ],
   "scripts": {
     "test": "xo",
@@ -49,6 +51,7 @@
     "navigo": "^4.5.1",
     "nedb": "^1.8.0",
     "path": "^0.12.7",
+    "sanitize-html": "^1.14.1",
     "stack-trace": "0.0.9"
   },
   "devDependencies": {

@@ -8,7 +8,6 @@ var watch = require('gulp-watch')
 var batch = require('gulp-batch')
 var plumber = require('gulp-plumber')
 
-
 gulp.task('sass', () => {
   return gulp.src('./app/css/**/*.scss')
   .pipe(plumber())

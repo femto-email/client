@@ -71,8 +71,14 @@ async function updateMailDiv() {
   }
 
   for (let i = 0; i < mail.length; i++) {
-    $('#mail').append($(`<e-mail data-uid="${escape(mail[i].uid)}"></e-mail>`))
+    $('#mail').append($(`<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`))
   }
+
+  $('.email-item').off('click')
+
+  $('.email-item').click((e) => {
+    loadEmail(e.currentTarget.attributes['data-uid'].nodeValue)
+  })
 }
 
 function organiseFolders(tree) {
@@ -112,6 +118,10 @@ function linkFolders(children) {
       linkFolders(items)
     }
   })
+}
+
+function loadEmail(uid) {
+  console.log(uid)
 }
 
 global.findFolders = (folders, path) => {
@@ -162,7 +172,7 @@ customElements.define('e-mail', class extends HTMLElement {
       // NOTE: All of these *have* to be HTML escaped.  Consider using `escapeHTML(string)` which
       // is globally accessible.
       shadowRoot.innerHTML = `
-        <div class="email" style="border: 1px solid black;">
+        <div id="${btoa(mail.uid)}" class="email" style="border: 1px solid black;">
           UID: ${escapeHTML(mail.uid)}<br />
           Subject: ${escapeHTML(mail.subject)}<br />
           From: ${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}<br />
