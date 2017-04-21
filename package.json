@@ -69,6 +69,8 @@
     "envs": [
       "node",
       "browser"
-    ]
+    ],
+    "linebreak-style": "windows",
+    "semi-colon": false
   }
 }
