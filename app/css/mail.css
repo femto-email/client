@@ -1,15 +1,15 @@
-#content {
-    width: 100%;
-    height: calc(100% - 30px);
-    padding-left: 300px;
-}
-
-@media only screen and (max-width: 992px) {
-    #content {
-        padding-left: 0;
-    }
-}
-
 .wrapper{
     padding: 2em;
+}
+
+.collection{
+    padding:0px;
+}
+
+.collection-item{
+    min-height: 0px !important; 
+}
+
+e-mail{
+    background-color: red;
 }
