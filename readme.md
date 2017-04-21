@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/femto-email/client.svg?branch=master)](https://travis-ci.org/femto-email/client)
 # Maily
 
 > A cross-platform mail-client with the intent to be fast, reliable and easy to use.
