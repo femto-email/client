@@ -152,9 +152,9 @@ customElements.define('e-mail', class extends HTMLElement {
     // Shadow root is it's *own* entire DOM.  This makes it impact less when
     // we change and search through other parts of the DOM, *hopefully* making it
     // slightly quicker.  It also allows us to use the cool <e-mail> tags.
-    const shadowRoot = this.attachShadow({mode: 'open'})
+    // const shadowRoot = this.attachShadow({ mode: 'open' })
 
-    shadowRoot.innerHTML = `
+    this.innerHTML = `
       <div>Loading...</div>
     `
 
@@ -171,21 +171,30 @@ customElements.define('e-mail', class extends HTMLElement {
       // Attach a shadow root to <e-mail>.
       // NOTE: All of these *have* to be HTML escaped.  Consider using `escapeHTML(string)` which
       // is globally accessible.
-      shadowRoot.innerHTML = `
-        <div id="${btoa(mail.uid)}" class="email" style="border: 1px solid black;">
-          UID: ${escapeHTML(mail.uid)}<br />
-          Subject: ${escapeHTML(mail.subject)}<br />
-          From: ${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}<br />
-          Flags: ${escapeHTML(JSON.stringify(mail.flags))}<br />
-          Folder: ${escapeHTML(mail.folder)}<br />
-          ModSeq: ${mail.modseq}<br />
-          Date: ${formatDate(mail.date)}<br />
-          ${mail.threadMsg ? `Children: ${JSON.stringify(mail.threadMsg)}<br />` : ``}
-          ChildMsg: ${mail.isThreadChild ? `Yes` : `No`}
+      this.innerHTML = `
+        <div class="collection-item avatar">
+          <img src="http://placehold.it/100x100" alt="" class="circle">
+          <span class="title">${escapeHTML(mail.subject)}</span>
+          <p>${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}</p>
+          <a href="#!" class="secondary-content">${formatDate(mail.date)}</a>
         </div>
       `
     })
   }
 })
+
+/* 
+<div id="${btoa(mail.uid)}" class="email" style="border: 1px solid black;">
+  UID: ${escapeHTML(mail.uid)}<br />
+  Subject: ${escapeHTML(mail.subject)}<br />
+  From: ${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}<br />
+  Flags: ${escapeHTML(JSON.stringify(mail.flags))}<br />
+  Folder: ${escapeHTML(mail.folder)}<br />
+  ModSeq: ${mail.modseq}<br />
+  Date: ${formatDate(mail.date)}<br />
+  ${mail.threadMsg ? `Children: ${JSON.stringify(mail.threadMsg)}<br />` : ``}
+  ChildMsg: ${mail.isThreadChild ? `Yes` : `No`}
+</div> 
+*/
 
 module.exports = { mail }
