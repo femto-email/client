@@ -169,7 +169,9 @@ customElements.define('e-mail', class extends HTMLElement {
           Flags: ${escapeHTML(JSON.stringify(mail.flags))}<br />
           Folder: ${escapeHTML(mail.folder)}<br />
           ModSeq: ${mail.modseq}<br />
-          Date: ${formatDate(mail.date)}
+          Date: ${formatDate(mail.date)}<br />
+          ${mail.threadMsg ? `Children: ${JSON.stringify(mail.threadMsg)}<br />` : ``}
+          ChildMsg: ${mail.isThreadChild ? `Yes` : `No`}
         </div>
       `
     })

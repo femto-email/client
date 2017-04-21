@@ -133,6 +133,56 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
   })
 }
 
+function applyThreads(mail) {
+  let objectMail = {}
+  for (let i = 0; i < mail.length; i++) {
+    if (mail[i].envelope.messageId) {
+      objectMail[mail[i]._id] = {
+        messageId: mail[i].envelope.messageId,
+        inReplyTo: mail[i].envelope.inReplyTo || undefined
+      }
+    }
+  }
+  return generateReplyMap(objectMail)
+}
+
+function clean(obj) {
+  for (var propName in obj) { 
+    if (typeof obj[propName] == 'object' && obj[propName].length == 0) {
+      delete obj[propName];
+    }
+  }
+  return obj
+}
+
+function findAllChildren(root, children) {
+  let result = children[root] || [];
+  for (let child of result) {
+    result = result.concat(findAllChildren(child, children));
+  }
+  return result;
+}
+
+function generateReplyMap(messages) {
+  let ids = {};
+  for (let [id, message] of Object.entries(messages)) {
+    ids[message.messageId] = id;
+  }
+  
+  let children = {};
+  for (let [id, message] of Object.entries(messages)) {
+    let parent_id = ids[message.inReplyTo];
+    children[parent_id] = children[parent_id] || [];
+    children[parent_id].push(id);
+  }
+  
+  let result = {};
+  for (let child of children[undefined]) {
+    result[child] = findAllChildren(child, children);
+  }
+  return clean(result)
+}
+
 /**
  * Removes any circular elements from an object, replacing them with "Circular".
  * 
@@ -192,4 +242,4 @@ global.loadMail = (email, hash, uid) => {
   return mailStore[hash].findOneAsync({ uid: uid })
 }
 
-module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox, compilePath, checkTrash }
+module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox, compilePath, checkTrash, applyThreads }

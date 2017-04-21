@@ -90,11 +90,27 @@ async function welcome() {
       }
     }
 
+    $('#number').text('')
+    $('#doing').text('looking for threads.')
+
+    let threads = mailer.applyThreads(await mailStore[hash].findAsync({}))
+
+    console.log(threads)
+
+    for (let id in threads) {
+      console.log("Setting Parent Thread: " + id)
+      await mailStore[hash].updateAsync({ _id: id }, { $set: { threadMsg: threads[id] } }, {})
+
+      for (let i = 0; i < threads[id].length; i++) {
+        console.log("Setting Thread Child: " + threads[id][i])
+        await mailStore[hash].updateAsync({ _id: threads[id][i] }, { $set: { isThreadChild: true } }, {})
+      }
+    }
+
     // logger.log(mailboxes)
 
     await accounts.updateAsync({ user: details.user }, { $set: { folders: mailer.removeCircular(mailboxes) }})
 
-    $('#number').text('')
     $('#doing').text('getting your inbox setup.')
 
     stateSet('account', { hash, user: details.user })
