@@ -21,7 +21,6 @@
     "test": "xo",
     "start": "electron .",
     "build": "echo \"DEPRECATED\" && electron-packager . --out=dist --asar --overwrite --all",
-    "postinstall": "install-app-deps",
     "pack": "build --dir",
     "dist": "build"
   },
