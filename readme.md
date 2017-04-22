@@ -98,7 +98,7 @@ We enforce several code standards in order to keep the codebase maintainable, th
 - [ ] Allow people to use the service online. (major parts: db, page changes)
 - [x] List folders from an account.
 - [x] List emails from an account.
-- [ ] Add an account/edit an account.
+- [x] Add an account/edit an account.
 - [ ] Send emails via SMTP.
 - [x] Compile multiple emails into one thread.
 - [ ] Render HTML and plaintext.

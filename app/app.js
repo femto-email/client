@@ -1,6 +1,10 @@
 const { os } = require('os')
-const { remote } = require('electron')
+const { remote, ipcRenderer } = require('electron')
+const url = require('url')
 const Navigo = require('navigo')
+
+// ipcRenderer.send('open', { file: 'compose' })
+// ipcRenderer.send('send', { data: 'some_information' })
 
 require('dotenv').config()
 require('./helpers/switch')
@@ -13,6 +17,7 @@ const { mail } = require('./modules/mail')
 
 global.mailer = require('./modules/mailer')
 global.users = require('./modules/users')
+global.sender = require('./modules/sender')
 global.app = remote.app
 global.router = new Navigo(null, true, '#')
 

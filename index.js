@@ -1,5 +1,6 @@
 'use strict'
 const electron = require('electron')
+const url = require('url')
 const createWindow = require('./app/helpers/window')
 const app = electron.app
 
@@ -8,11 +9,17 @@ require('electron-debug')({ showDevTools: true })
 
 // prevent window being garbage collected
 let mainWindow
+let windows = []
 
-function onClosed() {
-  // dereference the window
-  // for multiple windows store them in an array
+function onMainClosed() {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
   mainWindow = null
+}
+
+function onOtherClosed(number) {
+  console.log(`Someone closed window number ${number}`)
 }
 
 app.on('window-all-closed', () => {
@@ -23,19 +30,45 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (!mainWindow) {
-    mainWindow = createMainWindow()
+    openWindow('main')
   }
 })
 
 app.on('ready', () => {
-  mainWindow = createWindow('main', {
-    width: 600,
-    height: 400,
-    icon: 'build/128x128.png',
-    frame: false
-  })
+  openWindow('main')
+})
 
-  mainWindow.loadURL(`file://${__dirname}/app/main.html`)
-  mainWindow.on('closed', onClosed)
-  mainWindow.webContents.openDevTools()
+function openWindow(file) {
+  if (file == 'main') {
+    mainWindow = createWindow(file, {
+      width: 600,
+      height: 400,
+      icon: 'build/128x128.png',
+      frame: false
+    }, false)
+
+    mainWindow.loadURL(`file://${__dirname}/app/${file}.html`)
+    mainWindow.on('closed', onMainClosed)
+  } else {
+    windows.push(createWindow(file, {
+      width: 600,
+      height: 400,
+      icon: 'build/128x128.png',
+      frame: false
+    }, false))
+
+    windows[windows.length - 1].loadURL(`file://${__dirname}/app/${file}.html`)
+    windows[windows.length - 1].on('closed', ((i) => {
+      return () => { onOtherClosed(i) }
+    })(windows.length - 1))
+  }
+}
+
+electron.ipcMain.on('open', (event, arg) => {
+  openWindow(arg.file)
+})
+
+electron.ipcMain.on('send', (event, arg) => {
+  console.log(arg)
+  mainWindow.webContents.send('send', arg)
 })

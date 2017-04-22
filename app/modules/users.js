@@ -109,4 +109,8 @@ async function listAccounts() {
   return await accounts.findAsync({})
 }
 
-module.exports = { addAccount, listAccounts }
+async function editAccount(email, updates) {
+  return await accounts.updateAsync({ user: email }, { $set: updates })
+}
+
+module.exports = { addAccount, listAccounts, editAccount }
