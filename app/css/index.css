@@ -6687,7 +6687,8 @@ body {
   padding: 0;
   margin: 0;
   height: 100%;
-  width: 100%; }
+  width: 100%;
+  overflow: hidden; }
 
 @font-face {
   font-family: 'Material Icons';
@@ -6718,9 +6719,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   /* Support for IE. */
   font-feature-settings: 'liga'; }
-
-body {
-  font-family: -apple-system, 'Helvetica Neue', Helvetica, sans-serif; }
 
 header {
   position: absolute;

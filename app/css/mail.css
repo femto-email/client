@@ -1,20 +1,20 @@
 .wrapper {
-  padding: 2em; }
+  padding: 2em;
+  min-height: 100%;
+  max-height: 100%; }
+  .wrapper .wide {
+    width: 100%; }
+  .wrapper .overflow {
+    height: calc(100vh - 30px - 2em * 2);
+    overflow-y: auto; }
 
-.collection{
-    padding:0px;
-    border: 0px !important;
-}
+.collection {
+  padding: 0px;
+  border: 0px; }
 
-.collection-item{
-    min-height: 0px !important; 
-}
+.collection-item {
+  min-height: 0px !important; }
 
-.no-padding{
-    padding: 0px;
-}
-
-.wide{
-    width:100% !important;
-    min-width: 100% !important;
-}
+#content {
+  overflow: hidden;
+  height: calc(100vh - 30px); }

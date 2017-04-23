@@ -107,7 +107,7 @@ function htmlFolders (tree, journey) {
     temp = journey.concat({ name: prop, delimiter: tree[prop].delimiter })
     html += `
       <div class="col s12 no-padding center-align">
-        <div class="waves-effect waves-teal btn-flat wide" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
+        <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
       </div>
     `
   }

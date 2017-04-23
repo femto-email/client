@@ -1,11 +1,33 @@
+$wrapper-padding: 2em !default;
+
 .wrapper{
-    padding: 2em;
+    padding: $wrapper-padding;
+    //overflow: auto;
+    min-height: 100%;
+    max-height: 100%;
+
+    .wide{
+        width:100%;
+    }
+
+    .overflow{
+        height: calc(100vh - 30px - #{$wrapper-padding} * 2);
+        overflow-y: auto;
+    }
+
+
 }
 
 .collection{
     padding:0px;
+    border: 0px;
 }
 
 .collection-item{
     min-height: 0px !important; 
 }
+
+#content{
+    overflow: hidden;
+    height:calc(100vh - 30px);
+} 
