@@ -1,6 +1,4 @@
-const { os } = require('os')
 const { remote, ipcRenderer } = require('electron')
-const url = require('url')
 const Navigo = require('navigo')
 
 // ipcRenderer.send('open', { file: 'compose' })

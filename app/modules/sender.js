@@ -7,9 +7,9 @@ ipcRenderer.on('send', (event, arg) => {
   console.log(arg)
 })
 
-async function send(email) {
+async function send (email) {
   // create reusable transporter object using the default SMTP transport
-  if (typeof transporters[email] == 'undefined') {
+  if (typeof transporters[email] === 'undefined') {
     transporters[email] = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -38,6 +38,5 @@ async function send(email) {
 }
 
 // send()
-
 
 module.exports = { send }

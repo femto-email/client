@@ -1,6 +1,6 @@
 /**
  * Grab all the values from a form and returns them as an object.
- * 
+ *
  * @param  {string} id
  * @return {object}
  */
@@ -35,7 +35,7 @@ global.escapeHTML = (string) => {
   }
 
   if (string) {
-    return string.replace(/[&<>"']/g, function(m) { return map[m] })
+    return string.replace(/[&<>"']/g, function (m) { return map[m] })
   } else {
     return undefined
   }
@@ -63,16 +63,17 @@ global.timeFunc = async (func) => {
 }
 
 global.debounce = (func, wait, immediate) => {
-  var timeout;
-  return function() {
-    var context = this, args = arguments;
-    var later = function() {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-    var callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
-  };
-};
+  let timeout
+  return function () {
+    let context = this
+    let args = arguments
+    let later = function () {
+      timeout = null
+      if (!immediate) func.apply(context, args)
+    }
+    let callNow = immediate && !timeout
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+    if (callNow) func.apply(context, args)
+  }
+}

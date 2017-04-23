@@ -1,30 +1,29 @@
-const imap = require('imap')
+const Imap = require('imap')
 const Promise = require('bluebird')
-const inspect = require('util').inspect
 const simpleParser = require('mailparser').simpleParser
 const util = require('util')
 
-let imapLogger = process.env.NODE_END == 'production' || 0 ? function(string) {} : function(string) {
+let imapLogger = process.env.NODE_END === 'production' || 0 ? function (string) {} : function (string) {
   // Obfuscate passwords.
   if (string.includes('=> \'A1 LOGIN')) {
     let array = string.split('"')
-    for (let i = 1; i < array.length; i+=2) {
+    for (let i = 1; i < array.length; i += 2) {
       array[i] = array[i].replace(/./g, '*')
     }
     string = array.join('"')
   }
-  logger.debug(string) 
+  logger.debug(string)
 }
 
 /**
  * Logs in a user to their preferred mailing server.
- * 
+ *
  * @param  {object} details
  * @return {promise}
  */
-function login(details) {
+function login (details) {
   return new Promise((resolve, reject) => {
-    let client = Promise.promisifyAll(new imap(Object.assign(details, { debug: imapLogger })))
+    let client = Promise.promisifyAll(new Imap(Object.assign(details, { debug: imapLogger })))
 
     client.once('ready', () => { resolve(client) })
     client.once('error', reject)
@@ -36,12 +35,12 @@ function login(details) {
 
 /**
  * Retrieves all mailboxes from a users account.
- * 
+ *
  * @param  {object} client
  * @return {array}
  */
-async function getMailboxes(client) {
-  return await client.getBoxesAsync()
+async function getMailboxes (client) {
+  return client.getBoxesAsync()
 }
 
 /**
@@ -50,9 +49,9 @@ async function getMailboxes(client) {
  * @param {object} client
  * @return {object}
  */
-async function openMailbox(client, path) {
-  if (typeof path != 'string') path = compilePath(path)
-  if (client.state == 'disconnected') client = await login(client._config)
+async function openMailbox (client, path) {
+  if (typeof path !== 'string') path = compilePath(path)
+  if (client.state === 'disconnected') client = await login(client._config)
   logger.log(`Opening mailbox: ${path}`)
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -67,7 +66,7 @@ async function openMailbox(client, path) {
   })
 }
 
-function compilePath(path) {
+function compilePath (path) {
   // We have to compile it ourselves.
   let compiledPath = ''
   for (let i = 0; i < path.length - 1; i++) {
@@ -81,16 +80,16 @@ function compilePath(path) {
  * Retrieves all emails past a point from a client.
  * Every time a message is loaded, loadedMessage is called
  * with the message number, the contents and attributes of the message.
- * 
- * @param  {object} client        
- * @param  {boolean} readOnly      
- * @param  {integer} lowestSeq     
- * @param  {function} loadedMessage 
- * @return {promise}               
+ *
+ * @param  {object} client
+ * @param  {boolean} readOnly
+ * @param  {integer} lowestSeq
+ * @param  {function} loadedMessage
+ * @return {promise}
  */
-async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
+async function getNewEmails (client, readOnly, lowestSeq, loadedMessage) {
   lowestSeq = lowestSeq || 1
-  loadedMessage = loadedMessage || function(seqno, msg, attributes) {}
+  loadedMessage = loadedMessage || function (seqno, msg, attributes) {}
   return new Promise((resolve, reject) => {
     let f = client.seq.fetch(`${lowestSeq}:*`, {
       bodies: 'HEADER.FIELDS (TO FROM SUBJECT)',
@@ -113,7 +112,7 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
       })
       msg.once('attributes', (attrs) => {
         attributes = attrs
-        // logger.debug(`#${seqno} Attributes: ${inspect(attrs, false, 4)}`)
+        // logger.debug(`#${seqno} Attributes: ${util.inspect(attrs, false, 4)}`)
       })
       msg.once('end', async () => {
         // logger.debug(`#${seqno} Finished`)
@@ -133,7 +132,7 @@ async function getNewEmails(client, readOnly, lowestSeq, loadedMessage) {
   })
 }
 
-function applyThreads(mail) {
+function applyThreads (mail) {
   let objectMail = {}
   for (let i = 0; i < mail.length; i++) {
     if (mail[i].envelope.messageId) {
@@ -146,51 +145,51 @@ function applyThreads(mail) {
   return generateReplyMap(objectMail)
 }
 
-function clean(obj) {
-  for (var propName in obj) { 
-    if (typeof obj[propName] == 'object' && obj[propName].length == 0) {
-      delete obj[propName];
+function clean (obj) {
+  for (var propName in obj) {
+    if (typeof obj[propName] === 'object' && obj[propName].length === 0) {
+      delete obj[propName]
     }
   }
   return obj
 }
 
-function findAllChildren(root, children) {
-  let result = children[root] || [];
+function findAllChildren (root, children) {
+  let result = children[root] || []
   for (let child of result) {
-    result = result.concat(findAllChildren(child, children));
+    result = result.concat(findAllChildren(child, children))
   }
-  return result;
+  return result
 }
 
-function generateReplyMap(messages) {
-  let ids = {};
+function generateReplyMap (messages) {
+  let ids = {}
   for (let [id, message] of Object.entries(messages)) {
-    ids[message.messageId] = id;
+    ids[message.messageId] = id
   }
-  
-  let children = {};
+
+  let children = {}
   for (let [id, message] of Object.entries(messages)) {
-    let parent_id = ids[message.inReplyTo];
-    children[parent_id] = children[parent_id] || [];
-    children[parent_id].push(id);
+    let parentId = ids[message.inReplyTo]
+    children[parentId] = children[parentId] || []
+    children[parentId].push(id)
   }
-  
-  let result = {};
+
+  let result = {}
   for (let child of children[undefined]) {
-    result[child] = findAllChildren(child, children);
+    result[child] = findAllChildren(child, children)
   }
   return clean(result)
 }
 
 /**
  * Removes any circular elements from an object, replacing them with "Circular".
- * 
+ *
  * @param  {object} object
  * @return {object}
  */
-function removeCircular(object) {
-  str = util.inspect(object, { depth: null })
+function removeCircular (object) {
+  var str = util.inspect(object, { depth: null })
   str = str
     .replace(/<Buffer[ \w\.]+>/ig, '"buffer"')
     .replace(/\[Function]/ig, 'function(){}')
@@ -202,10 +201,10 @@ function removeCircular(object) {
   return JSON.parse(JSON.stringify((new Function('return ' + str + ';'))()))
 }
 
-function checkTrash(folder) {
+function checkTrash (folder) {
   let exists = false
   for (let i = 0; i < folder.length; i++) {
-    if (folder[i].name.toLowerCase() == 'trash') {
+    if (folder[i].name.toLowerCase() === 'trash') {
       exists = true
       continue
     }
@@ -217,25 +216,25 @@ function checkTrash(folder) {
 }
 
 global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
-  if (typeof mailStore[hash] == 'undefined') {
+  if (typeof mailStore[hash] === 'undefined') {
     setupMailDB(email)
   }
-  if (typeof folder != 'string') folder = compilePath(folder)
+  if (typeof folder !== 'string') folder = compilePath(folder)
 
   // Here, we use folder + seqno as our unique identifier between each mail item.  It is guarenteed to be unique
   // unless UIDValidity changes, whereupon I believe our only option is to purge the database and regather all
   // the information we need.
   // (This is yet to be implemented, we just hope it doesn't change for now)
-  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { seqno: seqno, uid: folder + seqno, folder: folder, date: +new Date(attributes.date) })).catch(function mailError(reason) {
+  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { seqno: seqno, uid: folder + seqno, folder: folder, date: +new Date(attributes.date) })).catch(function mailError (reason) {
     // logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
-    if (String(reason).indexOf('it violates the unique constraint') != -1) {
+    if (String(reason).indexOf('it violates the unique constraint') !== -1) {
       return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign(msg, attributes, { seqno: seqno, folder: folder, uid: folder + seqno, date: +new Date(attributes.date) }))
     }
   })
 }
 
 global.loadMail = (email, hash, uid) => {
-  if (typeof mailStore[hash] == 'undefined') {
+  if (typeof mailStore[hash] === 'undefined') {
     setupMailDB(email)
   }
 
