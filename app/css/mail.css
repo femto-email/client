@@ -17,4 +17,5 @@
 
 #content {
   overflow: hidden;
-  height: calc(100vh - 30px); }
+  height: calc(100vh - 30px);
+  background-color: #F5F5F5; }
