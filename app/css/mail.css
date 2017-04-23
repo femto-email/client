@@ -13,7 +13,9 @@
   border: 0px; }
 
 .collection-item {
-  min-height: 0px !important; }
+  min-height: 0px; }
+  .collection-item:hover {
+    filter: brightness(85%); }
 
 #content {
   overflow: hidden;
