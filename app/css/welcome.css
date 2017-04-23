@@ -1,16 +1,13 @@
 #content {
-	margin-top: 0px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 50px;
-	min-height: 100%;
-}
+  margin-top: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  min-height: 100%; }
 
-.break{
-    height:2em;
-}
+.break {
+  height: 2em; }
 
-html, body{
-	overflow: hidden;
-}
+html, body {
+  overflow: hidden; }
