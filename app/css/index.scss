@@ -1,0 +1,123 @@
+@import '../../node_modules/materialize-css/sass/materialize.scss';
+
+html,
+body {
+	padding: 0;
+	margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(fonts/MaterialIcons-Regular.woff) format('woff2'),
+    url(fonts/MaterialIcons-Regular.woff) format('woff'),
+    url(fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+body {
+	font-family: -apple-system, 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+header {
+	position: absolute;
+	width: 500px;
+	height: 250px;
+	top: 50%;
+	left: 50%;
+	margin-top: -125px;
+	margin-left: -250px;
+	text-align: center;
+}
+
+header h1 {
+	font-size: 60px;
+	font-weight: 100;
+	margin: 0;
+	padding: 0;
+}
+
+#title-bar {
+  z-index: 1000;
+  -webkit-app-region: drag;
+  height: 30px;
+  padding: none;
+  margin: 0px;
+  position: fixed;
+  top: 0px;
+  width:100vw;
+}
+
+#title {
+  z-index: 1001;
+  position: fixed;
+  top: 0px;
+  left: 6px;
+}
+
+#title-bar-btns {
+  z-index: 1002;
+  -webkit-app-region: no-drag;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+}
+
+.window-button {
+  height: 30px !important;
+  line-height: 30px;
+  padding: 0 0.5rem;
+}
+
+.window-button:hover {
+  filter: brightness(85%);
+}
+
+.breadcrumb:before {
+  color: #343434;
+  font-size: 1.2em;
+}
+
+.breadcrumb,
+.breadcrumb:last-child {
+  color: #343434;
+  font-size: 0.9em;
+}
+
+.breadcrumb:first-child{
+font-weight: bold;
+}
+
+#content{
+  margin-top: 30px;
+}
