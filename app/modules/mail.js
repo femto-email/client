@@ -2,13 +2,13 @@ const $ = require('jquery')
 const crypto = require('crypto')
 const formatDate = require('../helpers/date.js')
 
-async function mail() {
+async function mail () {
   if (!testLoaded('mail')) return
 
   logger.debug(`We're loading up the mail page now.`)
   page('mail', ['basic', 'mail'])
 
-  if (typeof state.account == 'undefined') {
+  if (typeof state.account === 'undefined') {
     // I have no idea when this happens, but just in case
     // Perhaps this could happen if someone deleted their state.json file?
     // Or it was unreadable.
@@ -24,11 +24,11 @@ async function mail() {
   let account = (await accounts.findAsync({ user: state.account.user }, {}))[0]
   let folders = htmlFolders(account.folders)
 
-  if (typeof mailStore[state.account.hash] == 'undefined') {
+  if (typeof mailStore[state.account.hash] === 'undefined') {
     setupMailDB(state.account.user)
   }
 
-  if (typeof state.account.folder == 'undefined') {
+  if (typeof state.account.folder === 'undefined') {
     // Here, we somewhat fake the folder tree for the inbox folder.
     // We don't really need the seperator, in this instance it should never be used,
     // but we keep it just in case.
@@ -40,19 +40,19 @@ async function mail() {
     }))
   }
 
-  if (typeof account.folders[state.account.folder[0].name] == 'undefined') {
-    stateSet('account', Object.assign(state.account, { folder: [{ name: 'Inbox', delimiter: findSeperator(account.folders) }]}))
+  if (typeof account.folders[state.account.folder[0].name] === 'undefined') {
+    stateSet('account', Object.assign(state.account, { folder: [{ name: 'Inbox', delimiter: findSeperator(account.folders) }] }))
   }
 
   $('#folders').html(folders)
 
-  linkFolders($('#folders').children())
+  linkFolders($('#folders').children().children())
   updateMailDiv()
 
   logger.log(`Loading mail window complete.`)
 }
 
-async function updateMailDiv() {
+async function updateMailDiv () {
   let mail = await new Promise((resolve) => {
     mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: -1 }).exec((err, docs) => {
       resolve(docs)
@@ -81,7 +81,13 @@ async function updateMailDiv() {
   })
 }
 
-function organiseFolders(tree) {
+/**
+ * Currently not functioning.
+ *
+ * @param  {object} tree
+ * @return {object}
+ */
+function organiseFolders (tree) {
   let keys = Object.getOwnPropertyNames(tree)
   let results = {}
   for (let i = 0; i < keys.length; i++) {
@@ -94,37 +100,38 @@ function organiseFolders(tree) {
   return results
 }
 
-function htmlFolders(tree, journey) {
+function htmlFolders (tree, journey) {
   journey = journey || []
   let html = ''
   for (let prop in tree) {
     temp = journey.concat({ name: prop, delimiter: tree[prop].delimiter })
-    html += `<div class="col s12 no-padding center-align">
-          <div class="waves-effect waves-teal btn-flat wide" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
-        </div>`
-    
-    //`<div id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>`
+    html += `
+      <div class="col s12 no-padding center-align">
+        <div class="waves-effect waves-teal btn-flat wide" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
+      </div>
+    `
   }
   return html
 }
 
-function linkFolders(children) {
+function linkFolders (children) {
   children.each((index, item) => {
     $(`#${item.id.replace(/=/g, '\\=')}`).click((element) => {
+      logger.log(`Switching page to ${atob(element.target.id)}`)
       stateSet('account', Object.assign(state.account, {
         folder: JSON.parse(atob(element.target.id))
       }))
       updateMailDiv()
     })
 
-    let items = $(`#${item.id.replace(/=/g, '\\=')}`).children()
+    let items = $(`#${item.id.replace(/=/g, '\\=')}`).children().children()
     if (items.length) {
       linkFolders(items)
     }
   })
 }
 
-function loadEmail(uid) {
+function loadEmail (uid) {
   console.log(uid)
 }
 
@@ -145,12 +152,12 @@ global.findSeperator = (folders) => {
   // We assume they use one delimiter for the entire inbox, otherwise...
   // Well, I worry for their health..
   // Try not to use this function too much, at some point I intend to deprecate it.
-  return typeof folders.INBOX == 'undefined' ? folders.Inbox.delimiter : folders.INBOX.delimiter
+  return typeof folders.INBOX === 'undefined' ? folders.Inbox.delimiter : folders.INBOX.delimiter
 }
 
 // Possibly also document.registerElement()?
 customElements.define('e-mail', class extends HTMLElement {
-  constructor() {
+  constructor () {
     super()
 
     // Shadow root is it's *own* entire DOM.  This makes it impact less when
@@ -164,14 +171,14 @@ customElements.define('e-mail', class extends HTMLElement {
 
     // We're able to assume some values from the current state.
     // However, we don't rely on it, preferring instead to find it in the email itself.
-    let email = this.getAttribute('data-email') || 
+    let email = this.getAttribute('data-email') ||
                 state.account.user
-    let hash  = this.getAttribute('data-hash') || 
-                crypto.createHash('md5').update(email).digest('hex') || 
+    let hash = this.getAttribute('data-hash') ||
+                crypto.createHash('md5').update(email).digest('hex') ||
                 state.account.hash
-    let uid   = unescape(this.getAttribute('data-uid'))
+    let uid = unescape(this.getAttribute('data-uid'))
 
-    let message = loadMail(email, hash, uid).then((mail) => {
+    loadMail(email, hash, uid).then((mail) => {
       // Attach a shadow root to <e-mail>.
       // NOTE: All of these *have* to be HTML escaped.  Consider using `escapeHTML(string)` which
       // is globally accessible.
@@ -187,7 +194,7 @@ customElements.define('e-mail', class extends HTMLElement {
   }
 })
 
-/* 
+/*
 <div id="${btoa(mail.uid)}" class="email" style="border: 1px solid black;">
   UID: ${escapeHTML(mail.uid)}<br />
   Subject: ${escapeHTML(mail.subject)}<br />
@@ -198,7 +205,7 @@ customElements.define('e-mail', class extends HTMLElement {
   Date: ${formatDate(mail.date)}<br />
   ${mail.threadMsg ? `Children: ${JSON.stringify(mail.threadMsg)}<br />` : ``}
   ChildMsg: ${mail.isThreadChild ? `Yes` : `No`}
-</div> 
+</div>
 */
 
 module.exports = { mail }
