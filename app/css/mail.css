@@ -1,8 +1,20 @@
 .wrapper {
   padding: 2em; }
 
-.collection {
-  padding: 0px; }
+.collection{
+    padding:0px;
+    border: 0px !important;
+}
 
-.collection-item {
-  min-height: 0px !important; }
+.collection-item{
+    min-height: 0px !important; 
+}
+
+.no-padding{
+    padding: 0px;
+}
+
+.wide{
+    width:100% !important;
+    min-width: 100% !important;
+}

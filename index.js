@@ -1,6 +1,5 @@
 'use strict'
 const electron = require('electron')
-const url = require('url')
 const createWindow = require('./app/helpers/window')
 const app = electron.app
 
@@ -11,14 +10,14 @@ require('electron-debug')({ showDevTools: true })
 let mainWindow
 let windows = []
 
-function onMainClosed() {
+function onMainClosed () {
   if (process.platform !== 'darwin') {
     app.quit()
   }
   mainWindow = null
 }
 
-function onOtherClosed(number) {
+function onOtherClosed (number) {
   console.log(`Someone closed window number ${number}`)
 }
 
@@ -38,8 +37,8 @@ app.on('ready', () => {
   openWindow('main')
 })
 
-function openWindow(file) {
-  if (file == 'main') {
+function openWindow (file) {
+  if (file === 'main') {
     mainWindow = createWindow(file, {
       width: 600,
       height: 400,

@@ -3,7 +3,7 @@ const $ = require('jquery')
 /**
  * This function enables an array of CSS files, whilst disabling
  * the rest.
- * 
+ *
  * @param  {array} titles
  * @return {undefined}
  */
@@ -27,7 +27,7 @@ global.style = (titles) => {
  * Page handles all our application state switching by enabling
  * and disabling CSS, and loading the HTML into the body of the
  * application
- * 
+ *
  * @param  {string} page
  * @param  {array} css
  * @return {undefined}

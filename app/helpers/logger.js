@@ -11,42 +11,42 @@ var defaults = {
   'detectFunctions': true,
   'customName': false,
   'colour': {
-    error:    chalk.red,    // (0)
-    warning:  chalk.yellow, // (1)
-    success:  chalk.green,  // (2)
-    log:      chalk.gray,   // (3)
-    info:     chalk.gray,   // (4)
-    debug:    chalk.gray,   // (5)
-    date:     chalk.cyan,
-    file:     chalk.yellow,
+    error: chalk.red,      // (0)
+    warning: chalk.yellow, // (1)
+    success: chalk.green,  // (2)
+    log: chalk.gray,       // (3)
+    info: chalk.gray,      // (4)
+    debug: chalk.gray,     // (5)
+    date: chalk.cyan,
+    file: chalk.yellow,
     function: chalk.green
   },
   'clientColour': {
-    error:   'color: Red; font-weight: bold;',
+    error: 'color: Red; font-weight: bold;',
     warning: 'color: Salmon; font-weight: bold;',
     success: 'color: Green',
-    log:     'color: Black',
-    info:    'color: DodgerBlue',
-    debug:   'color: DarkGray'
+    log: 'color: Black',
+    info: 'color: DodgerBlue',
+    debug: 'color: DarkGray'
   }
 }
 
-function Logger(options) {
+function Logger (options) {
   options = options || {}
 
   for (var option in defaults) {
-    this[option] = options[option] ||  defaults[option]
+    this[option] = options[option] || defaults[option]
   }
 
   if (options.customName) this.customName = this.pad(options.customName)
 }
 
-Logger.prototype.pad = function(name) {
+Logger.prototype.pad = function (name) {
   while (name.length < this.locLength) name += ' '
   return name
 }
 
-Logger.prototype.date = function() {
+Logger.prototype.date = function () {
   var date = new Date()
   var parts = {
     hh: String('00' + date.getHours()).slice(-2),
@@ -54,7 +54,7 @@ Logger.prototype.date = function() {
     ss: String('00' + date.getSeconds()).slice(-2),
     dd: String('00' + date.getDate()).slice(-2),
     yyyy: String('0000' + date.getFullYear()).slice(-4),
-    MM: String('00' + (date.getMonth() + 1)).slice(-2),
+    MM: String('00' + (date.getMonth() + 1)).slice(-2)
   }
 
   var keys = Object.keys(parts)
@@ -67,25 +67,25 @@ Logger.prototype.date = function() {
   return format
 }
 
-Logger.prototype.capitalise = function(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+Logger.prototype.capitalise = function (string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-Logger.prototype.error   = function() { if (this.logLevel >= 0) this.print(arguments, 'error')   }
-Logger.prototype.warning = function() { if (this.logLevel >= 1) this.print(arguments, 'warning') }
-Logger.prototype.success = function() { if (this.logLevel >= 2) this.print(arguments, 'success') }
-Logger.prototype.log     = function() { if (this.logLevel >= 3) this.print(arguments, 'log')     }
-Logger.prototype.info    = function() { if (this.logLevel >= 4) this.print(arguments, 'info')    }
-Logger.prototype.debug   = function() { if (this.logLevel >= 5) this.print(arguments, 'debug')   }
+Logger.prototype.error = function () { if (this.logLevel >= 0) this.print(arguments, 'error') }
+Logger.prototype.warning = function () { if (this.logLevel >= 1) this.print(arguments, 'warning') }
+Logger.prototype.success = function () { if (this.logLevel >= 2) this.print(arguments, 'success') }
+Logger.prototype.log = function () { if (this.logLevel >= 3) this.print(arguments, 'log') }
+Logger.prototype.info = function () { if (this.logLevel >= 4) this.print(arguments, 'info') }
+Logger.prototype.debug = function () { if (this.logLevel >= 5) this.print(arguments, 'debug') }
 
-Logger.prototype.group          = function(title) { console.group(title)          }
-Logger.prototype.groupEnd       = function(title) { console.groupEnd(title)       }
-Logger.prototype.groupCollapsed = function(title) { console.groupCollapsed(title) }
+Logger.prototype.group = function (title) { console.group(title) }
+Logger.prototype.groupEnd = function (title) { console.groupEnd(title) }
+Logger.prototype.groupCollapsed = function (title) { console.groupCollapsed(title) }
 
-Logger.prototype.print = function(args, level) {
+Logger.prototype.print = function (args, level) {
   var date = this.date()
 
-  var args = Object.keys(args).map(function(key) {
+  args = Object.keys(args).map(function (key) {
     return args[key]
   })
 
@@ -100,12 +100,12 @@ Logger.prototype.print = function(args, level) {
   }
 
   message = message.join(' ')
-  if (message.charAt(0) == '\n') message = message.slice(1)
+  if (message.charAt(0) === '\n') message = message.slice(1)
 
   var func, file
 
   if (this.customName) {
-    var file = this.customName
+    file = this.customName
   } else {
     var stack = stacktrace.get()[2]
     if (stack.getFunctionName()) {
@@ -118,9 +118,9 @@ Logger.prototype.print = function(args, level) {
     }
   }
 
-  log = level == 'error' ? console.error : console.log
+  var log = level === 'error' ? console.error : console.log
   if (this.client) {
-    log(`%c${date} %c[${func ? func : file}] %c${message}`, `color:blue;`, func ? `color:green` : `color:orange`, this.clientColour[level])
+    log(`%c${date} %c[${func || file}] %c${message}`, `color:blue;`, func ? `color:green` : `color:orange`, this.clientColour[level])
   } else {
     log(`${this.colour.date(date)} [${func ? this.colour.function(func) : this.colour.file(file)}] ${this.colour[level](message)}`)
   }

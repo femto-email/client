@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 var childProcess = require('child_process')
 var electron = require('electron')
@@ -12,7 +12,7 @@ gulp.task('sass', () => {
   return gulp.src('./app/css/**/*.scss')
   .pipe(plumber())
   .pipe(sass().on('error', sass.logError))
-  .pipe(gulp.dest('./app/css/'));
+  .pipe(gulp.dest('./app/css/'))
 })
 
 gulp.task('watch', () => {

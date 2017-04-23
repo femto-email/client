@@ -1,4 +1,7 @@
-async function addAccount(details) {
+const $ = require('jquery')
+const _ = require('lodash')
+
+async function addAccount (details) {
   $('.wrapper').html(`
   <span id="doing"></span> <span id="number"></span><br>
   <span id="mailboxes"></span>
@@ -15,7 +18,7 @@ async function addAccount(details) {
     $('#doing').text('saving your account for the future.')
     let doc = await accounts.insertAsync(Object.assign(details, { hash: hash, date: +new Date() }))
     logger.log(`Added ${details.user} to the accounts database.`)
-  } catch(e) {
+  } catch (e) {
     logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
   }
 
@@ -29,7 +32,7 @@ async function addAccount(details) {
   let total = 0
 
   linearFolders.reverse()
-  linearFolders = linearFolders.filter(function(n){ return n != undefined && JSON.stringify(n) != '[]' })
+  linearFolders = linearFolders.filter(function (n) { return n != undefined && JSON.stringify(n) != '[]' })
   logger.log(JSON.stringify(linearFolders))
   // linearFolders = [linearFolders[26]]
 
@@ -41,7 +44,7 @@ async function addAccount(details) {
 
     $('#doing').text(`grabbing ${linearFolders[i][linearFolders[i].length - 1].name}.`)
     // $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
-    console.log("Opening folder: " + JSON.stringify(linearFolders[i]))
+    console.log('Opening folder: ' + JSON.stringify(linearFolders[i]))
     let mailbox = await mailer.openMailbox(client, linearFolders[i])
     console.log(mailbox)
     logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
@@ -85,11 +88,11 @@ async function addAccount(details) {
   console.log(threads)
 
   for (let id in threads) {
-    console.log("Setting Parent Thread: " + id)
+    console.log('Setting Parent Thread: ' + id)
     await mailStore[hash].updateAsync({ _id: id }, { $set: { threadMsg: threads[id] } }, {})
 
     for (let i = 0; i < threads[id].length; i++) {
-      console.log("Setting Thread Child: " + threads[id][i])
+      console.log('Setting Thread Child: ' + threads[id][i])
       await mailStore[hash].updateAsync({ _id: threads[id][i] }, { $set: { isThreadChild: id } }, {})
     }
   }
@@ -105,12 +108,12 @@ async function addAccount(details) {
   stateCheck()
 }
 
-async function listAccounts() {
-  return await accounts.findAsync({})
+async function listAccounts () {
+  return accounts.findAsync({})
 }
 
-async function editAccount(email, updates) {
-  return await accounts.updateAsync({ user: email }, { $set: updates })
+async function editAccount (email, updates) {
+  return accounts.updateAsync({ user: email }, { $set: updates })
 }
 
 module.exports = { addAccount, listAccounts, editAccount }

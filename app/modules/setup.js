@@ -2,11 +2,12 @@ const jetpack = require('fs-jetpack')
 const Datastore = require('nedb')
 const Promise = require('bluebird')
 const crypto = require('crypto')
+const $ = require('jquery')
 const { remote } = require('electron')
 
 /**
  * Sets and saves a config value to the config file.
- * 
+ *
  * @param  {string} value
  * @param  {all} option
  * @return {undefined}
@@ -18,7 +19,7 @@ global.configSet = (option, value) => {
 
 /**
  * Sets and saves a state value to the state file.
- * 
+ *
  * @param  {string} valu
 e * @param  {all} option
  * @return {undefined}
@@ -30,12 +31,12 @@ global.stateSet = (option, value) => {
 
 /**
  * Tests whether the setup has been completed.
- * 
+ *
  * @param  {string} page
  * @return {undefined}
  */
 global.testLoaded = (page) => {
-  if (typeof setupComplete == 'undefined' || !setupComplete) {
+  if (typeof setupComplete === 'undefined' || !setupComplete) {
     logger.warning(`We tried to load ${page}, but setup hadn't completed yet, likely caused by the user refreshing the page.`)
     return false
   }
@@ -45,10 +46,10 @@ global.testLoaded = (page) => {
 /**
  * Setup is called when the application is run, it retrieves required
  * databases and files, and works out the current state.
- * 
+ *
  * @return {undefined}
  */
-function setup() {
+function setup () {
   global.connections = {}
   global.mailStore = {}
   global.appDir = jetpack.cwd(app.getAppPath())
@@ -56,12 +57,12 @@ function setup() {
 
   $(() => {
     $('#header').html(appDir.read(`./app/header.html`))
-    document.getElementById('min-btn').addEventListener('click', function(e) { remote.BrowserWindow.getFocusedWindow().minimize() })
-    document.getElementById('max-btn').addEventListener('click', function(e) { 
+    document.getElementById('min-btn').addEventListener('click', function (e) { remote.BrowserWindow.getFocusedWindow().minimize() })
+    document.getElementById('max-btn').addEventListener('click', function (e) {
       let remoteWindow = remote.BrowserWindow.getFocusedWindow()
-      remoteWindow.isMaximized() ? remoteWindow.unmaximize() : remoteWindow.maximize() 
+      remoteWindow.isMaximized() ? remoteWindow.unmaximize() : remoteWindow.maximize()
     })
-    document.getElementById('close-btn').addEventListener('click', function(e) { remote.BrowserWindow.getFocusedWindow().close()  })
+    document.getElementById('close-btn').addEventListener('click', function (e) { remote.BrowserWindow.getFocusedWindow().close() })
   })
 
   logger.log(`Application Paths Found:
@@ -76,7 +77,7 @@ function setup() {
   global.config = storeDir.read('./config.json', 'json') || {}
   global.state = storeDir.read('./state.json', 'json') || { state: 'new' }
 
-  global.accounts = new Datastore({ 
+  global.accounts = new Datastore({
     filename: app.getPath('userData') + '/db/accounts.db',
     autoload: true
   })
@@ -94,11 +95,11 @@ function setup() {
 /**
  * State check is called when the current state changes, and handles switching
  * between the states.
- * 
+ *
  * @return {undefined}
  */
 global.stateCheck = () => {
-  switch(state.state) {
+  switch (state.state) {
     case 'new':
       logger.debug(`This is a new user, we'll welcome them in to the application.`)
       router.navigate('/welcome')
@@ -114,17 +115,17 @@ global.stateCheck = () => {
 
 /**
  * Attempts to transform an email address into a DB.
- * 
+ *
  * @return {string}
  */
 global.setupMailDB = async (email) => {
   let hash = crypto.createHash('md5').update(email).digest('hex')
 
-  global.mailStore[hash] = Promise.promisifyAll(new Datastore({ 
+  global.mailStore[hash] = Promise.promisifyAll(new Datastore({
     filename: `${app.getPath('userData')}/db/${hash}.db`
   }))
 
-  let pause = await mailStore[hash].loadDatabaseAsync()
+  await mailStore[hash].loadDatabaseAsync()
 
   mailStore[hash].ensureIndex({ fieldName: 'uid', unique: true })
 
