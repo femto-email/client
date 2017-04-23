@@ -3,9 +3,8 @@
 // Can be used for more than one window, just construct many
 // instances of it and give each different name.
 
-module.exports = function (name, options, isRemote) {
-  const { screen } = require('electron')
-  const { app, BrowserWindow } = isRemote ? require('electron').remote : require('electron')
+module.exports = function (name, options) {
+  const { screen, app, BrowserWindow } = require('electron')
   const jetpack = require('fs-jetpack')
 
   console.log(options)

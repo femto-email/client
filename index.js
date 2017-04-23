@@ -7,17 +7,14 @@ const app = electron.app
 require('electron-debug')({ showDevTools: true })
 
 // prevent window being garbage collected
-let mainWindow
 let windows = []
 
-function onMainClosed () {
-  if (process.platform !== 'darwin') {
+function onClosed (number) {
+  if (process.platform !== 'darwin' && number === 0) {
+    windows.map((val) => { return null })
     app.quit()
   }
-  mainWindow = null
-}
-
-function onOtherClosed (number) {
+  windows[number] = null
   console.log(`Someone closed window number ${number}`)
 }
 
@@ -28,7 +25,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  if (!mainWindow) {
+  if (windows[0]) {
     openWindow('main')
   }
 })
@@ -38,29 +35,19 @@ app.on('ready', () => {
 })
 
 function openWindow (file) {
-  if (file === 'main') {
-    mainWindow = createWindow(file, {
-      width: 600,
-      height: 400,
-      icon: 'build/128x128.png',
-      frame: false
-    }, false)
+  const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize
+  let index = file === 'main' ? 0 : windows.length
 
-    mainWindow.loadURL(`file://${__dirname}/app/${file}.html`)
-    mainWindow.on('closed', onMainClosed)
-  } else {
-    windows.push(createWindow(file, {
-      width: 600,
-      height: 400,
-      icon: 'build/128x128.png',
-      frame: false
-    }, false))
-
-    windows[windows.length - 1].loadURL(`file://${__dirname}/app/${file}.html`)
-    windows[windows.length - 1].on('closed', ((i) => {
-      return () => { onOtherClosed(i) }
-    })(windows.length - 1))
-  }
+  windows[index] = createWindow(file, {
+    width: 600,
+    height: 400,
+    icon: 'build/128x128.png',
+    frame: false
+  })
+  windows[index].loadURL(`file://${__dirname}/app/${file}.html`)
+  windows[index].on('closed', ((i) => {
+    return () => { onClosed(i) }
+  })(index))
 }
 
 electron.ipcMain.on('open', (event, arg) => {
