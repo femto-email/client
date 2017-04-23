@@ -110,11 +110,17 @@ function htmlFolders (tree, journey) {
   let html = ''
   for (let prop in tree) {
     temp = journey.concat({ name: prop, delimiter: tree[prop].delimiter })
+    // html += `
+    //   <div class="col s12 no-padding center-align">
+    //     <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
+    //   </div>
+    // `
     html += `
       <div class="col s12 no-padding center-align">
-        <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
+        <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop}</div>
       </div>
     `
+    html += htmlFolders(tree[prop].children, temp)
   }
   return html
 }
