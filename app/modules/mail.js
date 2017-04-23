@@ -1,12 +1,17 @@
 const $ = require('jquery')
 const crypto = require('crypto')
 const formatDate = require('../helpers/date.js')
+const { ipcRenderer } = require('electron')
 
 async function mail () {
   if (!testLoaded('mail')) return
 
   logger.debug(`We're loading up the mail page now.`)
   page('mail', ['basic', 'mail'])
+
+  $('#compose-button').click(() => {
+    ipcRenderer.send('open', { file: 'compose' })
+  })
 
   if (typeof state.account === 'undefined') {
     // I have no idea when this happens, but just in case
