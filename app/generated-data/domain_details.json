@@ -1,0 +1,75 @@
+{
+    "aol.com": {
+        "host": "smtp.aol.com",
+        "port": 587,
+        "name": "AOL"
+    },
+    "fastmail.fm": {
+        "host": "mail.messagingengine.com",
+        "port": 465,
+        "secure": true,
+        "name": "FastMail"
+    },
+    "gmail.com": {
+        "host": "smtp.gmail.com",
+        "port": 465,
+        "secure": true,
+        "name": "Gmail"
+    },
+    "googlemail.com": {
+        "host": "smtp.gmail.com",
+        "port": 465,
+        "secure": true,
+        "name": "Gmail"
+    },
+    "hotmail.com": {
+        "host": "smtp.live.com",
+        "port": 587,
+        "name": "Hotmail"
+    },
+    "outlook.com": {
+        "host": "smtp.live.com",
+        "port": 587,
+        "name": "Hotmail"
+    },
+    "me.com": {
+        "host": "smtp.mail.me.com",
+        "port": 587,
+        "name": "iCloud"
+    },
+    "mac.com": {
+        "host": "smtp.mail.me.com",
+        "port": 587,
+        "name": "iCloud"
+    },
+    "qq.com": {
+        "host": "smtp.qq.com",
+        "port": 465,
+        "secure": true,
+        "name": "QQ"
+    },
+    "exmail.qq.com": {
+        "host": "smtp.exmail.qq.com",
+        "port": 465,
+        "secure": true,
+        "name": "QQex"
+    },
+    "sparkpost.com": {
+        "host": "smtp.sparkpostmail.com",
+        "port": 587,
+        "secure": false,
+        "name": "Sparkpost"
+    },
+    "yahoo.com": {
+        "host": "smtp.mail.yahoo.com",
+        "port": 465,
+        "secure": true,
+        "name": "Yahoo"
+    },
+    "yandex.ru": {
+        "host": "smtp.yandex.ru",
+        "port": 465,
+        "secure": true,
+        "name": "Yandex"
+    }
+}
