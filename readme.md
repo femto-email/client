@@ -3,7 +3,7 @@
 
 > A cross-platform mail-client with the intent to be fast, reliable and easy to use.
 
-![](https://puu.sh/vmtT6/b803a88da5.png)
+![screenshot](http://i.imgur.com/yRfJUXE.png)
 
 This is an attempt to see how *simple* a Node.JS app can be yet still have the full functionality a user can expect.  It aims to be a good training project for people to start working on, even if they have very little knowledge on contributing to Node.JS projects, or open source projects in general.
 

@@ -1,11 +1,26 @@
+::-webkit-scrollbar {
+  width: 0.5em;
+  height: 0.5em; }
+
+::-webkit-scrollbar-thumb {
+  background: #DBDBDB;
+  border-radius: 10px; }
+
+::-webkit-scrollbar-track {
+  background: #ededed; }
+
+body {
+  scrollbar-face-color: #DBDBDB;
+  scrollbar-track-color: #ededed; }
+
 .wrapper {
-  padding: 2em;
+  padding: 2em 2em 0px 2em;
   min-height: 100%;
   max-height: 100%; }
   .wrapper .wide {
     width: 100%; }
   .wrapper .overflow {
-    height: calc(100vh - 30px - 2em * 2);
+    height: calc(100vh - 30px - 2em);
     overflow-y: auto; }
 
 .collection {
