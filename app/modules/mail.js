@@ -92,7 +92,7 @@ async function updateMailDiv () {
   $('.email-item').off('click')
 
   $('.email-item').click((e) => {
-    loadEmail(e.currentTarget.attributes['data-uid'].nodeValue)
+    loadEmail(unescape(e.currentTarget.attributes['data-uid'].nodeValue))
   })
 }
 

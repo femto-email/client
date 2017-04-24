@@ -215,6 +215,10 @@ function checkTrash (folder) {
   return false
 }
 
+function refreshEmail (client, email) {
+  // TODO
+}
+
 global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
   if (typeof mailStore[hash] === 'undefined') {
     setupMailDB(email)
