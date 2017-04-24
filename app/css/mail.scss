@@ -1,6 +1,6 @@
 $wrapper-padding: 2em !default;
 .wrapper {
-    padding: $wrapper-padding; //overflow: auto;
+    padding: $wrapper-padding;
     min-height: 100%;
     max-height: 100%;
     .wide {
@@ -19,7 +19,7 @@ $wrapper-padding: 2em !default;
 
 .collection-item {
     min-height: 0px;
-     &:hover {
+    &:hover {
         filter: brightness(85%);
     }
 }
@@ -28,4 +28,84 @@ $wrapper-padding: 2em !default;
     overflow: hidden;
     height: calc(100vh - 30px);
     background-color: #F5F5F5
+}
+
+%vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+.read{
+    color: #A0A0A0
+}
+
+.unread{
+    font-weight: bolder;
+}
+
+.mail-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 2px 1rem 2px 1rem;
+    background-color: #FFF;
+    &:hover {
+        filter: brightness(90%);
+    }
+    label {
+        padding-left: 1.7em;
+    }
+    .multi {
+        display: flex;
+        align-items: center;
+        display: inline-block;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    .star {
+        display: flex;
+        align-items: center;
+        display: inline-block;
+        height: 100%;
+    }
+    .text {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        .sender {
+            display: flex;
+            align-items: center;
+            width: 40%;
+            height: 100%;
+            padding: 0rem 1.5rem 0rem 1.5rem;
+            .sender-text {
+                display: inline-block;
+                width:100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+        .subject{
+            display: flex;
+            align-items: center;
+            width: 40%;
+            height: 100%;
+            padding: 0rem 1.5rem 0rem 1.5rem;
+            .subject-text {
+                display: inline-block;
+                width:100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+        .date{
+            width: 20%;
+            float: right;
+        }
+    }
 }

@@ -206,11 +206,19 @@ customElements.define('e-mail', class extends HTMLElement {
       // NOTE: All of these *have* to be HTML escaped.  Consider using `escapeHTML(string)` which
       // is globally accessible.
       this.innerHTML = `
-        <div class="collection-item avatar">
-          <img src="http://placehold.it/100x100" alt="" class="circle">
-          <span class="title">${escapeHTML(mail.subject)}</span>
-          <p>${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}</p>
-          <a href="#!" class="secondary-content">${formatDate(mail.date)}</a>
+        <div class="mail-item">
+          <div class="multi"><input type="checkbox" id="${crypto.createHash('md5').update(escapeHTML(mail.subject)).digest("hex")}" />
+            <label for="${crypto.createHash('md5').update(escapeHTML(mail.subject)).digest("hex")}"></label>
+          </div>
+          <div class="text read">
+            <div class="subject">
+              <div class="subject-text">${escapeHTML(mail.subject)}</div>
+            </div>
+            <div class="sender">
+              <div class="sender-text">${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}</div>
+            </div>
+            <div class="date teal-text right-align">${formatDate(mail.date)}</div>
+          </div>
         </div>
       `
     })

@@ -21,3 +21,65 @@
   overflow: hidden;
   height: calc(100vh - 30px);
   background-color: #F5F5F5; }
+
+.read {
+  color: #A0A0A0; }
+
+.unread {
+  font-weight: bolder; }
+
+.mail-item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 2px 1rem 2px 1rem;
+  background-color: #FFF; }
+  .mail-item:hover {
+    filter: brightness(90%); }
+  .mail-item label {
+    padding-left: 1.7em; }
+  .mail-item .multi {
+    display: flex;
+    align-items: center;
+    display: inline-block;
+    height: 100%;
+    display: flex;
+    align-items: center; }
+  .mail-item .star {
+    display: flex;
+    align-items: center;
+    display: inline-block;
+    height: 100%; }
+  .mail-item .text {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%; }
+    .mail-item .text .sender {
+      display: flex;
+      align-items: center;
+      width: 40%;
+      height: 100%;
+      padding: 0rem 1.5rem 0rem 1.5rem; }
+      .mail-item .text .sender .sender-text {
+        display: inline-block;
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden; }
+    .mail-item .text .subject {
+      display: flex;
+      align-items: center;
+      width: 40%;
+      height: 100%;
+      padding: 0rem 1.5rem 0rem 1.5rem; }
+      .mail-item .text .subject .subject-text {
+        display: inline-block;
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden; }
+    .mail-item .text .date {
+      width: 20%;
+      float: right; }
