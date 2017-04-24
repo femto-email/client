@@ -207,10 +207,10 @@ customElements.define('e-mail', class extends HTMLElement {
       // is globally accessible.
       this.innerHTML = `
         <div class="mail-item">
-          <div class="multi"><input type="checkbox" id="${crypto.createHash('md5').update(escapeHTML(mail.subject)).digest("hex")}" />
-            <label for="${crypto.createHash('md5').update(escapeHTML(mail.subject)).digest("hex")}"></label>
+          <div class="multi"><input type="checkbox" id="${mail.uid}" />
+            <label for="${mail.uid}"></label>
           </div>
-          <div class="text read">
+          <div class="text ${mail.flags.includes('\\Seen') ? `read` : `unread`}">
             <div class="subject">
               <div class="subject-text">${escapeHTML(mail.subject)}</div>
             </div>
