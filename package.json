@@ -1,6 +1,6 @@
 {
-  "name": "Maily",
-  "productName": "Maily",
+  "name": "Femto",
+  "productName": "Femto",
   "version": "0.1.0",
   "description": "An open source email client.",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "dist": "build"
   },
   "build": {
-    "appId": "com.codefined.maily",
+    "appId": "com.codefined.femto",
     "mac": {
       "category": "productivity"
     }
@@ -33,7 +33,7 @@
   "keywords": [
     "electron-app",
     "electron",
-    "maily"
+    "femto"
   ],
   "dependencies": {
     "bluebird": "^3.5.0",

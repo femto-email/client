@@ -67,7 +67,7 @@ async function updateMailDiv () {
   $('#mail').html('')
 
   $('#title').html(`
-    <a href="#!" class="breadcrumb">Maily</a>
+    <a href="#!" class="breadcrumb">Femto</a>
     <a href="#!" class="breadcrumb">${state.account.user}</a>
   `)
 
