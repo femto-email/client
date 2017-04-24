@@ -5,37 +5,38 @@ let transporters = {}
 
 ipcRenderer.on('send', async (event, arg) => {
   let details = (await accounts.findAsync({ _id: arg.from }))[0]
-  console.log(details)
-  console.log(arg)
+  send(details, arg)
 })
 
-async function send (email) {
+async function send (account, mail) {
   // create reusable transporter object using the default SMTP transport
-  if (typeof transporters[email] === 'undefined') {
-    transporters[email] = nodemailer.createTransport({
-      service: 'gmail',
+  if (typeof transporters[account.user] === 'undefined') {
+    transporters[account.user] = nodemailer.createTransport({
+      host: account.smtp.host,
+      port: account.smtp.port,
+      secure: account.tls,
       auth: {
-        user: 'popeygilbert@gmail.com',
-        pass: '2f4i95FgZTmh'
+        user: account.user,
+        pass: account.password
       }
     })
   }
 
   // setup email data with unicode symbols
   let mailOptions = {
-    from: 'Alexander <popeygilbert@gmail.com>', // sender address
-    to: 'popeygilbert@gmail.com', // list of receivers
-    subject: 'Hello ✔', // Subject line
-    text: 'Hello world ?', // plain text body
-    html: '<b>Hello world ?</b>' // html body
+    from: mail.from, // sender address (Firstname Lastname <Email Address>)
+    to: mail.to, // list of receivers
+    subject: mail.subject, // Subject line
+    text: mail.message, // plain text body
+    html: mail.message // html body
   }
 
   // send mail with defined transport object
-  transporters[email].sendMail(mailOptions, (error, info) => {
+  transporters[account.user].sendMail(mailOptions, (error, info) => {
     if (error) {
-      return console.log(error)
+      return logger.error(error)
     }
-    console.log(`Message ${info.messageId} sent: ${info.response}`)
+    logger.log(`Message ${info.messageId} sent: ${info.response}`)
   })
 }
 

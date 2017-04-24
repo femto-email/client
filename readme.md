@@ -99,7 +99,7 @@ We enforce several code standards in order to keep the codebase maintainable, th
 - [x] List folders from an account.
 - [x] List emails from an account.
 - [x] Add an account/edit an account.
-- [ ] Send emails via SMTP.
+- [x] Send emails via SMTP.
 - [x] Compile multiple emails into one thread.
 - [ ] Render HTML and plaintext.
 - [ ] Implement anti-spam.

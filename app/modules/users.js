@@ -24,10 +24,10 @@ async function addAccount (details) {
       host: details.host_outgoing,
       port: details.port_outgoing
     },
-    hash: details.hash,
     user: details.user, 
     password: details.password, 
     tls: details.tls,
+    hash: hash,
     date: +new Date()
   }
 
