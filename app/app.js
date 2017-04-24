@@ -1,6 +1,9 @@
 const { remote, ipcRenderer } = require('electron')
 const Navigo = require('navigo')
 
+console.log("%cStop!", "font: 2em sans-serif; color: yellow; background-color: red;");
+console.log("%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a feature or “hack” someone’s account, it is a scam and will give them access to your account.", "font: 1.5em sans-serif; color: grey;");
+
 require('dotenv').config()
 require('./helpers/switch')
 require('./helpers/utils')
