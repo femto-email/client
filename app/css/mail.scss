@@ -104,8 +104,10 @@ $wrapper-padding: 2em !default;
             display: flex;
             align-items: center;
             width: 40%;
+            max-width: 40%;
+            min-width: 40%;
             height: 100%;
-            padding: 0rem 1.5rem 0rem 1.5rem;
+            // padding: 0rem 1.5rem 0rem 1.5rem;
             .sender-text {
                 display: inline-block;
                 width:100%;
@@ -118,8 +120,10 @@ $wrapper-padding: 2em !default;
             display: flex;
             align-items: center;
             width: 40%;
+            max-width: 40%;
+            min-width: 40%;
             height: 100%;
-            padding: 0rem 1.5rem 0rem 1.5rem;
+            // padding: 0rem 1.5rem 0rem 1.5rem;
             .subject-text {
                 display: inline-block;
                 width:100%;
@@ -130,7 +134,7 @@ $wrapper-padding: 2em !default;
         }
         .date{
             width: 20%;
-            float: right;
+            float: right; 
         }
     }
 }

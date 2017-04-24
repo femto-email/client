@@ -75,8 +75,9 @@ body {
       display: flex;
       align-items: center;
       width: 40%;
-      height: 100%;
-      padding: 0rem 1.5rem 0rem 1.5rem; }
+      max-width: 40%;
+      min-width: 40%;
+      height: 100%; }
       .mail-item .text .sender .sender-text {
         display: inline-block;
         width: 100%;
@@ -87,8 +88,9 @@ body {
       display: flex;
       align-items: center;
       width: 40%;
-      height: 100%;
-      padding: 0rem 1.5rem 0rem 1.5rem; }
+      max-width: 40%;
+      min-width: 40%;
+      height: 100%; }
       .mail-item .text .subject .subject-text {
         display: inline-block;
         width: 100%;
