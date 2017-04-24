@@ -26,7 +26,7 @@ document.getElementById('max-btn').addEventListener('click', function (e) {
 document.getElementById('close-btn').addEventListener('click', function (e) { remote.BrowserWindow.getFocusedWindow().close() })
 
 $('#title').html(`
-  <a href="#!" class="breadcrumb">Maily</a>
+  <a href="#!" class="breadcrumb">Femto</a>
   <a href="#!" class="breadcrumb">${state.account.user}</a>
   <a href="#!" class="breadcrumb">Compose</a>
 `)

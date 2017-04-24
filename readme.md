@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/femto-email/client.svg?branch=master)](https://travis-ci.org/femto-email/client)
-# Maily
+# Femto
 
 > A cross-platform mail-client with the intent to be fast, reliable and easy to use.
 
@@ -143,4 +143,4 @@ stateSet('state', 'new')
 
 ## License
 
-MIT © [Codefined](http://github.com/popey456963/maily) & [Miles Budden](http://github.com/pbexe)
+MIT © [Codefined](http://github.com/popey456963) & [Miles Budden](http://github.com/pbexe)
