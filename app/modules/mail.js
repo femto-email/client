@@ -215,7 +215,7 @@ customElements.define('e-mail', class extends HTMLElement {
               <div class="subject-text">${escapeHTML(mail.subject)}</div>
             </div>
             <div class="sender">
-              <div class="sender-text">${escapeHTML(mail.from ? mail.from.text : 'No Sender?')}</div>
+              <div class="sender-text">${escapeHTML(mail.from.value[0].name || mail.from.value[0].address)}</div>
             </div>
             <div class="date teal-text right-align">${formatDate(mail.date)}</div>
           </div>
