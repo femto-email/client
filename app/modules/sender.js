@@ -3,7 +3,9 @@ const { ipcRenderer } = require('electron')
 
 let transporters = {}
 
-ipcRenderer.on('send', (event, arg) => {
+ipcRenderer.on('send', async (event, arg) => {
+  let details = (await accounts.findAsync({ _id: arg.from }))[0]
+  console.log(details)
   console.log(arg)
 })
 

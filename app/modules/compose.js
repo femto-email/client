@@ -1,7 +1,7 @@
 const $ = require('jquery')
 const jetpack = require('fs-jetpack')
 const Datastore = require('nedb')
-const { remote } = require('electron')
+const { remote, ipcRenderer } = require('electron')
 global.Promise = require('bluebird')
 
 global.app = remote.app
@@ -44,3 +44,12 @@ $('#content').html(appDir.read(`./app/compose_out.html`))
   }
 })()
 
+$('#send').click(() => {
+  let message = {
+    from: $('#from').val(),
+    to: $('#to').val(),
+    subject: $('#subject').val(),
+    message: $('#message').val()
+  }
+  ipcRenderer.send('send', message)
+})

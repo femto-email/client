@@ -55,6 +55,5 @@ electron.ipcMain.on('open', (event, arg) => {
 })
 
 electron.ipcMain.on('send', (event, arg) => {
-  console.log(arg)
-  mainWindow.webContents.send('send', arg)
+  windows[0].webContents.send('send', arg)
 })

@@ -6,6 +6,7 @@ async function addAccount (details) {
   <span id="doing"></span> <span id="number"></span><br>
   <span id="mailboxes"></span>
   `)
+  
   $('#doing').text('logging you in.')
   let client = await mailer.login(details)
   logger.log(`Successfully logged in to user ${details.user}.`)
@@ -14,9 +15,25 @@ async function addAccount (details) {
   let hash = await setupMailDB(details.user)
   logger.log(`Successfully created a database account for ${details.user}`)
 
+  let user = {
+    imap: { 
+      host: details.host,
+      port: details.port
+    },
+    smtp: {
+      host: details.host_outgoing,
+      port: details.port_outgoing
+    },
+    hash: details.hash,
+    user: details.user, 
+    password: details.password, 
+    tls: details.tls,
+    date: +new Date()
+  }
+
   try {
     $('#doing').text('saving your account for the future.')
-    let doc = await accounts.insertAsync(Object.assign(details, { hash: hash, date: +new Date() }))
+    let doc = await accounts.insertAsync(user)
     logger.log(`Added ${details.user} to the accounts database.`)
   } catch (e) {
     logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
@@ -32,7 +49,7 @@ async function addAccount (details) {
   let total = 0
 
   linearFolders.reverse()
-  linearFolders = linearFolders.filter(function (n) { return n != undefined && JSON.stringify(n) != '[]' })
+  linearFolders = linearFolders.filter((n) => { return n != undefined && JSON.stringify(n) != '[]' })
   logger.log(JSON.stringify(linearFolders))
   // linearFolders = [linearFolders[26]]
 

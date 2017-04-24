@@ -46,7 +46,12 @@ async function mail () {
   }
 
   if (typeof account.folders[state.account.folder[0].name] === 'undefined') {
-    stateSet('account', Object.assign(state.account, { folder: [{ name: 'Inbox', delimiter: findSeperator(account.folders) }] }))
+    stateSet('account', Object.assign(state.account, { 
+      folder: [{
+        name: 'Inbox',
+        delimiter: findSeperator(account.folders)
+      }]
+    }))
   }
 
   $('#folders').html(folders)
@@ -77,6 +82,11 @@ async function updateMailDiv () {
 
   for (let i = 0; i < mail.length; i++) {
     $('#mail').append($(`<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`))
+  }
+
+  if (mail.length === 0) {
+    // This folder is empty...
+    $('#mail').html('This folder is empty ;(')
   }
 
   $('.email-item').off('click')
@@ -110,19 +120,19 @@ function htmlFolders (tree, journey) {
   let html = ''
   for (let prop in tree) {
     temp = journey.concat({ name: prop, delimiter: tree[prop].delimiter })
-    // RE-ENABLE THIS TO GET FOLDERS WITH DEPTH
-    // html += `
-    //   <div class="col s12 no-padding center-align">
-    //     <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
-    //   </div>
-    // `
-    // COMMENT THIS OUT WHEN YOU DO.
+    // Folders with depth
     html += `
       <div class="col s12 no-padding center-align">
-        <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop}</div>
+        <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
       </div>
     `
-    html += htmlFolders(tree[prop].children, temp)
+    // Folders without depth
+    // html += `
+    //   <div class="col s12 no-padding center-align">
+    //     <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop}</div>
+    //   </div>
+    // `
+    // html += htmlFolders(tree[prop].children, temp)
   }
   return html
 }

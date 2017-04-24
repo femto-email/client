@@ -19,10 +19,12 @@ async function welcome () {
  * When we're not in production, we can keep user information in a
  * .env file so that we don't have to enter it every time.
  *
- * @return {[type]} [description]
+ * @return {undefined}
  */
 function fillFields () {
-  $('#domain').val(process.env.DOMAIN)
+  $('#host_outgoing').val(process.env.HOST_OUTGOING)
+  $('#port_outgoing').val(process.env.PORT_OUTGOING)
+  $('#host').val(process.env.HOST)
   $('#port').val(process.env.PORT)
   $('#email').val(process.env.EMAIL)
   $('#password').val(process.env.PASSWORD)

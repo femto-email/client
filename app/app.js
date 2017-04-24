@@ -1,9 +1,6 @@
 const { remote, ipcRenderer } = require('electron')
 const Navigo = require('navigo')
 
-// ipcRenderer.send('open', { file: 'compose' })
-// ipcRenderer.send('send', { data: 'some_information' })
-
 require('dotenv').config()
 require('./helpers/switch')
 require('./helpers/utils')
