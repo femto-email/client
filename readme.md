@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/femto-email/client.svg?branch=master)](https://travis-ci.org/femto-email/client)
 
-<img src="logo.svg" alt="logo" width="100%">
+<img src="logo.png" alt="logo" width="100%">
 
 > A cross-platform mail-client with the intent to be fast, reliable and easy to use.
 
