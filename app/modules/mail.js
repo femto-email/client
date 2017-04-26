@@ -80,9 +80,11 @@ async function updateMailDiv () {
     $('#title').append(`<a href="#!" class="breadcrumb">${state.account.folder[i].name}</a>`)
   }
 
+  let html = ""
   for (let i = 0; i < mail.length; i++) {
-    $('#mail').append($(`<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`))
+    html += `<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`
   }
+  $('#mail').html($(html))
 
   if (mail.length === 0) {
     // This folder is empty...
@@ -123,7 +125,7 @@ function htmlFolders (tree, journey) {
     // Folders with depth
     html += `
       <div class="col s12 no-padding center-align">
-        <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
+        <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
       </div>
     `
     // Folders without depth
@@ -144,6 +146,8 @@ function linkFolders (children) {
       stateSet('account', Object.assign(state.account, {
         folder: JSON.parse(atob(element.target.id))
       }))
+      $(`.folder-tree`).removeClass('teal')
+      $(`#${element.target.id.replace(/=/g, '\\=')}`).addClass('teal')
       updateMailDiv()
     })
 
