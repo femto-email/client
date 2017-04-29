@@ -1,0 +1,210 @@
+{
+  "Googlemail - Gmail": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.gmail.com",
+        "port": 995
+      }
+    }
+  },
+  "Outlook.com": {
+    "pop3": {
+      "ssl": {
+        "host": "pop3.live.com",
+        "port": 995
+      }
+    }
+  },
+  "Office365.com": {
+    "pop3": {
+      "ssl": {
+        "host": "outlook.office365.com",
+        "port": 995
+      }
+    }
+  },
+  "Yahoo Mail": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.mail.yahoo.com",
+        "port": 995
+      }
+    }
+  },
+  "Yahoo Mail Plus": {
+    "pop3": {
+      "ssl": {
+        "host": "plus.pop.mail.yahoo.com",
+        "port": 995
+      }
+    }
+  },
+  "Yahoo UK": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.mail.yahoo.co.uk",
+        "port": 995
+      }
+    }
+  },
+  "Yahoo Deutschland": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.mail.yahoo.com",
+        "port": 995
+      }
+    }
+  },
+  "Yahoo AU/NZ": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.mail.yahoo.com.au",
+        "port": 995
+      }
+    }
+  },
+  "O2": {
+    "pop3": {
+      "unencrypted": {
+        "host": "pop3.o2.ie",
+        "port": 110
+      }
+    }
+  },
+  "O2.uk": {
+    "pop3": {
+      "unencrypted": {
+        "host": "pop3.o2.co.uk",
+        "port": 110
+      }
+    }
+  },
+  "AT&T": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.att.yahoo.com",
+        "port": 995
+      }
+    }
+  },
+  "NTL @ntlworld.com": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.ntlworld.com",
+        "port": 995
+      }
+    }
+  },
+  "BT Connect": {
+    "pop3": {
+      "unencrypted": {
+        "host": "mail.btconnect.com",
+        "port": 110
+      }
+    }
+  },
+  "BT Openworld": {
+    "pop3": {
+      "unencrypted": {
+        "host": "mail.btopenworld.com",
+        "port": 110
+      }
+    }
+  },
+  "BT Internet": {
+    "pop3": {
+      "unencrypted": {
+        "host": "mail.btinternet.com",
+        "port": 110
+      }
+    }
+  },
+  "Orange": {
+    "pop3": {
+      "unencrypted": {
+        "host": "pop.orange.net",
+        "port": 110
+      }
+    }
+  },
+  "Orange.uk": {
+    "pop3": {
+      "unencrypted": {
+        "host": "pop.orange.co.uk",
+        "port": 110
+      }
+    }
+  },
+  "Wanadoo UK": {
+    "pop3": {
+      "unencrypted": {
+        "host": "pop.wanadoo.co.uk",
+        "port": 110
+      }
+    }
+  },
+  "Hotmail": {
+    "pop3": {
+      "ssl": {
+        "host": "pop3.live.com",
+        "port": 995
+      }
+    }
+  },
+  "O2 Online Deutschland": {
+    "pop3": {
+      "unencrypted": {
+        "host": "pop.o2online.de",
+        "port": 110
+      }
+    }
+  },
+  "T-Online Deutschland": {
+    "pop3": {
+      "ssl": {
+        "host": "securepop.t-online.de",
+        "port": 995
+      }
+    }
+  },
+  "1&1 (1and1)": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.1and1.com",
+        "port": 995
+      }
+    }
+  },
+  "1&1 Deutschland": {
+    "pop3": {
+      "ssl": {
+        "host": "pop.1und1.de",
+        "port": 995
+      }
+    }
+  },
+  "Comcast": {
+    "pop3": {
+      "unencrypted": {
+        "host": "mail.comcast.net",
+        "port": 110
+      }
+    }
+  },
+  "Verizon": {
+    "pop3": {
+      "ssl": {
+        "host": "incoming.verizon.net",
+        "port": 995
+      }
+    }
+  },
+  "Verizon (Yahoo hosted)": {
+    "pop3": {
+      "unencrypted": {
+        "host": "incoming.yahoo.verizon.net",
+        "port": 110
+      }
+    }
+  }
+}

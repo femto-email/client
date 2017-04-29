@@ -1,0 +1,368 @@
+[
+ {
+   "FIELD1": "Googlemail - Gmail",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.gmail.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.gmail.com",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.gmail.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Outlook.com",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp-mail.outlook.com",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap-mail.outlook.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Office365.com",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.office365.com",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "outlook.office365.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Yahoo Mail",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.mail.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.mail.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Yahoo Mail Plus",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "plus.smtp.mail.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "plus.imap.mail.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Yahoo Mail UK",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.mail.yahoo.co.uk",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.mail.yahoo.co.uk",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Yahoo Mail Deutschland",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.mail.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.mail.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Yahoo Mail AU/NZ",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.mail.yahoo.au",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.mail.yahoo.au",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "AOL.com",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.aol.com",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.aol.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "AT&T",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.att.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.att.yahoo.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "NTL @ntlworld.com",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.ntlworld.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.ntlworld.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "BT Connect",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.btconnect.com",
+   "FIELD3": "",
+   "FIELD4": "25"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap4.btconnect.com",
+   "FIELD3": "",
+   "FIELD4": "143"
+ },
+ {
+   "FIELD1": "O2 Deutschland",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "mail.o2online.de",
+   "FIELD3": "",
+   "FIELD4": "25"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.o2online.de",
+   "FIELD3": "",
+   "FIELD4": "143"
+ },
+ {
+   "FIELD1": "T-Online Deutschland",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "securesmtp.t-online.de",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "secureimap.t-online.de",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "1&1 (1and1)",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.1and1.com",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.1and1.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "1&1 Deutschland",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.1und1.de",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.1und1.de",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Verizon",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "outgoing.verizon.net",
+   "FIELD3": "",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "incoming.verizon.net",
+   "FIELD3": "",
+   "FIELD4": "143"
+ },
+ {
+   "FIELD1": "zoho Mail",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.zoho.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.zoho.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "Mail.com",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.mail.com",
+   "FIELD3": "StartTLS",
+   "FIELD4": "587"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.mail.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ },
+ {
+   "FIELD1": "GMX.com",
+   "FIELD2": "Server:",
+   "FIELD3": "Authentication:",
+   "FIELD4": "Port:"
+ },
+ {
+   "FIELD1": "SMTP Server (Outgoing Messages)",
+   "FIELD2": "smtp.gmx.com",
+   "FIELD3": "SSL",
+   "FIELD4": "465"
+ },
+ {
+   "FIELD1": "IMAP Server (Incoming Messages)",
+   "FIELD2": "imap.gmx.com",
+   "FIELD3": "SSL",
+   "FIELD4": "993"
+ }
+]

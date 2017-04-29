@@ -1,0 +1,404 @@
+{
+  "126": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.126.com",
+        "port": 465
+      }
+    }
+  },
+  "163": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.163.com",
+        "port": 465
+      }
+    }
+  },
+  "1und1": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.1und1.de",
+        "port": 465
+      }
+    }
+  },
+  "AOL": {
+    "domains": [
+      "aol.com"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.aol.com",
+        "port": 587
+      }
+    }
+  },
+  "DebugMail": {
+    "smtp": {
+      "unencrypted": {
+        "host": "debugmail.io",
+        "port": 25
+      }
+    }
+  },
+  "DynectEmail": {
+    "aliases": [
+      "Dynect"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.dynect.net",
+        "port": 25
+      }
+    }
+  },
+  "FastMail": {
+    "domains": [
+      "fastmail.fm"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "mail.messagingengine.com",
+        "port": 465
+      }
+    }
+  },
+  "GandiMail": {
+    "aliases": [
+      "Gandi",
+      "Gandi Mail"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "mail.gandi.net",
+        "port": 587
+      }
+    }
+  },
+  "Gmail": {
+    "aliases": [
+      "Google Mail"
+    ],
+    "domains": [
+      "gmail.com",
+      "googlemail.com"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.gmail.com",
+        "port": 465
+      }
+    }
+  },
+  "Godaddy": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtpout.secureserver.net",
+        "port": 25
+      }
+    }
+  },
+  "GodaddyAsia": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.asia.secureserver.net",
+        "port": 25
+      }
+    }
+  },
+  "GodaddyEurope": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.europe.secureserver.net",
+        "port": 25
+      }
+    }
+  },
+  "hot.ee": {
+    "smtp": {
+      "unencrypted": {
+        "host": "mail.hot.ee"
+      }
+    }
+  },
+  "Hotmail": {
+    "aliases": [
+      "Outlook",
+      "Outlook.com",
+      "Hotmail.com"
+    ],
+    "domains": [
+      "hotmail.com",
+      "outlook.com"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.live.com",
+        "port": 587
+      }
+    }
+  },
+  "iCloud": {
+    "aliases": [
+      "Me",
+      "Mac"
+    ],
+    "domains": [
+      "me.com",
+      "mac.com"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.mail.me.com",
+        "port": 587
+      }
+    }
+  },
+  "mail.ee": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.mail.ee"
+      }
+    }
+  },
+  "Mail.ru": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.mail.ru",
+        "port": 465
+      }
+    }
+  },
+  "Maildev": {
+    "smtp": {
+      "unencrypted": {
+        "port": 1025
+      }
+    }
+  },
+  "Mailgun": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.mailgun.org",
+        "port": 587
+      }
+    }
+  },
+  "Mailjet": {
+    "smtp": {
+      "unencrypted": {
+        "host": "in.mailjet.com",
+        "port": 587
+      }
+    }
+  },
+  "Mailosaur": {
+    "smtp": {
+      "unencrypted": {
+        "host": "mailosaur.io",
+        "port": 25
+      }
+    }
+  },
+  "Mandrill": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.mandrillapp.com",
+        "port": 587
+      }
+    }
+  },
+  "Naver": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.naver.com",
+        "port": 587
+      }
+    }
+  },
+  "OpenMailBox": {
+    "aliases": [
+      "OMB",
+      "openmailbox.org"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.openmailbox.org",
+        "port": 465
+      }
+    }
+  },
+  "Outlook365": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.office365.com",
+        "port": 587
+      }
+    }
+  },
+  "Postmark": {
+    "aliases": [
+      "PostmarkApp"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.postmarkapp.com",
+        "port": 2525
+      }
+    }
+  },
+  "QQ": {
+    "domains": [
+      "qq.com"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.qq.com",
+        "port": 465
+      }
+    }
+  },
+  "QQex": {
+    "aliases": [
+      "QQ Enterprise"
+    ],
+    "domains": [
+      "exmail.qq.com"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.exmail.qq.com",
+        "port": 465
+      }
+    }
+  },
+  "SendCloud": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtpcloud.sohu.com",
+        "port": 25
+      }
+    }
+  },
+  "SendGrid": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.sendgrid.net",
+        "port": 587
+      }
+    }
+  },
+  "SendinBlue": {
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp-relay.sendinblue.com",
+        "port": 587
+      }
+    }
+  },
+  "SendPulse": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp-pulse.com",
+        "port": 465
+      }
+    }
+  },
+  "SES": {
+    "smtp": {
+      "ssl": {
+        "host": "email-smtp.us-east-1.amazonaws.com",
+        "port": 465
+      }
+    }
+  },
+  "SES-US-EAST-1": {
+    "smtp": {
+      "ssl": {
+        "host": "email-smtp.us-east-1.amazonaws.com",
+        "port": 465
+      }
+    }
+  },
+  "SES-US-WEST-2": {
+    "smtp": {
+      "ssl": {
+        "host": "email-smtp.us-west-2.amazonaws.com",
+        "port": 465
+      }
+    }
+  },
+  "SES-EU-WEST-1": {
+    "smtp": {
+      "ssl": {
+        "host": "email-smtp.eu-west-1.amazonaws.com",
+        "port": 465
+      }
+    }
+  },
+  "Sparkpost": {
+    "aliases": [
+      "SparkPost",
+      "SparkPost Mail"
+    ],
+    "domains": [
+      "sparkpost.com"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.sparkpostmail.com",
+        "port": 587
+      }
+    }
+  },
+  "Tipimail": {
+    "aliases": [
+      "tipimail"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.tipimail.com",
+        "port": 587
+      }
+    }
+  },
+  "Yahoo": {
+    "domains": [
+      "yahoo.com"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.mail.yahoo.com",
+        "port": 465
+      }
+    }
+  },
+  "Yandex": {
+    "domains": [
+      "yandex.ru"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.yandex.ru",
+        "port": 465
+      }
+    }
+  },
+  "Zoho": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.zoho.com",
+        "port": 465
+      }
+    }
+  },
+  "qiye.aliyun": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.mxhichina.com",
+        "port": "465"
+      }
+    }
+  }
+}
