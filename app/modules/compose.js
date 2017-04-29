@@ -14,7 +14,6 @@ global.accounts = new Datastore({
 })
 global.accounts = Promise.promisifyAll(accounts)
 
-
 $('html')[0].innerHTML = appDir.read(`./app/main.html`)
 
 $('#header').html(appDir.read(`./app/header.html`))

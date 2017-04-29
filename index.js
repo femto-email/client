@@ -25,7 +25,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  if (windows[0]) {
+  if (!windows[0]) {
     openWindow('main')
   }
 })
@@ -39,9 +39,11 @@ function openWindow (file) {
   let index = file === 'main' ? 0 : windows.length
 
   windows[index] = createWindow(file, {
-    width: 600,
-    height: 400,
+    width, height
     icon: 'build/128x128.png',
+    minWidth: 320, 
+    minHeight: 480,
+    maximized: true,
     frame: false
   })
   windows[index].loadURL(`file://${__dirname}/app/${file}.html`)

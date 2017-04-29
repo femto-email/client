@@ -6,14 +6,13 @@
 module.exports = function (name, options) {
   const { screen, app, BrowserWindow } = require('electron')
   const jetpack = require('fs-jetpack')
-
-  console.log(options)
-
+  
   var userDataDir = jetpack.cwd(app.getPath('userData'))
   var stateStoreFile = 'window-state-' + name + '.json'
   var defaultSize = {
     width: options.width,
-    height: options.height
+    height: options.height,
+    maximized: true
   }
   var state = {}
   var win
@@ -71,14 +70,26 @@ module.exports = function (name, options) {
     if (!win.isMinimized() && !win.isMaximized()) {
       Object.assign(state, getCurrentPosition())
     }
+    Object.assign(state, { maximized: win.isMaximized() })
     userDataDir.write(stateStoreFile, state, { atomic: true })
   }
 
-  state = ensureVisibleOnSomeDisplay(restore())
+  let previous = restore()
+  if (!previous.maximize) {
+    state = ensureVisibleOnSomeDisplay(previous)
+  }
 
-  win = new BrowserWindow(Object.assign({}, options, state))
+  state = Object.assign({}, options, state)
+
+  console.log(`Loading ${name} with the following state:`)
+  console.log(JSON.stringify(state, null, 4))
+  win = new BrowserWindow(state)
 
   win.on('close', saveState)
+
+  if (state.maximized) {
+    win.maximize()
+  }
 
   return win
 }
