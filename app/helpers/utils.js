@@ -60,6 +60,10 @@ global.timeFunc = async (func) => {
   } else {
     logger.warning(`Alert, running ${func.name}() took a long time, ${parseFloat(run.toFixed(4))} milliseconds.`)
   }
+  if (promise instanceof Promise) {
+    return await promise
+  }
+  return promise
 }
 
 global.debounce = (func, wait, immediate) => {

@@ -26,7 +26,6 @@ document.getElementById('close-btn').addEventListener('click', function (e) { re
 
 $('#title').html(`
   <a href="#!" class="breadcrumb">Femto</a>
-  <a href="#!" class="breadcrumb">${state.account.user}</a>
   <a href="#!" class="breadcrumb">Compose</a>
 `)
 

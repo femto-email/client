@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const simpleParser = require('mailparser').simpleParser
 const util = require('util')
 
-let imapLogger = process.env.NODE_END === 'production' || 0 ? function (string) {} : function (string) {
+let imapLogger = process.env.NODE_END === 'production' || 1 ? function (string) {} : function (string) {
   // Obfuscate passwords.
   if (string.includes('=> \'A1 LOGIN')) {
     let array = string.split('"')
@@ -58,7 +58,7 @@ async function openMailbox (client, path) {
       client.openBox(path, false, (err, mailbox) => {
         if (err) logger.error(err)
         else {
-          logger.log('We got the mailbox!')
+          console.log(mailbox)
           resolve(mailbox)
         }
       })

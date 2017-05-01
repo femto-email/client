@@ -92,6 +92,7 @@ async function addAccount (details) {
 
     let data = Object.keys(mailbox)
 
+    console.log(mailbox)
     for (let j = 0; j < data.length; j++) {
       _.set(mailboxes, location.concat(data[j]), mailbox[data[j]])
     }
@@ -100,16 +101,16 @@ async function addAccount (details) {
   $('#number').text('')
   $('#doing').text('looking for threads.')
 
-  let threads = mailer.applyThreads(await mailStore[hash].findAsync({}))
+  let threads = timeFunc(mailer.applyThreads(await mailStore[hash].findAsync({})))
 
   console.log(threads)
 
   for (let id in threads) {
-    console.log('Setting Parent Thread: ' + id)
+    // logger.debug('Setting Parent Thread: ' + id)
     await mailStore[hash].updateAsync({ _id: id }, { $set: { threadMsg: threads[id] } }, {})
 
     for (let i = 0; i < threads[id].length; i++) {
-      console.log('Setting Thread Child: ' + threads[id][i])
+      // logger.debug('Setting Thread Child: ' + threads[id][i])
       await mailStore[hash].updateAsync({ _id: threads[id][i] }, { $set: { isThreadChild: id } }, {})
     }
   }
