@@ -67,12 +67,15 @@ async function addAccount (details) {
     logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
 
     let highest = 0
+    let unread = 0
     if (mailbox.messages.total) {
       let promises = []
       let emails = await mailer.getNewEmails(client, true, undefined, (seqno, msg, attributes) => {
         if (seqno > highest) {
           highest = seqno
         }
+        // For some unknown reason, msg.flags doesn't exist here?  But it does when commented out.
+        // if (!msg.flags.includes('\\Seen')) unread++
         promises.push(saveMail(details.user, hash, linearFolders[i], seqno, msg, attributes))
         total++
         $('#number').text(`(${total})`)
@@ -89,6 +92,7 @@ async function addAccount (details) {
 
     location.pop()
     if (mailbox.messages.total) _.set(mailboxes, location.concat(['highest']), highest)
+    _.set(mailboxes, location.concat(['unread']), unread)
 
     let data = Object.keys(mailbox)
 
