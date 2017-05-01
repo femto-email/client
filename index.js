@@ -39,7 +39,7 @@ function openWindow (file) {
   let index = file === 'main' ? 0 : windows.length
 
   windows[index] = createWindow(file, {
-    width, height
+    width, height,
     icon: 'build/128x128.png',
     minWidth: 320, 
     minHeight: 480,

@@ -55,7 +55,9 @@
     }
   },
   "1und1": {
-    "domains": "1und1.de",
+    "domains": [
+      "1und1.de"
+    ],
     "smtp": {
       "ssl": {
         "host": "smtp.1und1.de",

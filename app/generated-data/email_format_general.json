@@ -1,0 +1,250 @@
+{
+  "1und1.de": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.1und1.de",
+        "port": 465
+      }
+    }
+  },
+  "aol.com": {
+    "smtp": {
+      "start-tls": {
+        "host": "smtp.aol.com",
+        "port": "587"
+      }
+    },
+    "imap": {
+      "ssl": {
+        "host": "imap.aol.com",
+        "port": "993"
+      }
+    }
+  },
+  "fastmail.fm": {
+    "smtp": {
+      "ssl": {
+        "host": "mail.messagingengine.com",
+        "port": 465
+      }
+    }
+  },
+  "gmail.com": {
+    "aliases": [
+      "Google Mail"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.gmail.com",
+        "port": "465"
+      },
+      "start-tls": {
+        "host": "smtp.gmail.com",
+        "port": "587"
+      }
+    },
+    "imap": {
+      "ssl": {
+        "host": "imap.gmail.com",
+        "port": "993"
+      }
+    },
+    "pop3": {
+      "ssl": {
+        "host": "pop.gmail.com",
+        "port": 995
+      }
+    }
+  },
+  "googlemail.com": {
+    "aliases": [
+      "Google Mail"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.gmail.com",
+        "port": "465"
+      },
+      "start-tls": {
+        "host": "smtp.gmail.com",
+        "port": "587"
+      }
+    },
+    "imap": {
+      "ssl": {
+        "host": "imap.gmail.com",
+        "port": "993"
+      }
+    },
+    "pop3": {
+      "ssl": {
+        "host": "pop.gmail.com",
+        "port": 995
+      }
+    }
+  },
+  "hotmail.com": {
+    "aliases": [
+      "Outlook",
+      "Outlook.com",
+      "Hotmail.com"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.live.com",
+        "port": 587
+      },
+      "start-tls": {
+        "host": "smtp-mail.outlook.com",
+        "port": "587"
+      }
+    },
+    "imap": {
+      "ssl": {
+        "host": "imap-mail.outlook.com",
+        "port": "993"
+      }
+    },
+    "pop3": {
+      "ssl": {
+        "host": "pop3.live.com",
+        "port": 995
+      }
+    }
+  },
+  "outlook.com": {
+    "aliases": [
+      "Outlook",
+      "Outlook.com",
+      "Hotmail.com"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.live.com",
+        "port": 587
+      },
+      "start-tls": {
+        "host": "smtp-mail.outlook.com",
+        "port": "587"
+      }
+    },
+    "imap": {
+      "ssl": {
+        "host": "imap-mail.outlook.com",
+        "port": "993"
+      }
+    },
+    "pop3": {
+      "ssl": {
+        "host": "pop3.live.com",
+        "port": 995
+      }
+    }
+  },
+  "me.com": {
+    "aliases": [
+      "Me",
+      "Mac"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.mail.me.com",
+        "port": 587
+      }
+    }
+  },
+  "mac.com": {
+    "aliases": [
+      "Me",
+      "Mac"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.mail.me.com",
+        "port": 587
+      }
+    }
+  },
+  "qq.com": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.qq.com",
+        "port": 465
+      }
+    }
+  },
+  "ntlworld.com": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.ntlworld.com",
+        "port": "465"
+      }
+    },
+    "imap": {
+      "ssl": {
+        "host": "imap.ntlworld.com",
+        "port": "993"
+      }
+    },
+    "pop3": {
+      "ssl": {
+        "host": "pop.ntlworld.com",
+        "port": 995
+      }
+    }
+  },
+  "exmail.qq.com": {
+    "aliases": [
+      "QQ Enterprise"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.exmail.qq.com",
+        "port": 465
+      }
+    }
+  },
+  "sparkpost.com": {
+    "aliases": [
+      "SparkPost",
+      "SparkPost Mail"
+    ],
+    "smtp": {
+      "unencrypted": {
+        "host": "smtp.sparkpostmail.com",
+        "port": 587
+      }
+    }
+  },
+  "yahoo.com": {
+    "aliases": [
+      "Yahoo Mail"
+    ],
+    "smtp": {
+      "ssl": {
+        "host": "smtp.mail.yahoo.com",
+        "port": 465
+      }
+    },
+    "imap": {
+      "ssl": {
+        "host": "imap.mail.yahoo.com",
+        "port": "993"
+      }
+    },
+    "pop3": {
+      "ssl": {
+        "host": "pop.mail.yahoo.com",
+        "port": 995
+      }
+    }
+  },
+  "yandex.ru": {
+    "smtp": {
+      "ssl": {
+        "host": "smtp.yandex.ru",
+        "port": 465
+      }
+    }
+  }
+}
