@@ -121,8 +121,12 @@ function organiseFolders (tree) {
 /**
  * Update all emails for a specific account, also used for the first
  * grab of emails.
- * 
- * @return {[type]} [description]
+ *
+ * @param  {boolean} isFirstTime
+ * @param  {object} client
+ * @param  {string} user
+ * @param  {string} hash
+ * @return {undefined}
  */
 global.updateAccount = async (isFirstTime, client, user, hash) => {
   $('#doing').text('grabbing your mailboxes.')
@@ -133,12 +137,13 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
   if (isFirstTime) {
     updateObject = mailer.removeCircular(mailboxes)
   } else {
-    // Grab existing folders from the DB
-    // Iterate over each item, *PRESERVE* values in oldFolders
-    // but overwrite updated values.
-  }
+    // We start by grabbing the older items.
+    let oldMailbox = (await accounts.findAsync({ user: user }))[0].folders
 
-  let update = await accounts.updateAsync({ user: user }, { $set: { folders: updateObject }})
+    // Then, we deep merge with the new items.
+    // Don't give deep merge circular mailbox objects, otherwise it loops infinitely.
+    updateObject = mergeDeep(oldMailbox, mailer.removeCircular(mailboxes))
+  }
 
   logger.log(`Retrieved all mailboxes from ${user}`)
   $('#doing').text('getting your emails.')
@@ -189,14 +194,14 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
     }
 
     location.pop()
-    if (mailbox.messages.total) _.set(mailboxes, location.concat(['highest']), highest)
-    _.set(mailboxes, location.concat(['unread']), unread)
+    if (mailbox.messages.total) _.set(updateObject, location.concat(['highest']), highest)
+    _.set(updateObject, location.concat(['unread']), unread)
 
     let data = Object.keys(mailbox)
 
     console.log(mailbox)
     for (let j = 0; j < data.length; j++) {
-      _.set(mailboxes, location.concat(data[j]), mailbox[data[j]])
+      _.set(updateObject, location.concat(data[j]), mailbox[data[j]])
     }
   }
 
@@ -219,7 +224,7 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
 
   // logger.log(mailboxes)
 
-  await accounts.updateAsync({ user: user }, { $set: { folders: mailer.removeCircular(mailboxes) }})
+  await accounts.updateAsync({ user: user }, { $set: { folders: mailer.removeCircular(updateObject) }})
 
   $('#doing').text('getting your inbox setup.')
 }
