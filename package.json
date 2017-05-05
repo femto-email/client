@@ -18,7 +18,7 @@
     }
   ],
   "scripts": {
-    "test": "node_modules\\ava\\cli.js",
+    "test": "ava",
     "start": "electron .",
     "build": "echo \"DEPRECATED\" && electron-packager . --out=dist --asar --overwrite --all",
     "pack": "build --dir",
