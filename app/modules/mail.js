@@ -204,21 +204,25 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
       // Set the third parameter to be either undefined (if first time grabbing folder)
       // Or the current highest grabbed index (if not first time grabbing folder)
       let emails = await mailer.getNewEmails(client, true, highest || undefined, (seqno, msg, attributes) => {
-        if (seqno > highest) {
-          highest = seqno
-        }
         // For some unknown reason, msg.flags doesn't exist here?  But it does when commented out.
         // if (!msg.flags.includes('\\Seen')) unread++
         promises.push(saveMail(user, hash, linearFolders[i], seqno, msg, attributes))
 
-        if (!isFirstTime) {
+        if (!isFirstTime && seqno != highest) {
           // Check we're on the right user & folder.
           if (path == compilePath(state.account.folder) && user == state.account.user) {
             // We're currently viewing this thread!
             let uid = path + seqno
-            console.log(`Downloaded a new visible email, ${uid}`)
+            // console.log(`Downloaded a new visible email, ${uid}`)
+            // console.log(linearFolders[i])
+            // console.log(path)
+            // console.log(user)
             alteredView = true
           }
+        }
+
+        if (seqno > highest) {
+          highest = seqno
         }
 
         total++
