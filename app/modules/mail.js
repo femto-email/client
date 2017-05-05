@@ -1,4 +1,5 @@
 const $ = require('jquery')
+const _ = require('lodash')
 const crypto = require('crypto')
 const formatDate = require('../helpers/date.js')
 const { ipcRenderer } = require('electron')
@@ -115,6 +116,112 @@ function organiseFolders (tree) {
     }
   }
   return results
+}
+
+/**
+ * Update all emails for a specific account, also used for the first
+ * grab of emails.
+ * 
+ * @return {[type]} [description]
+ */
+global.updateAccount = async (isFirstTime, client, user, hash) => {
+  $('#doing').text('grabbing your mailboxes.')
+  let mailboxes = await mailer.getMailboxes(client)
+  let linearFolders = findFolders(mailboxes)
+  let updateObject = undefined
+
+  if (isFirstTime) {
+    updateObject = mailer.removeCircular(mailboxes)
+  } else {
+    // Grab existing folders from the DB
+    // Iterate over each item, *PRESERVE* values in oldFolders
+    // but overwrite updated values.
+  }
+
+  let update = await accounts.updateAsync({ user: user }, { $set: { folders: updateObject }})
+
+  logger.log(`Retrieved all mailboxes from ${user}`)
+  $('#doing').text('getting your emails.')
+  let total = 0
+
+  linearFolders.reverse()
+  linearFolders = linearFolders.filter((n) => { return n != undefined && JSON.stringify(n) != '[]' })
+  logger.log(JSON.stringify(linearFolders))
+  // linearFolders = [linearFolders[26]]
+
+  console.log(linearFolders)
+
+  for (let i = 0; i < linearFolders.length; i++) {
+    // Fix Outlook being able to chuck folders in the trash, not in RFC.
+    // if (mailer.checkTrash(linearFolders[i])) continue
+
+    $('#doing').text(`grabbing ${linearFolders[i][linearFolders[i].length - 1].name}.`)
+    // $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
+    console.log('Opening folder: ' + JSON.stringify(linearFolders[i]))
+    let mailbox = await mailer.openMailbox(client, linearFolders[i])
+    console.log(mailbox)
+    logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
+
+    let highest = 0
+    let unread = 0
+    if (mailbox.messages.total) {
+      let promises = []
+      // Set the third parameter to be either undefined (if first time grabbing folder)
+      // Or the current highest grabbed index (if not first time grabbing folder)
+      let emails = await mailer.getNewEmails(client, true, undefined, (seqno, msg, attributes) => {
+        if (seqno > highest) {
+          highest = seqno
+        }
+        // For some unknown reason, msg.flags doesn't exist here?  But it does when commented out.
+        // if (!msg.flags.includes('\\Seen')) unread++
+        promises.push(saveMail(user, hash, linearFolders[i], seqno, msg, attributes))
+        total++
+        $('#number').text(`(${total})`)
+      })
+
+      await Promise.all(promises)
+    }
+
+    let location = []
+    for (let j = 0; j < linearFolders[i].length; j++) {
+      location.push(linearFolders[i][j].name)
+      location.push('children')
+    }
+
+    location.pop()
+    if (mailbox.messages.total) _.set(mailboxes, location.concat(['highest']), highest)
+    _.set(mailboxes, location.concat(['unread']), unread)
+
+    let data = Object.keys(mailbox)
+
+    console.log(mailbox)
+    for (let j = 0; j < data.length; j++) {
+      _.set(mailboxes, location.concat(data[j]), mailbox[data[j]])
+    }
+  }
+
+  $('#number').text('')
+  $('#doing').text('looking for threads.')
+
+  let threads = mailer.applyThreads(await mailStore[hash].findAsync({}))
+
+  console.log(threads)
+
+  for (let id in threads) {
+    // logger.debug('Setting Parent Thread: ' + id)
+    await mailStore[hash].updateAsync({ _id: id }, { $set: { threadMsg: threads[id] } }, {})
+
+    for (let i = 0; i < threads[id].length; i++) {
+      // logger.debug('Setting Thread Child: ' + threads[id][i])
+      await mailStore[hash].updateAsync({ _id: threads[id][i] }, { $set: { isThreadChild: id } }, {})
+    }
+  }
+
+  // logger.log(mailboxes)
+
+  await accounts.updateAsync({ user: user }, { $set: { folders: mailer.removeCircular(mailboxes) }})
+
+  $('#doing').text('getting your inbox setup.')
 }
 
 function htmlFolders (tree, journey) {

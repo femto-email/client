@@ -31,6 +31,8 @@ async function send (account, mail) {
     html: mail.message // html body
   }
 
+  console.log(mailOptions)
+
   // send mail with defined transport object
   transporters[account.user].sendMail(mailOptions, (error, info) => {
     if (error) {

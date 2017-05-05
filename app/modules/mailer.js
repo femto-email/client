@@ -58,7 +58,7 @@ async function openMailbox (client, path) {
       client.openBox(path, false, (err, mailbox) => {
         if (err) logger.error(err)
         else {
-          console.log(mailbox)
+          // console.log(mailbox)
           resolve(mailbox)
         }
       })
