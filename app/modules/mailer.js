@@ -66,7 +66,7 @@ async function openMailbox (client, path) {
   })
 }
 
-function compilePath (path) {
+global.compilePath = (path) => {
   // We have to compile it ourselves.
   let compiledPath = ''
   for (let i = 0; i < path.length - 1; i++) {

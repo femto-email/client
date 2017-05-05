@@ -63,7 +63,28 @@ async function mail () {
   logger.log(`Loading mail window complete.`)
 }
 
-async function updateMailDiv () {
+global.refreshAllAccounts = async () => {
+  logger.log('We\'re refreshing all email accounts.')
+  let users = await accounts.findAsync({})
+  for (let i = 0; i < users.length; i++) {
+    refreshAccount({
+      user: users[i].user,
+      password: users[i].password,
+      tls: users[i].tls,
+      host: users[i].imap.host,
+      port: users[i].imap.port
+    })
+  }
+}
+
+async function refreshAccount(details) {
+  let client = await mailer.login(details)
+  let hash = await setupMailDB(details.user)
+  logger.log(`Initiating refresh for ${details.user}`)
+  await updateAccount(false, client, details.user, hash)
+}
+
+global.updateMailDiv = async () => {
   let mail = await new Promise((resolve) => {
     mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: -1 }).exec((err, docs) => {
       resolve(docs)
@@ -148,6 +169,7 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
   logger.log(`Retrieved all mailboxes from ${user}`)
   $('#doing').text('getting your emails.')
   let total = 0
+  let alteredView = false
 
   linearFolders.reverse()
   linearFolders = linearFolders.filter((n) => { return n != undefined && JSON.stringify(n) != '[]' })
@@ -164,22 +186,41 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
     // $('#mailboxes').append('<br />' + JSON.stringify(linearFolders[i]))
     console.log('Opening folder: ' + JSON.stringify(linearFolders[i]))
     let mailbox = await mailer.openMailbox(client, linearFolders[i])
+    let path = compilePath(linearFolders[i])
     console.log(mailbox)
     logger.log(`Successfully loaded mailbox: ${mailbox.name}`)
 
-    let highest = 0
+    let location = []
+    for (let j = 0; j < linearFolders[i].length; j++) {
+      location.push(linearFolders[i][j].name)
+      location.push('children')
+    }
+    location.pop()
+
+    let highest = _.get(updateObject, location.concat(['highest']), 0)
     let unread = 0
     if (mailbox.messages.total) {
       let promises = []
       // Set the third parameter to be either undefined (if first time grabbing folder)
       // Or the current highest grabbed index (if not first time grabbing folder)
-      let emails = await mailer.getNewEmails(client, true, undefined, (seqno, msg, attributes) => {
+      let emails = await mailer.getNewEmails(client, true, highest || undefined, (seqno, msg, attributes) => {
         if (seqno > highest) {
           highest = seqno
         }
         // For some unknown reason, msg.flags doesn't exist here?  But it does when commented out.
         // if (!msg.flags.includes('\\Seen')) unread++
         promises.push(saveMail(user, hash, linearFolders[i], seqno, msg, attributes))
+
+        if (!isFirstTime) {
+          // Check we're on the right user & folder.
+          if (path == compilePath(state.account.folder) && user == state.account.user) {
+            // We're currently viewing this thread!
+            let uid = path + seqno
+            console.log(`Downloaded a new visible email, ${uid}`)
+            alteredView = true
+          }
+        }
+
         total++
         $('#number').text(`(${total})`)
       })
@@ -187,13 +228,6 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
       await Promise.all(promises)
     }
 
-    let location = []
-    for (let j = 0; j < linearFolders[i].length; j++) {
-      location.push(linearFolders[i][j].name)
-      location.push('children')
-    }
-
-    location.pop()
     if (mailbox.messages.total) _.set(updateObject, location.concat(['highest']), highest)
     _.set(updateObject, location.concat(['unread']), unread)
 
@@ -220,6 +254,10 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
       // logger.debug('Setting Thread Child: ' + threads[id][i])
       await mailStore[hash].updateAsync({ _id: threads[id][i] }, { $set: { isThreadChild: id } }, {})
     }
+  }
+
+  if (alteredView) {
+    updateMailDiv()
   }
 
   // logger.log(mailboxes)

@@ -86,6 +86,9 @@ function setup () {
 
   accounts.ensureIndex({ fieldName: 'user', unique: true })
 
+  refreshAllAccounts()
+  setInterval(refreshAllAccounts, 300000)
+
   global.setupComplete = true
   logger.debug(`Setup complete, we've read the config file and loaded the databases.`)
 
