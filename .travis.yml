@@ -2,6 +2,8 @@ language: node_js
 node_js:
   - "7.4"
 sudo: false
+# This command caches node_modules, but `npm install` is still run if any changes
+# are required.  Reduces build time by 52 seconds.
 cache:
   directories:
     - "node_modules"
