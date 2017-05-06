@@ -32,6 +32,9 @@ app.on('activate', () => {
 
 app.on('ready', () => {
   openWindow('main')
+  electron.globalShortcut.register('CmdOrCtrl+Shift+C', () => {
+    openWindow('compose')
+  })
 })
 
 function openWindow (file) {
