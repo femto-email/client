@@ -58,6 +58,8 @@ async function mail () {
   $('#folders').html(folders)
 
   linkFolders($('#folders').children().children())
+  $(`#${btoa(JSON.stringify(state.account.folder)).replace(/=/g, '\\=')}`).addClass('teal lighten-2')
+
   updateMailDiv()
 
   logger.log(`Loading mail window complete.`)
@@ -282,18 +284,18 @@ function htmlFolders (tree, journey) {
   for (let prop in tree) {
     temp = journey.concat({ name: prop, delimiter: tree[prop].delimiter })
     // Folders with depth
-    html += `
-      <div class="col s12 no-padding center-align">
-        <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
-      </div>
-    `
-    // Folders without depth
     // html += `
     //   <div class="col s12 no-padding center-align">
-    //     <div class="waves-effect waves-teal btn-flat wide no=padding" id="${btoa(JSON.stringify(temp))}">${prop}</div>
+    //     <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop} ${htmlFolders(tree[prop].children, temp)}</div>
     //   </div>
     // `
-    // html += htmlFolders(tree[prop].children, temp)
+    // Folders without depth
+    html += `
+      <div class="col s12 no-padding center-align">
+        <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop}</div>
+      </div>
+    `
+    html += htmlFolders(tree[prop].children, temp)
   }
   return html
 }
@@ -305,8 +307,8 @@ function linkFolders (children) {
       stateSet('account', Object.assign(state.account, {
         folder: JSON.parse(atob(element.target.id))
       }))
-      $(`.folder-tree`).removeClass('teal')
-      $(`#${element.target.id.replace(/=/g, '\\=')}`).addClass('teal')
+      $(`.folder-tree`).removeClass('teal lighten-2')
+      $(`#${element.target.id.replace(/=/g, '\\=')}`).addClass('teal lighten-2')
       updateMailDiv()
     })
 
