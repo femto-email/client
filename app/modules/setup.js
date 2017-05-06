@@ -86,8 +86,10 @@ function setup () {
 
   accounts.ensureIndex({ fieldName: 'user', unique: true })
 
-  refreshAllAccounts()
+  // refreshAllAccounts()
   setInterval(refreshAllAccounts, 300000)
+
+  require('./keybindings')
 
   global.setupComplete = true
   logger.debug(`Setup complete, we've read the config file and loaded the databases.`)
@@ -121,8 +123,13 @@ global.stateCheck = () => {
  *
  * @return {string}
  */
-global.setupMailDB = async (email) => {
-  let hash = crypto.createHash('md5').update(email).digest('hex')
+global.setupMailDB = async (email, isHash) => {
+  let hash = undefined
+  if (!isHash) {
+    hash = crypto.createHash('md5').update(email).digest('hex')
+  } else {
+    hash = email
+  }
 
   global.mailStore[hash] = Promise.promisifyAll(new Datastore({
     filename: `${app.getPath('userData')}/db/${hash}.db`

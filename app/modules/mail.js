@@ -61,6 +61,7 @@ async function mail () {
   $(`#${btoa(JSON.stringify(state.account.folder)).replace(/=/g, '\\=')}`).addClass('teal lighten-2')
 
   updateMailDiv()
+  grabHTMLMail(state.account.hash)
 
   logger.log(`Loading mail window complete.`)
 }
@@ -139,6 +140,41 @@ function organiseFolders (tree) {
     }
   }
   return results
+}
+
+/**
+ * Grab all HTML pages.
+ *
+ * @param  {string} hash
+ * @return {undefined}
+ */
+async function grabHTMLMail (hash, uid) {
+  if (typeof mailStore[hash] === 'undefined') {
+    setupMailDB(hash, true)
+  }
+
+  let doc = undefined
+  if (typeof uid === 'undefined') {
+    doc = await new Promise((resolve, reject) => {
+      mailStore[hash].find({
+        'retrieved': { $exists: false } 
+      }).sort({ folder: 0 }).limit(1).exec((err, docs) => {
+        if (err) return reject(err)
+        resolve(docs[0])
+      })
+    })
+  } else {
+    doc = (await mailStore[hash].findAsync({
+      uid: uid
+    }))[0]
+  }
+
+  let folder = ""
+  // await mailer.getEmailBody(client, folder, doc.seqno, (parsedContent, attributes) => {})
+
+  // Grab email body
+
+  console.log(doc)
 }
 
 /**

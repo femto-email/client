@@ -132,6 +132,49 @@ async function getNewEmails (client, readOnly, lowestSeq, loadedMessage) {
   })
 }
 
+async function getEmailBody (client, folder, seqno, loadedMessage) {
+  return new Promise((resolve, reject) => {
+    let f = client.seq.fetch(`${seqno}`, {
+      bodies: '',
+      struct: true,
+      envelope: true
+    })
+    f.on('message', (msg, seqno) => {
+      let content
+      let attributes
+      // logger.log(`Message #${seqno}`)
+      msg.on('body', (stream, info) => {
+        let buffer = ''
+        stream.on('data', (chunk) => {
+          buffer += chunk.toString('utf8')
+        })
+        stream.once('end', () => {
+          content = buffer
+          // logger.debug(`#${seqno} Parsed header: ${JSON.stringify(parsedContent)}`)
+        })
+      })
+      msg.once('attributes', (attrs) => {
+        attributes = attrs
+        // logger.debug(`#${seqno} Attributes: ${util.inspect(attrs, false, 4)}`)
+      })
+      msg.once('end', async () => {
+        // logger.debug(`#${seqno} Finished`)
+        // logger.log(content)
+        let parsedContent = await simpleParser(content)
+        loadedMessage(parsedContent, attributes)
+      })
+    })
+    f.once('error', (err) => {
+      logger.error(`Fetch error: ${err}`)
+      reject(err)
+    })
+    f.once('end', () => {
+      logger.success(`Done fetching message html`)
+      resolve()
+    })
+  })
+}
+
 function applyThreads (mail) {
   let objectMail = {}
   for (let i = 0; i < mail.length; i++) {
@@ -245,4 +288,4 @@ global.loadMail = (email, hash, uid) => {
   return mailStore[hash].findOneAsync({ uid: uid })
 }
 
-module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox, compilePath, checkTrash, applyThreads }
+module.exports = { login, getMailboxes, getNewEmails, removeCircular, openMailbox, compilePath, checkTrash, applyThreads, getEmailBody }
