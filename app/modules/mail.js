@@ -81,7 +81,7 @@ async function refreshAccount(details) {
   let client = await mailer.login(details)
   let hash = await setupMailDB(details.user)
   logger.log(`Initiating refresh for ${details.user}`)
-  await updateAccount(false, client, details.user, hash)
+  await updateAccount(false, client, details.user, hash, true)
 }
 
 global.updateMailDiv = async () => {
@@ -147,9 +147,10 @@ function organiseFolders (tree) {
  * @param  {object} client
  * @param  {string} user
  * @param  {string} hash
+ * @param  {boolean} shouldClose
  * @return {undefined}
  */
-global.updateAccount = async (isFirstTime, client, user, hash) => {
+global.updateAccount = async (isFirstTime, client, user, hash, shouldClose) => {
   $('#doing').text('grabbing your mailboxes.')
   let mailboxes = await mailer.getMailboxes(client)
   let linearFolders = findFolders(mailboxes)
@@ -265,6 +266,10 @@ global.updateAccount = async (isFirstTime, client, user, hash) => {
   }
 
   // logger.log(mailboxes)
+
+  if (shouldClose) {
+    client.end()
+  }
 
   await accounts.updateAsync({ user: user }, { $set: { folders: mailer.removeCircular(updateObject) }})
 
