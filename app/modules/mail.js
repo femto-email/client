@@ -1,8 +1,11 @@
 const $ = require('jquery')
 const _ = require('lodash')
 const crypto = require('crypto')
+const path = require('path')
 const formatDate = require('../helpers/date.js')
+const jetpack = require('fs-jetpack')
 const { ipcRenderer } = require('electron')
+const lzma = require('lzma')
 
 async function mail () {
   if (!testLoaded('mail')) return
@@ -142,6 +145,14 @@ function organiseFolders (tree) {
   return results
 }
 
+function openEmail(hash, hashuid) {
+  const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', hash))
+  let array = file.read(`${hashuid}.json`).split('').map((val) => {
+    return val.charCodeAt(0)
+  })
+  return JSON.parse(lzma.decompress(array))
+}
+
 /**
  * Grab all HTML pages.
  *
@@ -149,6 +160,9 @@ function organiseFolders (tree) {
  * @return {undefined}
  */
 async function grabHTMLMail (hash, uid) {
+  // console.log(openEmail(hash, '85bc842ad96558e2c84167790bf82ae6'))
+  return 
+
   if (typeof mailStore[hash] === 'undefined') {
     setupMailDB(hash, true)
   }
@@ -158,23 +172,47 @@ async function grabHTMLMail (hash, uid) {
     doc = await new Promise((resolve, reject) => {
       mailStore[hash].find({
         'retrieved': { $exists: false } 
-      }).sort({ folder: 0 }).limit(1).exec((err, docs) => {
+      }).sort({ folder: 1 }).limit(1).exec((err, docs) => {
         if (err) return reject(err)
-        resolve(docs[0])
+        resolve(docs)
       })
     })
+    if (typeof doc === 'undefined') return
   } else {
     doc = (await mailStore[hash].findAsync({
       uid: uid
-    }))[0]
+    }))
+  }
+  doc = doc[0]
+
+  let user = (await accounts.findAsync({ user: doc.user }))[0]
+  let details = {
+    user: user.user,
+    password: user.password,
+    tls: user.tls,
+    host: user.imap.host,
+    port: user.imap.port
   }
 
-  let folder = ""
-  // await mailer.getEmailBody(client, folder, doc.seqno, (parsedContent, attributes) => {})
+  let client = await mailer.login(details)
 
-  // Grab email body
-
-  console.log(doc)
+  await mailer.getEmailBody(client, doc.folder, doc.seqno, async (parsedContent, attributes) => {
+    let hashuid = crypto.createHash('md5').update(doc.uid).digest('hex')
+    const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', hash))
+    console.time('Write and hash')
+    lzma.compress(JSON.stringify(Object.assign(parsedContent, attributes)), 1, async (result, error) => {
+      file.write(`${hashuid}.json`, String.fromCharCode.apply(null, result))
+      console.timeEnd('Write and hash')
+      await mailStore[hash].updateAsync({
+        uid: doc.uid
+      }, {
+        $set: { retrieved: true }
+      }, {})
+      console.log(`Added ${hashuid} to the file system.`)
+      client.end()
+      grabHTMLMail(hash)
+    })
+  })
 }
 
 /**
