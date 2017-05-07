@@ -84,10 +84,10 @@ async function mail () {
 
   setInterval(async () => {
     if (currentCount == 0) {
-      console.log(`Grabbing batch ${currentIter}`)
+      // console.log(`Grabbing batch ${currentIter}`)
       currentCount ++
       currentIter ++
-      await grabBatch(docs[currentIter])
+      // await grabBatch(docs[currentIter])
       currentCount --
     }
   }, 1000)
@@ -177,15 +177,6 @@ function organiseFolders (tree) {
     }
   }
   return results
-}
-
-function openEmail(hash, hashuid) {
-  const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', hash))
-  
-  // let array = JSON.parse(lzma.decompress(file.read(`${hashuid}.json`).split('').map((val) => {
-  //   return val.charCodeAt(0)
-  // })))
-  return JSON.parse(file.read(`${hashuid}.json`))
 }
 
 /**
@@ -431,7 +422,15 @@ function linkFolders (children) {
 }
 
 function loadEmail (uid) {
-  console.log(uid)
+  const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', state.account.hash))
+  const hashuid = crypto.createHash('md5').update(uid).digest('hex')
+
+  // let array = JSON.parse(lzma.decompress(file.read(`${hashuid}.json`).split('').map((val) => {
+  //   return val.charCodeAt(0)
+  // })))
+  let data = JSON.parse(file.read(`${hashuid}.json`))
+  console.log(data)
+  return data
 }
 
 global.findFolders = (folders, path) => {
