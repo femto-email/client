@@ -5,7 +5,7 @@ const path = require('path')
 const formatDate = require('../helpers/date.js')
 const jetpack = require('fs-jetpack')
 const { ipcRenderer } = require('electron')
-const lzma = require('lzma')
+const lzma = require('lzma-purejs')
 
 async function mail () {
   if (!testLoaded('mail')) return
@@ -64,9 +64,43 @@ async function mail () {
   $(`#${btoa(JSON.stringify(state.account.folder)).replace(/=/g, '\\=')}`).addClass('teal lighten-2')
 
   updateMailDiv()
-  grabHTMLMail(state.account.hash)
+
+  docs = await new Promise((resolve, reject) => {
+    mailStore[state.account.hash].find({
+      'retrieved': { $exists: false } 
+    }, { 
+      uid: 1 
+    }).sort({ date: 0 }).exec((err, docs) => {
+      if (err) return reject(err)
+      resolve(docs)
+    })
+  })
+
+  docs = _.chunk(docs, 1)
+  let currentIter = 0
+  let currentCount = 0
 
   logger.log(`Loading mail window complete.`)
+
+  setInterval(async () => {
+    if (currentCount == 0) {
+      console.log(`Grabbing batch ${currentIter}`)
+      currentCount ++
+      currentIter ++
+      await grabBatch(docs[currentIter])
+      currentCount --
+    }
+  }, 1000)
+}
+
+async function grabBatch(batch) {
+  let array = []
+  for (let i = 0; i < batch.length; i++) {
+    if (typeof batch[i].uid != 'undefined') {
+      array.push(grabHTMLMail(state.account.hash, batch[i].uid))
+    }
+  }
+  return Promise.all(array)
 }
 
 global.refreshAllAccounts = async () => {
@@ -147,10 +181,11 @@ function organiseFolders (tree) {
 
 function openEmail(hash, hashuid) {
   const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', hash))
-  let array = file.read(`${hashuid}.json`).split('').map((val) => {
-    return val.charCodeAt(0)
-  })
-  return JSON.parse(lzma.decompress(array))
+  
+  // let array = JSON.parse(lzma.decompress(file.read(`${hashuid}.json`).split('').map((val) => {
+  //   return val.charCodeAt(0)
+  // })))
+  return JSON.parse(file.read(`${hashuid}.json`))
 }
 
 /**
@@ -160,49 +195,51 @@ function openEmail(hash, hashuid) {
  * @return {undefined}
  */
 async function grabHTMLMail (hash, uid) {
-  // console.log(openEmail(hash, '85bc842ad96558e2c84167790bf82ae6'))
-  return 
+  return new Promise(async (res, rej) => {
+    console.log(uid)
+    // console.log(openEmail(hash, '85bc842ad96558e2c84167790bf82ae6'))
 
-  if (typeof mailStore[hash] === 'undefined') {
-    setupMailDB(hash, true)
-  }
+    if (typeof mailStore[hash] === 'undefined') {
+      setupMailDB(hash, true)
+    }
 
-  let doc = undefined
-  if (typeof uid === 'undefined') {
-    doc = await new Promise((resolve, reject) => {
-      mailStore[hash].find({
-        'retrieved': { $exists: false } 
-      }).sort({ folder: 1 }).limit(1).exec((err, docs) => {
-        if (err) return reject(err)
-        resolve(docs)
+    let doc = undefined
+    if (typeof uid === 'undefined') {
+      doc = await new Promise((resolve, reject) => {
+        mailStore[hash].find({
+          'retrieved': { $exists: false } 
+        }).sort({ date: 0 }).limit(1).exec((err, docs) => {
+          if (err) return reject(err)
+          resolve(docs)
+        })
       })
-    })
-    if (typeof doc === 'undefined') return
-  } else {
-    doc = (await mailStore[hash].findAsync({
-      uid: uid
-    }))
-  }
-  doc = doc[0]
+      if (typeof doc === 'undefined') return
+    } else {
+      doc = (await mailStore[hash].findAsync({
+        uid: uid
+      }))
+    }
+    doc = doc[0]
 
-  let user = (await accounts.findAsync({ user: doc.user }))[0]
-  let details = {
-    user: user.user,
-    password: user.password,
-    tls: user.tls,
-    host: user.imap.host,
-    port: user.imap.port
-  }
+    let user = (await accounts.findAsync({ user: doc.user }))[0]
+    let details = {
+      user: user.user,
+      password: user.password,
+      tls: user.tls,
+      host: user.imap.host,
+      port: user.imap.port
+    }
 
-  let client = await mailer.login(details)
+    let client = await mailer.login(details)
 
-  await mailer.getEmailBody(client, doc.folder, doc.seqno, async (parsedContent, attributes) => {
-    let hashuid = crypto.createHash('md5').update(doc.uid).digest('hex')
-    const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', hash))
-    console.time('Write and hash')
-    lzma.compress(JSON.stringify(Object.assign(parsedContent, attributes)), 1, async (result, error) => {
-      file.write(`${hashuid}.json`, String.fromCharCode.apply(null, result))
-      console.timeEnd('Write and hash')
+    await mailer.getEmailBody(client, doc.folder, doc.seqno, async (parsedContent, attributes) => {
+      let hashuid = crypto.createHash('md5').update(doc.uid).digest('hex')
+      const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', hash))
+      // let result = String.fromCharCode.apply(lzma.compressFile(new Buffer(JSON.stringify(Object.assign(parsedContent, attributes)), 'utf8')))
+      // console.log(result)
+      //lzma.compress(JSON.stringify(Object.assign(parsedContent, attributes)), 1, async (result, error) => {
+      // String.fromCharCode.apply(null, result)
+      file.write(`${hashuid}.json`, JSON.stringify(Object.assign(parsedContent, attributes)))
       await mailStore[hash].updateAsync({
         uid: doc.uid
       }, {
@@ -210,7 +247,7 @@ async function grabHTMLMail (hash, uid) {
       }, {})
       console.log(`Added ${hashuid} to the file system.`)
       client.end()
-      grabHTMLMail(hash)
+      res()
     })
   })
 }

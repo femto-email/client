@@ -52,7 +52,7 @@ async function getMailboxes (client) {
 async function openMailbox (client, path) {
   if (typeof path !== 'string') path = compilePath(path)
   if (client.state === 'disconnected') client = await login(client._config)
-  logger.log(`Opening mailbox: ${path}`)
+  // logger.log(`Opening mailbox: ${path}`)
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       client.openBox(path, false, (err, mailbox) => {
@@ -133,7 +133,6 @@ async function getNewEmails (client, readOnly, lowestSeq, loadedMessage) {
 }
 
 async function getEmailBody (client, folder, seqno, loadedMessage) {
-  folder = compilePath(folder)
   let mailbox = await openMailbox(client, folder)
   return new Promise((resolve, reject) => {
     let f = client.seq.fetch(`${seqno}`, {
@@ -171,7 +170,7 @@ async function getEmailBody (client, folder, seqno, loadedMessage) {
       reject(err)
     })
     f.once('end', () => {
-      logger.success(`Done fetching message html`)
+      // logger.success(`Done fetching message html`)
       resolve()
     })
   })
@@ -268,17 +267,16 @@ global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
   if (typeof mailStore[hash] === 'undefined') {
     setupMailDB(email)
   }
-  let newFolder = undefined
-  if (typeof folder !== 'string') newFolder = compilePath(folder)
+  if (typeof folder !== 'string') folder = compilePath(folder)
 
   // Here, we use folder + seqno as our unique identifier between each mail item.  It is guarenteed to be unique
   // unless UIDValidity changes, whereupon I believe our only option is to purge the database and regather all
   // the information we need.
   // (This is yet to be implemented, we just hope it doesn't change for now)
-  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { user: email, seqno: seqno, uid: newFolder + seqno, folder: folder, date: +new Date(attributes.date) })).catch(function mailError (reason) {
+  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { user: email, seqno: seqno, uid: folder + seqno, folder: folder, date: +new Date(attributes.date) })).catch(function mailError (reason) {
     // logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
     if (String(reason).indexOf('it violates the unique constraint') !== -1) {
-      return mailStore[hash].updateAsync({ uid: newFolder + seqno }, Object.assign(msg, attributes, { user: email, seqno: seqno, folder: folder, uid: newFolder + seqno, date: +new Date(attributes.date) }))
+      return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign(msg, attributes, { user: email, seqno: seqno, folder: folder, uid: folder + seqno, date: +new Date(attributes.date) }))
     }
   })
 }
