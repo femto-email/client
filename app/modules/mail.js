@@ -3,6 +3,7 @@ const _ = require('lodash')
 const crypto = require('crypto')
 const path = require('path')
 const formatDate = require('../helpers/date.js')
+const clean = require('../helpers/clean.js')
 const jetpack = require('fs-jetpack')
 const { ipcRenderer } = require('electron')
 const lzma = require('lzma-purejs')
@@ -428,9 +429,14 @@ function loadEmail (uid) {
   // let array = JSON.parse(lzma.decompress(file.read(`${hashuid}.json`).split('').map((val) => {
   //   return val.charCodeAt(0)
   // })))
+
   let data = JSON.parse(file.read(`${hashuid}.json`))
+  let msg = cleanHTML(data.textAsHtml || data.text)
+
+  console.log('We\'re loading the following email...')
   console.log(data)
-  return data
+
+  $('#message').html(msg)
 }
 
 global.findFolders = (folders, path) => {

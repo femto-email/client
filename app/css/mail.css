@@ -100,3 +100,6 @@ body {
     .mail-item .text .date {
       width: 20%;
       float: right; }
+
+.padding {
+  padding: 10px 10px 10px 10px; }
