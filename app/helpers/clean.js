@@ -1,12 +1,13 @@
 const sanitizeHTML = require('sanitize-html')
 
 const htmlAllowed = {
-  allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+  allowedTags: [ 'html', 'meta', 'body', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p',
     'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-    'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'style', ],
+    'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'style',
+    'a', 'ul', 'ol', 'span', 'center', ],
   allowedAttributes: {
     // We're tentatively allowing inline-css for now.
-    '*': [ 'data-*', 'style' ],
+    '*': [ 'data-*', 'style', 'align', 'bgcolor', 'class', 'height', 'width', 'alt' ],
     a: [ 'href', 'name', 'target' ],
     // We don't currently allow img itself by default, but this
     // would make sense if we did

@@ -1,4 +1,4 @@
-<div class="wrapper">
+<div class="wrapper" style="width: 100%">
   <div class="row">
     <div class="col m12 overflow">
       <div class="card-panel collection padding">
@@ -8,11 +8,16 @@
               <select id="from">
                 <option value="" disabled selected>Choose your option</option>
               </select>
-              <label>From:</label>
+              <label for="from">From:</label>
             </div>
             To: <input type="text" name="to" id="to"><br />
             Subject: <input type="text" name="subject" id="subject"><br />
-            Message: <textarea id="message" name="message"></textarea>
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea id="message" name="message" class="materialize-textarea"></textarea>
+                <label for="message">Message</label>
+              </div>
+            </div>
             <button id="send">Send Message</button>
           </div>
         </div>

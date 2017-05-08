@@ -53,6 +53,7 @@
     "nedb": "^1.8.0",
     "nodemailer": "^4.0.1",
     "path": "^0.12.7",
+    "promise-timeout": "^1.1.1",
     "sanitize-html": "^1.14.1",
     "stack-trace": "0.0.9"
   },

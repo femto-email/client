@@ -6,6 +6,7 @@ const formatDate = require('../helpers/date.js')
 const clean = require('../helpers/clean.js')
 const jetpack = require('fs-jetpack')
 const { ipcRenderer, shell } = require('electron')
+const { timeout, TimeoutError } = require('promise-timeout')
 const lzma = require('lzma-purejs')
 
 async function mail () {
@@ -64,6 +65,11 @@ async function mail () {
     shell.openExternal(e.target.href)
   })
 
+  $(document).on('mousedown', 'a[href^="http"]', (e) => {
+    e.preventDefault()
+    shell.openExternal(e.target.href)
+  })
+
   $('#folders').html(folders)
 
   linkFolders($('#folders').children().children())
@@ -82,22 +88,33 @@ async function mail () {
     })
   })
 
-  docs = _.chunk(docs, 4)
+  docs = _.chunk(docs, 1)
   let total = docs.length
   let currentIter = 0
   let currentCount = 0
 
   logger.log(`Loading mail window complete.`)
 
-  setInterval(async () => {
-    if (currentCount == 0) {
+  let interval = setInterval(async () => {
+    if (currentIter == total - 1) {
+      clearInterval(interval)
+    }
+    else if (currentCount < 8) {
       console.log(`Grabbing batch ${currentIter} / ${total}`)
       currentCount ++
       currentIter ++
-      await grabBatch(docs[currentIter])
+      try {
+        await timeout(grabBatch(docs[currentIter]), 20000)
+      } catch(e) {
+        if (err instanceof TimeoutError) {
+          logger.error('Timeout on one of our emails grabs...')
+        } else {
+          throw e
+        }
+      }
       currentCount --
     }
-  }, 1000)
+  }, 250)
 }
 
 async function grabBatch(batch) {
@@ -131,7 +148,8 @@ async function refreshAccount(details) {
   await updateAccount(false, client, details.user, hash, true)
 }
 
-global.updateMailDiv = async () => {
+global.updateMailDiv = async (page) => {
+  page = page || 0
   let mail = await new Promise((resolve) => {
     mailStore[state.account.hash].find({ 
       folder: mailer.compilePath(state.account.folder) 
@@ -143,8 +161,6 @@ global.updateMailDiv = async () => {
     })
   })
 
-  $('#mail').html('')
-
   $('#title').html(`
     <a href="#!" class="breadcrumb">Femto</a>
     <a href="#!" class="breadcrumb">${state.account.user}</a>
@@ -154,14 +170,28 @@ global.updateMailDiv = async () => {
     $('#title').append(`<a href="#!" class="breadcrumb">${state.account.folder[i].name}</a>`)
   }
 
+  if (!page) {
+    $('#mail').html('')
+  }
+
   let html = ""
-  for (let i = 0; i < mail.length; i++) {
-    console.log(mail[i])
+  for (let i = 250 * page; i < mail.length; i++) {
+    if (i == 250 + 250 * page) {
+      html += `<button class='load-more'>Load more...</button>`
+      $('.load-more').remove()
+      break
+    }
     if (!mail[i].isThreadChild) {
       html += `<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`
     }
   }
-  $('#mail').html($(html))
+  $('#mail').append($(html))
+
+  $('.load-more').off('click')
+  $('.load-more').click((e) => {
+    console.log("Loading more email items.")
+    updateMailDiv(page + 1)
+  })
 
   if (mail.length === 0) {
     // This folder is empty...
@@ -436,7 +466,7 @@ function linkFolders (children) {
   })
 }
 
-async function loadEmail (uid) {
+async function loadEmail (uid, append, other) {
   const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', state.account.hash))
   const hashuid = crypto.createHash('md5').update(uid).digest('hex')
   let fileContents = file.read(`${hashuid}.json`)
@@ -453,7 +483,11 @@ async function loadEmail (uid) {
     let data = JSON.parse(fileContents)
     let msg = cleanHTML(data.textAsHtml || data.text)
     console.log(data)
-    $('#message').html(msg)
+    if (append) {
+      $('#message').append(msg)
+    } else {
+      $('#message').html(msg)
+    }
   }
 }
 
