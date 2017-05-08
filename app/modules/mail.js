@@ -5,7 +5,7 @@ const path = require('path')
 const formatDate = require('../helpers/date.js')
 const clean = require('../helpers/clean.js')
 const jetpack = require('fs-jetpack')
-const { ipcRenderer } = require('electron')
+const { ipcRenderer, shell } = require('electron')
 const lzma = require('lzma-purejs')
 
 async function mail () {
@@ -59,6 +59,11 @@ async function mail () {
     }))
   }
 
+  $(document).on('click', 'a[href^="http"]', (e) => {
+    e.preventDefault()
+    shell.openExternal(e.target.href)
+  })
+
   $('#folders').html(folders)
 
   linkFolders($('#folders').children().children())
@@ -78,6 +83,7 @@ async function mail () {
   })
 
   docs = _.chunk(docs, 4)
+  let total = docs.length
   let currentIter = 0
   let currentCount = 0
 
@@ -85,7 +91,7 @@ async function mail () {
 
   setInterval(async () => {
     if (currentCount == 0) {
-      console.log(`Grabbing batch ${currentIter}`)
+      console.log(`Grabbing batch ${currentIter} / ${total}`)
       currentCount ++
       currentIter ++
       await grabBatch(docs[currentIter])
@@ -127,7 +133,12 @@ async function refreshAccount(details) {
 
 global.updateMailDiv = async () => {
   let mail = await new Promise((resolve) => {
-    mailStore[state.account.hash].find({ folder: mailer.compilePath(state.account.folder) }).sort({ date: -1 }).exec((err, docs) => {
+    mailStore[state.account.hash].find({ 
+      folder: mailer.compilePath(state.account.folder) 
+    }, {
+      uid: 1,
+      isThreadChild: 1
+    }).sort({ date: -1 }).exec((err, docs) => {
       resolve(docs)
     })
   })
@@ -145,7 +156,10 @@ global.updateMailDiv = async () => {
 
   let html = ""
   for (let i = 0; i < mail.length; i++) {
-    html += `<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`
+    console.log(mail[i])
+    if (!mail[i].isThreadChild) {
+      html += `<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`
+    }
   }
   $('#mail').html($(html))
 
@@ -497,7 +511,7 @@ customElements.define('e-mail', class extends HTMLElement {
           </div>
           <div class="text ${mail.flags.includes('\\Seen') ? `read` : `unread`}">
             <div class="subject">
-              <div class="subject-text">${escapeHTML(mail.subject)}</div>
+              <div class="subject-text">${mail.threadMsg && mail.threadMsg.length ? `(${mail.threadMsg.length})` : ``} ${escapeHTML(mail.subject)}</div>
             </div>
             <div class="sender">
               <div class="sender-text">${escapeHTML(typeof mail.from !== 'undefined' ? mail.from.value[0].name || mail.from.value[0].address : 'No Sender...')}</div>
