@@ -3,7 +3,7 @@ const sanitizeHTML = require('sanitize-html')
 const htmlAllowed = {
   allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
     'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-    'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre' ],
+    'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'style', ],
   allowedAttributes: {
     // We're tentatively allowing inline-css for now.
     '*': [ 'data-*', 'style' ],

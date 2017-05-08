@@ -31,6 +31,10 @@ $('#title').html(`
 
 $('#content').html(appDir.read(`./app/compose_out.html`))
 
+$(() => {
+  $('select').material_select()
+})
+
 ;(async () => {
   let accountList = await accounts.findAsync({})
   for (let i = 0; i < accountList.length; i++) {

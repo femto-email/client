@@ -1,7 +1,22 @@
-<div>
-  From: <select id="from"></select>
-  To: <input type="text" name="to" id="to"><br />
-  Subject: <input type="text" name="subject" id="subject"><br />
-  Message: <textarea id="message" name="message"></textarea>
-  <button id="send">Send Message</button>
+<div class="wrapper">
+  <div class="row">
+    <div class="col m12 overflow">
+      <div class="card-panel collection padding">
+        <div id="mail">
+          <div>
+            <div class="input-field col s12">
+              <select id="from">
+                <option value="" disabled selected>Choose your option</option>
+              </select>
+              <label>From:</label>
+            </div>
+            To: <input type="text" name="to" id="to"><br />
+            Subject: <input type="text" name="subject" id="subject"><br />
+            Message: <textarea id="message" name="message"></textarea>
+            <button id="send">Send Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

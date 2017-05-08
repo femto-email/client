@@ -77,7 +77,7 @@ async function mail () {
     })
   })
 
-  docs = _.chunk(docs, 1)
+  docs = _.chunk(docs, 4)
   let currentIter = 0
   let currentCount = 0
 
@@ -85,10 +85,10 @@ async function mail () {
 
   setInterval(async () => {
     if (currentCount == 0) {
-      // console.log(`Grabbing batch ${currentIter}`)
+      console.log(`Grabbing batch ${currentIter}`)
       currentCount ++
       currentIter ++
-      // await grabBatch(docs[currentIter])
+      await grabBatch(docs[currentIter])
       currentCount --
     }
   }, 1000)
@@ -422,21 +422,25 @@ function linkFolders (children) {
   })
 }
 
-function loadEmail (uid) {
+async function loadEmail (uid) {
   const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', state.account.hash))
   const hashuid = crypto.createHash('md5').update(uid).digest('hex')
+  let fileContents = file.read(`${hashuid}.json`)
 
   // let array = JSON.parse(lzma.decompress(file.read(`${hashuid}.json`).split('').map((val) => {
   //   return val.charCodeAt(0)
   // })))
-
-  let data = JSON.parse(file.read(`${hashuid}.json`))
-  let msg = cleanHTML(data.textAsHtml || data.text)
-
-  console.log('We\'re loading the following email...')
-  console.log(data)
-
-  $('#message').html(msg)
+  
+  if (typeof fileContents === 'undefined') {
+    $('#message').html('Email not downloaded yet... loading...')
+      await grabHTMLMail(state.account.hash, uid)
+      loadEmail(uid)
+  } else {
+    let data = JSON.parse(fileContents)
+    let msg = cleanHTML(data.textAsHtml || data.text)
+    console.log(data)
+    $('#message').html(msg)
+  }
 }
 
 global.findFolders = (folders, path) => {
