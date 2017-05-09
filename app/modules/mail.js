@@ -469,10 +469,12 @@ function linkFolders (children) {
   })
 }
 
-async function loadEmail (uid, append, other) {
+async function loadEmail (uid, number) {
+  number = number || 0
   const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', state.account.hash))
   const hashuid = crypto.createHash('md5').update(uid).digest('hex')
   let fileContents = file.read(`${hashuid}.json`)
+  let mail = await loadMail(state.account.user, state.account.hash, uid)
 
   // let array = JSON.parse(lzma.decompress(file.read(`${hashuid}.json`).split('').map((val) => {
   //   return val.charCodeAt(0)
@@ -486,12 +488,35 @@ async function loadEmail (uid, append, other) {
   } else {
     let data = JSON.parse(fileContents)
     let msg = cleanHTML(data.html || data.textAsHtml || data.text)
-    console.log(data)
-    let shadow = document.getElementById('message').createShadowRoot()
-    if (append) {
-      $('#message').append(msg)
-    } else {
-      shadow.innerHTML = msg
+
+    if (number == 0) {
+      if (mail.threadMsg.length) {
+        let html = ''
+        // Iterate backwards to go newest --> oldest
+        for (let i = mail.threadMsg.length; i >= 0; i--) {
+          html += `<div id="message-${i}"></div>`
+          if (i != 0) {
+            html += `<hr>`
+          }
+        }
+        $('#message-holder').html(html)
+      } else {
+        $('#message-holder').html(`<div id="message-0"></div>`)
+      }
+    }
+
+    let shadow = document.getElementById(`message-${number}`).createShadowRoot()
+    shadow.innerHTML = msg
+
+    if (mail.threadMsg.length) {
+      accountList = []
+      for (let i = 0; i < mail.threadMsg.length; i++) {
+        accountList.push(mailStore[state.account.hash].findOneAsync({ _id: mail.threadMsg[i] }))
+      }
+      let threads = await Promise.all(accountList)
+      for (var i = 0; i < threads.length; i++) {
+        loadEmail(threads[i].uid, i + 1)
+      }
     }
   }
 }
@@ -550,7 +575,7 @@ customElements.define('e-mail', class extends HTMLElement {
           </div>
           <div class="text ${mail.flags.includes('\\Seen') ? `read` : `unread`}">
             <div class="subject">
-              <div class="subject-text">${mail.threadMsg && mail.threadMsg.length ? `(${mail.threadMsg.length})` : ``} ${escapeHTML(mail.subject)}</div>
+              <div class="subject-text">${mail.threadMsg && mail.threadMsg.length ? `(${mail.threadMsg.length + 1})` : ``} ${escapeHTML(mail.subject)}</div>
             </div>
             <div class="sender">
               <div class="sender-text">${escapeHTML(typeof mail.from !== 'undefined' ? mail.from.value[0].name || mail.from.value[0].address : 'No Sender...')}</div>
