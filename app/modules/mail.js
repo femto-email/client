@@ -102,7 +102,7 @@ async function mail () {
       clearInterval(interval)
     }
     else if (currentCount < 8) {
-      console.log(`Grabbing batch ${currentIter} / ${total}`)
+      logger.log(`Grabbing batch ${currentIter + 1} / ${total - 1}`)
       currentCount ++
       currentIter ++
       try {
@@ -116,7 +116,7 @@ async function mail () {
       }
       currentCount --
     }
-  }, 250)
+  }, 50)
 }
 
 async function grabBatch(batch) {
@@ -240,6 +240,20 @@ async function grabHTMLMail (hash, uid) {
 
     if (typeof mailStore[hash] === 'undefined') {
       setupMailDB(hash, true)
+    }
+
+    const file = jetpack.cwd(path.join(app.getPath('userData'), 'mail', hash))
+    const hashuid = crypto.createHash('md5').update(uid).digest('hex')
+    let fileContents = file.read(`${hashuid}.json`)
+
+    if (typeof fileContents != 'undefined') {
+      await mailStore[hash].updateAsync({
+        uid: uid
+      }, {
+        $set: { retrieved: true }
+      }, {})
+
+      return res()
     }
 
     let doc = undefined
@@ -490,7 +504,7 @@ async function loadEmail (uid, number) {
     let msg = cleanHTML(data.html || data.textAsHtml || data.text)
 
     if (number == 0) {
-      if (mail.threadMsg.length) {
+      if (mail.threadMsg && mail.threadMsg.length) {
         let html = ''
         // Iterate backwards to go newest --> oldest
         for (let i = mail.threadMsg.length; i >= 0; i--) {
@@ -508,7 +522,7 @@ async function loadEmail (uid, number) {
     let shadow = document.getElementById(`message-${number}`).createShadowRoot()
     shadow.innerHTML = msg
 
-    if (mail.threadMsg.length) {
+    if (mail.threadMsg && mail.threadMsg.length) {
       accountList = []
       for (let i = 0; i < mail.threadMsg.length; i++) {
         accountList.push(mailStore[state.account.hash].findOneAsync({ _id: mail.threadMsg[i] }))
@@ -570,7 +584,7 @@ customElements.define('e-mail', class extends HTMLElement {
       // is globally accessible.
       this.innerHTML = `
         <div class="mail-item">
-          <div class="multi"><input type="checkbox" id="${mail.uid}" />
+          <div class="multi mail-checkbox"><input type="checkbox" id="${mail.uid}" />
             <label for="${mail.uid}"></label>
           </div>
           <div class="text ${mail.flags.includes('\\Seen') ? `read` : `unread`}">

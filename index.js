@@ -53,16 +53,15 @@ function openWindow (file) {
   windows[index].on('closed', ((i) => {
     return () => { onClosed(i) }
   })(index))
-  windows[index].webContents.on('new-window', (e, url) => {
-    console.log("Called")
+  windows[index].webContents.on('new-window', handleURL)
+  windows[index].webContents.on('will-navigate', handleURL)
+}
+
+function handleURL (e, url) {
+  if (url.indexOf('file://') == '-1') {
     e.preventDefault()
     shell.openExternal(url)
-  })
-  windows[index].webContents.on('will-navigate', (e, url) => {
-    e.preventDefault()
-    console.log("Called2")
-    shell.openExternal(url)
-  })
+  }
 }
 
 electron.ipcMain.on('open', (event, arg) => {
