@@ -106,7 +106,7 @@ async function mail () {
       try {
         await timeout(grabBatch(docs[currentIter]), 20000)
       } catch(e) {
-        if (err instanceof TimeoutError) {
+        if (e instanceof TimeoutError) {
           logger.error('Timeout on one of our emails grabs...')
         } else {
           throw e
@@ -481,7 +481,7 @@ async function loadEmail (uid, append, other) {
       loadEmail(uid)
   } else {
     let data = JSON.parse(fileContents)
-    let msg = cleanHTML(data.textAsHtml || data.text)
+    let msg = cleanHTML(data.html || data.textAsHtml || data.text)
     console.log(data)
     if (append) {
       $('#message').append(msg)
