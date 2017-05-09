@@ -476,17 +476,19 @@ async function loadEmail (uid, append, other) {
   // })))
   
   if (typeof fileContents === 'undefined') {
-    $('#message').html('Email not downloaded yet... loading...')
-      await grabHTMLMail(state.account.hash, uid)
-      loadEmail(uid)
+    let shadow = document.getElementById('message').createShadowRoot()
+    shadow.innerHTML = 'Email not downloaded yet... loading...'
+    await grabHTMLMail(state.account.hash, uid)
+    loadEmail(uid)
   } else {
     let data = JSON.parse(fileContents)
     let msg = cleanHTML(data.html || data.textAsHtml || data.text)
     console.log(data)
+    let shadow = document.getElementById('message').createShadowRoot()
     if (append) {
       $('#message').append(msg)
     } else {
-      $('#message').html(msg)
+      shadow.innerHTML = msg
     }
   }
 }
