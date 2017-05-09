@@ -142,3 +142,20 @@ $wrapper-padding: 2em !default;
 .padding {
     padding: 10px 10px 10px 10px;
 }
+
+.electron-in-page-search-window {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 300px !important;
+  height: 36px !important;
+  background-color: white !important;
+}
+
+.electron-in-page-search-window.search-inactive {
+  visibility: hidden;
+}
+
+.electron-in-page-search-window.search-active {
+  visibility: visible;
+}

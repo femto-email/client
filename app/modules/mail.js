@@ -5,9 +5,10 @@ const path = require('path')
 const formatDate = require('../helpers/date.js')
 const clean = require('../helpers/clean.js')
 const jetpack = require('fs-jetpack')
-const { ipcRenderer, shell, webContents } = require('electron')
+const { ipcRenderer, shell, webContents, remote } = require('electron')
 const { timeout, TimeoutError } = require('promise-timeout')
 const lzma = require('lzma-purejs')
+const searchInPage = require('electron-in-page-search').default
 
 async function mail () {
   if (!testLoaded('mail')) return
@@ -107,8 +108,8 @@ async function mail () {
       currentIter ++
       try {
         await timeout(grabBatch(docs[currentIter]), 20000)
-      } catch(e) {
-        if (e instanceof TimeoutError) {
+      } catch(e) {o
+        if (e instanceof TimeutError) {
           logger.error('Timeout on one of our emails grabs...')
         } else {
           throw e
@@ -117,6 +118,13 @@ async function mail () {
       currentCount --
     }
   }, 50)
+
+  const listener = new window.keypress.Listener()
+  listener.simple_combo('ctrl f', () => {
+    const searchInWindow = searchInPage(remote.getCurrentWebContents())
+    searchInWindow.openSearchWindow()
+  })
+
 }
 
 async function grabBatch(batch) {
