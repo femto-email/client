@@ -1,7 +1,7 @@
 'use strict'
 const electron = require('electron')
+const { app, shell } = require('electron')
 const createWindow = require('./app/helpers/window')
-const app = electron.app
 
 // adds debug features like hotkeys for triggering dev tools and reload
 require('electron-debug')({ showDevTools: true })
@@ -53,6 +53,16 @@ function openWindow (file) {
   windows[index].on('closed', ((i) => {
     return () => { onClosed(i) }
   })(index))
+  windows[index].webContents.on('new-window', (e, url) => {
+    console.log("Called")
+    e.preventDefault()
+    shell.openExternal(url)
+  })
+  windows[index].webContents.on('will-navigate', (e, url) => {
+    e.preventDefault()
+    console.log("Called2")
+    shell.openExternal(url)
+  })
 }
 
 electron.ipcMain.on('open', (event, arg) => {

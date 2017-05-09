@@ -86,8 +86,8 @@ function setup () {
 
   accounts.ensureIndex({ fieldName: 'user', unique: true })
 
-  refreshAllAccounts()
-  setInterval(refreshAllAccounts, 300000)
+  // refreshAllAccounts()
+  // setInterval(refreshAllAccounts, 300000)
 
   require('./keybindings')
 

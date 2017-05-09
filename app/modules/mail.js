@@ -5,7 +5,7 @@ const path = require('path')
 const formatDate = require('../helpers/date.js')
 const clean = require('../helpers/clean.js')
 const jetpack = require('fs-jetpack')
-const { ipcRenderer, shell } = require('electron')
+const { ipcRenderer, shell, webContents } = require('electron')
 const { timeout, TimeoutError } = require('promise-timeout')
 const lzma = require('lzma-purejs')
 
@@ -60,15 +60,17 @@ async function mail () {
     }))
   }
 
-  $(document).on('click', 'a[href^="http"]', (e) => {
-    e.preventDefault()
-    shell.openExternal(e.target.href)
-  })
+  // $(document).on('click', 'a[href^="http"]', (e) => {
+  //   console.log("CLICKED")
+  //   e.preventDefault()
+  //   shell.openExternal(e.target.href)
+  // })
 
-  $(document).on('mousedown', 'a[href^="http"]', (e) => {
-    e.preventDefault()
-    shell.openExternal(e.target.href)
-  })
+  // $(document).on('mousedown', 'a[href^="http"]', (e) => {
+  //   console.log("MOUSE DOWN")
+  //   e.preventDefault()
+  //   shell.openExternal(e.target.href)
+  // })
 
   $('#folders').html(folders)
 
@@ -172,6 +174,7 @@ global.updateMailDiv = async (page) => {
 
   if (!page) {
     $('#mail').html('')
+    $('#message-holder').html(`<div id="message"></div>`)
   }
 
   let html = ""
