@@ -285,7 +285,6 @@ global.loadMail = (email, hash, uid) => {
   if (typeof mailStore[hash] === 'undefined') {
     setupMailDB(email)
   }
-
   return mailStore[hash].findOneAsync({ uid: uid })
 }
 

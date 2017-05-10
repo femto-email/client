@@ -50,7 +50,6 @@ global.testLoaded = (page) => {
  * @return {undefined}
  */
 function setup () {
-  global.connections = {}
   global.mailStore = {}
   global.appDir = jetpack.cwd(app.getAppPath())
   global.storeDir = jetpack.cwd(app.getPath('userData'))
@@ -77,19 +76,8 @@ function setup () {
   global.config = storeDir.read('./config.json', 'json') || {}
   global.state = storeDir.read('./state.json', 'json') || { state: 'new' }
 
-  global.accounts = new Datastore({
-    filename: app.getPath('userData') + '/db/accounts.db',
-    autoload: true
-  })
-
-  global.accounts = Promise.promisifyAll(accounts)
-
-  accounts.ensureIndex({ fieldName: 'user', unique: true })
-
   // refreshAllAccounts()
   // setInterval(refreshAllAccounts, 300000)
-
-  require('./keybindings')
 
   global.setupComplete = true
   logger.debug(`Setup complete, we've read the config file and loaded the databases.`)

@@ -4,7 +4,7 @@ const { app, shell } = require('electron')
 const createWindow = require('./app/helpers/window')
 
 // adds global logging
-require('./app/helpers/Logger')
+require('./app/helpers/logger')
 
 // adds debug features like hotkeys for triggering dev tools and reload
 require('electron-debug')({ showDevTools: true })
