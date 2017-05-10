@@ -81,8 +81,8 @@ module.exports = function (name, options) {
 
   state = Object.assign({}, options, state)
 
-  console.log(`Loading ${name} with the following state:`)
-  console.log(JSON.stringify(state, null, 4))
+  logger.log(`Loading ${name} with the following state:`)
+  logger.log(state)
   win = new BrowserWindow(state)
 
   win.on('close', saveState)

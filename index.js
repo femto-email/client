@@ -3,6 +3,9 @@ const electron = require('electron')
 const { app, shell } = require('electron')
 const createWindow = require('./app/helpers/window')
 
+// adds global logging
+require('./app/helpers/Logger')
+
 // adds debug features like hotkeys for triggering dev tools and reload
 require('electron-debug')({ showDevTools: true })
 
@@ -10,12 +13,12 @@ require('electron-debug')({ showDevTools: true })
 let windows = []
 
 function onClosed (number) {
-  if (process.platform !== 'darwin' && number === 0) {
+  if (process.platform !== 'darwin' && !number) {
     windows.map((val) => { return null })
     app.quit()
   }
   windows[number] = null
-  console.log(`Someone closed window number ${number}`)
+  logger.log(`Someone closed window number ${number}`)
 }
 
 app.on('window-all-closed', () => {
@@ -69,7 +72,7 @@ electron.ipcMain.on('open', (event, arg) => {
 })
 
 electron.ipcMain.on('send', (event, arg) => {
-  console.log(event)
-  console.log(arg)
+  logger.log(event)
+  logger.log(arg)
   windows[0].webContents.send('send', arg)
 })
