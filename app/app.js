@@ -16,12 +16,13 @@ global.users = require('./modules/users')
 global.sender = require('./modules/sender')
 
 global.IMAPClient = require('./modules/IMAPClient')
+global.StateManager = require('./modules/StateManager')
 global.Threader = require('./modules/Threader')
 global.Utils = require('./modules/Utils')
 
-global.WelcomePage = require('./modules/WelcomePage')
+global.AccountManager = require('./modules/AccountManager')
 
-global.AccountManager = new require('./modules/AccountManager')()
+global.WelcomePage = require('./modules/WelcomePage')
 
 const { setup } = require('./modules/setup')
 const { welcome } = require('./modules/welcome')

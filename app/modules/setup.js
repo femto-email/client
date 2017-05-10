@@ -74,7 +74,6 @@ function setup () {
     Documents - ${app.getPath('documents')}`)
 
   global.config = storeDir.read('./config.json', 'json') || {}
-  global.state = storeDir.read('./state.json', 'json') || { state: 'new' }
 
   // refreshAllAccounts()
   // setInterval(refreshAllAccounts, 300000)
@@ -82,7 +81,7 @@ function setup () {
   global.setupComplete = true
   logger.debug(`Setup complete, we've read the config file and loaded the databases.`)
 
-  stateCheck()
+  StateManager.update()
 }
 
 /**

@@ -1,5 +1,6 @@
 const Datastore = require('nedb')
 const Promise = require('bluebird')
+const $ = require('jquery')
 
 function AccountManager () {
 	this.accounts = Promise.promisifyAll(new Datastore({
@@ -7,23 +8,72 @@ function AccountManager () {
 	  autoload: true
 	}))
 
-  accounts.ensureIndex({ fieldName: 'user', unique: true })
+  this.accounts.ensureIndex({ fieldName: 'user', unique: true })
+  this.addAccount = addAccount
+  this.listAccounts = listAccounts
+  this.editAccount = editAccount
+  this.removeAccount = removeAccount
 }
 
-AccountManager.addAccount = (details) => {
-	return this.accounts.insertAsync(details)
+async function addAccount (details) {
+  /*----------  OVERLAY PROCESSING MODAL  ----------*/
+  $('.wrapper').html(`
+    <span id="doing"></span> <span id="number"></span><br>
+    <span id="mailboxes"></span>
+  `)
+
+  /*----------  LOG USER IN  ----------*/
+  $('#doing').text('logging you in.')
+  let client = await (new IMAPClient(details))
+  logger.log(`Successfully logged in to user ${details.user}.`)
+
+  /*----------  CREATE ACCCOUNT DATABASE  ----------*/
+  $('#doing').text('creating a database for your mail.')
+  await IMAPClient.createEmailDB(details.user)
+  logger.log(`Successfully created a database account for ${details.user}`)
+
+  /*----------  REFORMAT DETAILS OBJECT  ----------*/
+  let user = {
+    imap: { 
+      host: details.host,
+      port: details.port
+    },
+    smtp: {
+      host: details.host_outgoing,
+      port: details.port_outgoing
+    },
+    user: details.user, 
+    password: details.password, 
+    tls: details.tls,
+    hash: Utils.md5(details.user),
+    date: +new Date()
+  }
+
+  /*----------  SAVE ACCOUNT TO ACCOUNTS DB  ----------*/
+  try {
+    $('#doing').text('saving your account for the future.')
+  	await this.accounts.insertAsync(details)
+    logger.log(`Added ${details.user} to the accounts database.`)
+  } catch(e) {
+    logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
+  }
+
+  /*----------  SWITCH TO THAT USER  ----------*/
+  StateManager.change('account', { hash, user: details.user })
+  StateManager.change('state', 'mail')
+  StateManager.update()
 }
 
-AccountManager.listAccounts = async () => {
+async function listAccounts () {
   return this.accounts.findAsync({})
 }
 
-AccountManager.editAccount = async (email, changes) => {
+async function editAccount (email, changes) {
   return this.accounts.updateAsync({ user: email }, { $set: changes })
 }
 
-AccountManager.removeAccount = (email) => {
+async function removeAccount (email) {
 	return this.accounts.removeAsync({ user: email })
 }
 
-module.exports = AccountManager
+module.exports = new AccountManager()

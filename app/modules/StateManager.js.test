@@ -1,0 +1,4 @@
+let StateManager = require('./StateManager')
+
+console.log(StateManager)
+StateManager.update()

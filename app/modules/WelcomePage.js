@@ -2,7 +2,8 @@ const $ = require('jquery')
 
 function WelcomePage () {}
 
-WelcomePage.load = () => {
+WelcomePage.load = function () {
+  console.log("This loaded ;)")
 	if (!testLoaded('welcome')) return
 
 	logger.log('Loading up the welcome page...')
@@ -13,7 +14,8 @@ WelcomePage.load = () => {
   $('#login-form').on('submit', async function onLogin (e) {
     e.preventDefault()
     let details = Utils.getItemsFromForm('login-form')
-  	await (new IMAPClient(details))
+    console.log(AccountManager)
+  	AccountManager.addAccount(details)
   })
 }
 

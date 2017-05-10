@@ -1,4 +1,5 @@
 const simpleParser = require('mailparser').simpleParser
+const Datastore    = require('nedb')
 const bluebird     = require('bluebird')
 const jetpack      = require('fs-jetpack')
 const path         = require('path')
@@ -27,7 +28,7 @@ function IMAPClient(details) {
       new IMAP(Object.assign(details, { debug: this.imapLogger }))
     )
 
-    this.client.once('ready', () => { resolve() })
+    this.client.once('ready', () => { resolve(this) })
     this.client.once('error', (err) => { throw err })
     this.client.connect()
   }).bind(this)) // Sets the Promise() `this` to the object `this`.
@@ -47,7 +48,7 @@ IMAPClient.compilePath = (path) => {
   return compiledPath
 }
 
-IMAPClient.saveEmail = (email, seqno, msg, attributes, folder) => {
+IMAPClient.saveEmail = async (email, seqno, msg, attributes, folder) => {
   const hash = Utils.md5(email)
   if (typeof mailStore[hash] === 'undefined') setupMailDB(email)
   let mail = Object.assign(
@@ -64,36 +65,28 @@ IMAPClient.saveEmail = (email, seqno, msg, attributes, folder) => {
   })
 }
 
-IMAPClient.loadEmail = (email, uid) => {
+IMAPClient.loadEmail = async (email, uid) => {
   const hash = Utils.md5(email)
   if (typeof mailStore[hash] === 'undefined') setupMailDB(email)
   return mailStore[hash].findOneAsync({ uid: uid })
 }
 
-global.saveMail = (email, hash, folder, seqno, msg, attributes) => {
-  if (typeof mailStore[hash] === 'undefined') {
-    setupMailDB(email)
-  }
-  if (typeof folder !== 'string') folder = compilePath(folder)
+/**
+ * Attempts to transform an email address into a DB.
+ * @param  {string}    email [An email address to create the DB instance of]
+ * @return {undefined}
+ */
+IMAPClient.createEmailDB = async (email) => {
+  // Detect whether we need to hash it ourselves, or if it is
+  // already hashed.
+  hash = ~email.indexOf('@') ? Utils.md5(email) : email
+  global.mailStore[hash] = Promise.promisifyAll(new Datastore({
+    filename: `${app.getPath('userData')}/db/${hash}.db`
+  }))
 
-  // Here, we use folder + seqno as our unique identifier between each mail item.  It is guarenteed to be unique
-  // unless UIDValidity changes, whereupon I believe our only option is to purge the database and regather all
-  // the information we need.
-  // (This is yet to be implemented, we just hope it doesn't change for now)
-  return mailStore[hash].insertAsync(Object.assign(msg, attributes, { user: email, seqno: seqno, uid: folder + seqno, folder: folder, date: +new Date(attributes.date) })).catch(function mailError (reason) {
-    // logger.warning(`Seq #${seqno} couldn't be saved to the database because of "${reason}"`)
-    if (String(reason).indexOf('it violates the unique constraint') !== -1) {
-      return mailStore[hash].updateAsync({ uid: folder + seqno }, Object.assign(msg, attributes, { user: email, seqno: seqno, folder: folder, uid: folder + seqno, date: +new Date(attributes.date) }))
-    }
-  })
-}
+  await mailStore[hash].loadDatabaseAsync()
 
-global.loadMail = (email, hash, uid) => {
-  if (typeof mailStore[hash] === 'undefined') {
-    setupMailDB(email)
-  }
-
-  return mailStore[hash].findOneAsync({ uid: uid })
+  mailStore[hash].ensureIndex({ fieldName: 'uid', unique: true })
 }
 
 /**
