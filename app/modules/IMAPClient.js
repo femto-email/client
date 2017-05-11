@@ -2,7 +2,7 @@ const simpleParser = require('mailparser').simpleParser
 const Datastore    = require('nedb')
 const bluebird     = require('bluebird')
 const jetpack      = require('fs-jetpack')
-const path         = require('path')
+const merge        = require('merge-deep')
 const util         = require('util')
 const IMAP         = require('imap')
 const _            = require('lodash')
@@ -19,14 +19,16 @@ function IMAPClient(details) {
   this.debug = process.env.DEBUG === 'true'
   // Jetpack is used in order to write to the log files, which are organised
   // by day (yyyy-mm-dd.log).
-  this.jetpack = jetpack.cwd(path.join(app.getPath('userData'), 'logs'))
+  this.jetpack = jetpack.cwd(app.getPath('userData'), 'logs')
   // Grabs the current day, for use in writing to the log files.
   this.currentDate = this.getDate()
+  // Set current account details
+  this.email = details.user
 
   return new Promise(((resolve, reject) => {
     // Login to the mail server using the details given to us.
     this.client = bluebird.promisifyAll(
-      new IMAP(Object.assign(details, { debug: this.imapLogger }))
+      new IMAP(Object.assign(details, { debug: this.logger() }))
     )
 
     this.client.once('ready', () => { resolve(this) })
@@ -59,47 +61,6 @@ IMAPClient.compileObjectPath = function (path) {
   return location
 }
 
-IMAPClient.saveEmail = async function (email, seqno, msg, attributes, folder) {
-  const hash = Utils.md5(email)
-  if (typeof mailStore[hash] === 'undefined') setupMailDB(email)
-  let mail = Object.assign(
-    msg, 
-    attributes, 
-    { seqno, folder, user: email, uid: folder + seqno, date: +new Date(attributes.date) }
-  )
-  // `folder + seqno` are guarenteed to be unique unless UIDValidity changes, which we
-  // currently are unable to detect.
-  return mailStore[hash].insertAsync(mail).catch((reason) => {
-    if (~String(reason).indexOf('it violates the unique constraint')) {
-      return mailStore[hash].updateAsync({ uid: folder + seqno }, mail)
-    }
-  })
-}
-
-IMAPClient.loadEmail = async function (email, uid) {
-  const hash = Utils.md5(email)
-  if (typeof mailStore[hash] === 'undefined') setupMailDB(email)
-  return mailStore[hash].findOneAsync({ uid: uid })
-}
-
-/**
- * Attempts to transform an email address into a DB.
- * @param  {string}    email [An email address to create the DB instance of]
- * @return {undefined}
- */
-IMAPClient.createEmailDB = async function (email) {
-  // Detect whether we need to hash it ourselves, or if it is
-  // already hashed.
-  hash = ~email.indexOf('@') ? Utils.md5(email) : email
-  global.mailStore[hash] = bluebird.promisifyAll(new Datastore({
-    filename: `${app.getPath('userData')}/db/${hash}.db`
-  }))
-
-  await mailStore[hash].loadDatabaseAsync()
-
-  mailStore[hash].ensureIndex({ fieldName: 'uid', unique: true })
-}
-
 IMAPClient.linearBoxes = function (folders, path) {
   let keys = folders ? Object.getOwnPropertyNames(folders) : []
   let results = []
@@ -112,6 +73,10 @@ IMAPClient.linearBoxes = function (folders, path) {
   }
   results.push(path)
   return results
+}
+
+IMAPClient.render = function () {
+
 }
 
 /**
@@ -161,7 +126,7 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
   //   'lowest:*'
   //   'seqno'
   // If we want the former, we expect the `grabNewer` boolean to be true.
-  return new Promise((resolve, reject) => {
+  return new Promise(function (resolve, reject) {
     if (!this.mailbox.messages.total) return resolve()
     // Outlook puts folders in the trash, which we can't retrieve at the moment.
     // if (path.toLowerCase().split('trash').length > 1) return resolve()
@@ -192,7 +157,7 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
     f.once('end', () => {
       resolve()
     })
-  })
+  }.bind(this))
 }
 
 /**
@@ -205,15 +170,17 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
  * @param  {boolean} shouldClose
  * @return {undefined}
  */
-IMAPClient.prototype.updateAccount = async function (email) {
+IMAPClient.prototype.updateAccount = async function () {
   /*----------  GRAB USER MAILBOXES  ----------*/
   $('#doing').text('grabbing your mailboxes.')
   let boxes = await this.getBoxes()
   let boxesLinear = IMAPClient.linearBoxes(boxes)
+  let email = this.client._config.user
+  let hash = Utils.md5(email)
 
   /*----------  MERGE NEW FOLDERS WITH OLD  ----------*/
-  let updateObject = await AccountManager.listAccount(email).folders || {}
-  updateObject = Utils.deepMerge(updateObject, Utils.removeCircular(boxes))
+  let updateObject = await AccountManager.findAccount(email).folders || {}
+  updateObject = merge(updateObject, Utils.removeCircular(boxes))
   logger.log(`Retrieved all mailboxes from ${email}`)
   
   /*----------  GRAB USER EMAILS  ----------*/
@@ -227,15 +194,50 @@ IMAPClient.prototype.updateAccount = async function (email) {
     let path = IMAPClient.compilePath(boxesLinear[i])
     let objectPath = IMAPClient.compileObjectPath(boxesLinear[i])
     let highest = _.get(updateObject, objectPath.concat(['highest']), 1)
-    console.log(highest)
-    console.log(path)
+    let isCurrentPath = StateManager.state && StateManager.state.account && IMAPClient.compilePath(StateManager.state.account.folder) == path
+    let promises = []
+
+    $('#doing').text(`grabbing ${boxesLinear[i][boxesLinear[i].length - 1].name}.`)
+
     await this.getEmails(path, true, true, highest, {
       bodies: 'HEADER.FIELDS (TO FROM SUBJECT)',
       envelope: true
     }, function onLoad(seqno, msg, attributes) {
-      console.log(seqno, msg, attributes)
+      promises.push(MailStore.saveEmail(email, seqno, msg, attributes, path))
+      if (isCurrentPath) this.viewChanged = true
+      if (seqno > highest) highest = seqno
+      $('#number').text(`(${++totalEmails})`)
     })
+
+    await Promise.all(promises)
+
+    _.set(updateObject, objectPath.concat(['highest']), highest)
+
+    let boxKeys = Object.keys(this.mailbox)
+    for (let j = 0; j < boxKeys.length; j++) {
+      _.set(updateObject, objectPath.concat([boxKeys[j]]), this.mailbox[boxKeys[j]])
+    }
   }
+
+  /*----------  THREADING EMAILS  ----------*/
+  $('#number').text('')
+  $('#doing').text('looking for threads.')
+  let threads = Threader.applyThreads(await MailStore[hash].findAsync({}))
+  for (let id in threads) {
+    await MailStore[hash].updateAsync({ _id: id }, { $set: { threadMsg: threads[id] } }, {})
+    for (let i = 0; i < threads[id].length; i++) {
+      await MailStore[hash].updateAsync({ _id: threads[id][i] }, { $set: { isThreadChild: id } }, {})
+    }
+  }
+
+  /*----------  RENDER, SAVE & CLOSE  ----------*/
+  AccountManager.editAccount(email, { folders: Utils.removeCircular(updateObject) })
+  this.client.end()
+  $('#doing').text('getting your inbox setup.')
+
+  StateManager.change('state', 'mail')
+  StateManager.change('account', { hash, email })
+  StateManager.update()
 
   throw "Function not finished"
 }
@@ -245,20 +247,22 @@ IMAPClient.prototype.updateAccount = async function (email) {
  * if debugging is enabled)
  * @param {string} string [The string that should be logged]
  */
-IMAPClient.prototype.logger = function (string) {
-  // Obfuscate passwords.
-  if (string.includes('=> \'A1 LOGIN')) {
-    let array = string.split('"')
-    for (let i = 1; i < array.length; i += 2) {
-      array[i] = array[i].replace(/./g, '*')
+IMAPClient.prototype.logger = function () {
+  return function(string) {
+    // Obfuscate passwords.
+    if (string.includes('=> \'A1 LOGIN')) {
+      let array = string.split('"')
+      for (let i = 1; i < array.length; i += 2) {
+        array[i] = array[i].replace(/./g, '*')
+      }
+      string = array.join('"')
     }
-    string = array.join('"')
-  }
 
-  if (this.debug) {
-    logger.debug(string)
-  }
-  this.jetpack.appendAsync(`${this.currentDate}.log`, string)
+    if (this.debug) {
+      logger.debug(string)
+    }
+    this.jetpack.append(`./${this.currentDate}.log`, string)
+  }.bind(this)
 }
 
 /**

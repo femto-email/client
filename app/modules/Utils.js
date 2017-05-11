@@ -4,25 +4,13 @@ const util = require('util')
 function Utils () {}
 
 /**
- * Deep merge two objects. 
- * @param target
- * @param ...sources
- * @return {object}
+ * Simple object check.
+ * 
+ * @param item
+ * @returns {boolean}
  */
-Utils.deepMerge = function (target, ...sources) {
-  if (!sources.length) return target
-  const source = sources.shift()
-
-  if (isObject(target) && isObject(source)) {
-    for (const key in source) {
-      if (isObject(source[key])) {
-        if (!target[key]) Object.assign(target, { [key]: {} })
-        mergeDeep(target[key], source[key])
-      } else {
-        Object.assign(target, { [key]: source[key] })
-      }
-    }
-  }
+Utils.isObject = function (item) {
+  return (item && typeof item === 'object' && !Array.isArray(item));
 }
 
 /**
@@ -46,6 +34,31 @@ Utils.removeCircular = function (object) {
 
 Utils.md5 = (string) => {
 	return crypto.createHash('md5').update(string).digest('hex')
+}
+
+/**
+ * Time the runtime of a function, waits for a promise to end if it is a promise.
+ *
+ * @param {function} func
+ * @return {undefined}
+ */
+Utils.time = async function (func) {
+  let start = performance.now()
+  let promise = func()
+  if (promise instanceof Promise) {
+    await promise
+  }
+  let end = performance.now()
+  let run = end - start
+  if (run < 1000) {
+    logger.log(`The ${func.name}() function took ${parseFloat(run.toFixed(4))} milliseconds to run.`)
+  } else {
+    logger.warning(`Alert, running ${func.name}() took a long time, ${parseFloat(run.toFixed(4))} milliseconds.`)
+  }
+  if (promise instanceof Promise) {
+    return await promise
+  }
+  return promise
 }
 
 /**

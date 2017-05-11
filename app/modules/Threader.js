@@ -16,7 +16,7 @@ Threader.applyThreads = (messages) => {
       }
     }
   }
-  return this.generateReplyMap(messageThreads)
+  return Threader.generateReplyMap(messageThreads)
 }
 
 /**
@@ -40,9 +40,9 @@ Threader.generateReplyMap = (messages) => {
 
   let result = {}
   for (let child of children[undefined]) {
-    result[child] = this.findAllChildren(child, children)
+    result[child] = Threader.findAllChildren(child, children)
   }
-  return this.cleanObject(result)
+  return Threader.cleanObject(result)
 }
 
 /**
@@ -54,7 +54,7 @@ Threader.generateReplyMap = (messages) => {
 Threader.findAllChildren = (root, children) => {
   let result = children[root] || []
   for (let child of result) {
-    result = result.concat(this.findAllChildren(child, children))
+    result = result.concat(Threader.findAllChildren(child, children))
   }
   return result
 }

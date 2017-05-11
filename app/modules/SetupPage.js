@@ -59,4 +59,4 @@ SetupPage.load = function () {
   StateManager.update()
 }
 
-module.exports = { SetupPage }
+module.exports = SetupPage

@@ -6,32 +6,37 @@ console.log("%cThis is a browser feature intended for developers. If someone tol
 
 require('dotenv').config()
 require('./helpers/switch')
-require('./helpers/utils')
 require('./helpers/clean')
 
 global.app = remote.app
 global.router = new Navigo(null, true, '#')
-// global.mailer = require('./modules/mailer')
-global.users = require('./modules/users')
-global.sender = require('./modules/sender')
 
+// SMTPClient is used for sending messages, IMAPClient for receiving.
+global.SMTPClient = require('./modules/SMTPClient')
 global.IMAPClient = require('./modules/IMAPClient')
+
+
 global.StateManager = require('./modules/StateManager')
 global.Threader = require('./modules/Threader')
 global.Utils = require('./modules/Utils')
 
+global.MailStore = require('./modules/MailStore')
+
 global.AccountManager = require('./modules/AccountManager')
 
 global.WelcomePage = require('./modules/WelcomePage')
+global.SetupPage = require('./modules/SetupPage')
 
-const { setup } = require('./modules/setup')
-const { welcome } = require('./modules/welcome')
 const { mail } = require('./modules/mail')
 
+ipcRenderer.on('send', async (event, arg) => {
+  SMTPClient.send(AccountManager.findAccount(arg.from), arg)
+})
+
 router.on({
-  '/setup': () => { timeFunc(setup) },
-  '/welcome': () => { timeFunc(WelcomePage.load) },
-  '/mail': () => { timeFunc(mail) }
+  '/setup': () => { Utils.time(SetupPage.load) },
+  '/welcome': () => { Utils.time(WelcomePage.load) },
+  '/mail': () => { Utils.time(mail) }
 }).resolve()
 
 router.navigate('/setup')

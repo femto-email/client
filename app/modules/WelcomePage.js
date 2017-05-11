@@ -6,7 +6,7 @@ WelcomePage.load = function () {
 	if (!testLoaded('welcome')) return
 
 	logger.log('Loading up the welcome page...')
-	page('welcome', ['basic', 'welcome'])
+	StateManager.page('welcome', ['basic', 'welcome'])
 
 	if (process.env.NODE_ENV !== 'production') fillFields()
 

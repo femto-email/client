@@ -25,7 +25,7 @@ AccountManager.prototype.addAccount = async function (details) {
 
   /*----------  CREATE ACCCOUNT DATABASE  ----------*/
   $('#doing').text('creating a database for your mail.')
-  await IMAPClient.createEmailDB(details.user)
+  await MailStore.createEmailDB(details.user)
   logger.log(`Successfully created a database account for ${details.user}`)
 
   /*----------  REFORMAT DETAILS OBJECT  ----------*/
@@ -67,7 +67,7 @@ AccountManager.prototype.listAccounts = async function () {
   return this.accounts.findAsync({})
 }
 
-AccountManager.prototype.listAccount = async function (email) {
+AccountManager.prototype.findAccount = async function (email) {
   return (await this.accounts.findAsync({ user: email }))[0] || {}
 }
 

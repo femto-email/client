@@ -49,6 +49,7 @@
     "lzma-purejs": "^0.9.3",
     "mailparser": "^2.0.2",
     "materialize-css": "^0.98.2",
+    "merge-deep": "^3.0.0",
     "moment": "^2.18.1",
     "navigo": "^4.5.1",
     "nedb": "^1.8.0",
