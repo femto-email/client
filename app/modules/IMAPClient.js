@@ -39,7 +39,7 @@ function IMAPClient(details) {
  * @param  {array}  path An array of path components
  * @return {string}      A string representing the path to a box
  */
-IMAPClient.compilePath = (path) => {
+IMAPClient.compilePath = function (path) {
   let compiledPath = ''
   for (let i = 0; i < path.length - 1; i++) {
     compiledPath += path[i].name + path[i].delimiter
@@ -48,7 +48,7 @@ IMAPClient.compilePath = (path) => {
   return compiledPath
 }
 
-IMAPClient.saveEmail = async (email, seqno, msg, attributes, folder) => {
+IMAPClient.saveEmail = async function (email, seqno, msg, attributes, folder) {
   const hash = Utils.md5(email)
   if (typeof mailStore[hash] === 'undefined') setupMailDB(email)
   let mail = Object.assign(
@@ -65,7 +65,7 @@ IMAPClient.saveEmail = async (email, seqno, msg, attributes, folder) => {
   })
 }
 
-IMAPClient.loadEmail = async (email, uid) => {
+IMAPClient.loadEmail = async function (email, uid) {
   const hash = Utils.md5(email)
   if (typeof mailStore[hash] === 'undefined') setupMailDB(email)
   return mailStore[hash].findOneAsync({ uid: uid })
@@ -76,11 +76,11 @@ IMAPClient.loadEmail = async (email, uid) => {
  * @param  {string}    email [An email address to create the DB instance of]
  * @return {undefined}
  */
-IMAPClient.createEmailDB = async (email) => {
+IMAPClient.createEmailDB = async function (email) {
   // Detect whether we need to hash it ourselves, or if it is
   // already hashed.
   hash = ~email.indexOf('@') ? Utils.md5(email) : email
-  global.mailStore[hash] = Promise.promisifyAll(new Datastore({
+  global.mailStore[hash] = bluebird.promisifyAll(new Datastore({
     filename: `${app.getPath('userData')}/db/${hash}.db`
   }))
 
@@ -89,11 +89,25 @@ IMAPClient.createEmailDB = async (email) => {
   mailStore[hash].ensureIndex({ fieldName: 'uid', unique: true })
 }
 
+IMAPClient.linearBoxes = function (folders, path) {
+  let keys = folders ? Object.getOwnPropertyNames(folders) : []
+  let results = []
+  path = path || []
+  for (let i = 0; i < keys.length; i++) {
+    results = results.concat(this.findFolders(folders[keys[i]].children, path.concat({ 
+      delimiter: folders[keys[i]].delimiter, 
+      name: keys[i]
+    })))
+  }
+  results.push(path)
+  return results
+}
+
 /**
  * Returns all boxes within a mail account.
  * @return {object} [An object containing all mailboxes]
  */
-IMAPClient.prototype.getBoxes = () => {
+IMAPClient.prototype.getBoxes = function () {
   return this.client.getBoxesAsync()
 }
 
@@ -103,7 +117,7 @@ IMAPClient.prototype.getBoxes = () => {
  * @param  {boolean} readOnly [Whether the box is to be opened in read only mode or not]
  * @return {promise}          [A promise which resolves when the box has been opened]
  */
-IMAPClient.prototype.openBox = async (path, readOnly) => {
+IMAPClient.prototype.openBox = async function (path, readOnly) {
   if (this.client.state === 'disconnected') this.client = await new IMAPClient(this.client._config, this.debug)
   return new Promise(async (resolve, reject) => {
     let folder = await this.client.openBoxAsync(path, readOnly || false)
@@ -129,7 +143,7 @@ IMAPClient.prototype.openBox = async (path, readOnly) => {
 //   envelope: true
 // }
 
-IMAPClient.prototype.getEmails = async (path, readOnly, grabNewer, seqno, struct, onLoad) => {
+IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqno, struct, onLoad) {
   // Ensure we have the right box open
   if (this.currentPath !== path) this.openBox(path, readOnly)
   // There are two ways we're going to want to grab emails, either:
@@ -168,11 +182,34 @@ IMAPClient.prototype.getEmails = async (path, readOnly, grabNewer, seqno, struct
 }
 
 /**
+ * Update all emails for a specific account, also used for the first
+ * grab of emails.
+ * @param  {boolean} isFirstTime
+ * @param  {object} client
+ * @param  {string} user
+ * @param  {string} hash
+ * @param  {boolean} shouldClose
+ * @return {undefined}
+ */
+IMAPClient.prototype.updateAccount = async function (email) {
+  $('#doing').text('grabbing your mailboxes.')
+  let boxes = await this.client.getBoxes()
+  let boxesLinear = IMAPClient.linearBoxes(boxes)
+
+  let updateObject = await AccountManager.listAccount(email).folders || {}
+  updateObject = Utils.deepMerge(updateObject, Utils.removeCircular(mailboxes))
+  
+
+
+  throw "Function not finished"
+}
+
+/**
  * A function which logs the specified string to the disk (and also to console
  * if debugging is enabled)
  * @param {string} string [The string that should be logged]
  */
-IMAPClient.prototype.logger = (string) => {
+IMAPClient.prototype.logger = function (string) {
   // Obfuscate passwords.
   if (string.includes('=> \'A1 LOGIN')) {
     let array = string.split('"')
@@ -192,7 +229,7 @@ IMAPClient.prototype.logger = (string) => {
  * Retrieves the current date in the format of year-month-day.
  * @return {string} [A string containing the current date (yyyy-mm-dd)]
  */
-IMAPClient.prototype.getDate = () => {
+IMAPClient.prototype.getDate = function () {
   const today = new Date()
   let day = today.getDate()
   let month = today.getMonth() + 1

@@ -27,6 +27,8 @@ async function addAccount (details) {
   let client = await (new IMAPClient(details))
   logger.log(`Successfully logged in to user ${details.user}.`)
 
+  global.x = client
+
   /*----------  CREATE ACCCOUNT DATABASE  ----------*/
   $('#doing').text('creating a database for your mail.')
   await IMAPClient.createEmailDB(details.user)
@@ -58,6 +60,9 @@ async function addAccount (details) {
     logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
   }
 
+  /*----------  UPDATE MAIL ITEMS FOR ACCOUNT  ----------*/
+  await client.updateAccount()
+
   /*----------  SWITCH TO THAT USER  ----------*/
   StateManager.change('account', { hash, user: details.user })
   StateManager.change('state', 'mail')
@@ -66,6 +71,10 @@ async function addAccount (details) {
 
 async function listAccounts () {
   return this.accounts.findAsync({})
+}
+
+async function listAccount (email) {
+  return (await this.accounts.findAsync({ user: email }))[0] || {}
 }
 
 async function editAccount (email, changes) {
