@@ -5,6 +5,7 @@ const jetpack      = require('fs-jetpack')
 const path         = require('path')
 const util         = require('util')
 const IMAP         = require('imap')
+const _            = require('lodash')
 
 /**
  * Logs the user in to their email server.
@@ -46,6 +47,16 @@ IMAPClient.compilePath = function (path) {
   }
   compiledPath += path[path.length - 1].name
   return compiledPath
+}
+
+IMAPClient.compileObjectPath = function (path) {
+  let location = []
+  for (let j = 0; j < path.length; j++) {
+    location.push(path[j].name)
+    if (j !== path.length - 1) location.push('children')
+  }
+  location.pop()
+  return location
 }
 
 IMAPClient.saveEmail = async function (email, seqno, msg, attributes, folder) {
@@ -94,7 +105,7 @@ IMAPClient.linearBoxes = function (folders, path) {
   let results = []
   path = path || []
   for (let i = 0; i < keys.length; i++) {
-    results = results.concat(this.findFolders(folders[keys[i]].children, path.concat({ 
+    results = results.concat(this.linearBoxes(folders[keys[i]].children, path.concat({ 
       delimiter: folders[keys[i]].delimiter, 
       name: keys[i]
     })))
@@ -107,7 +118,7 @@ IMAPClient.linearBoxes = function (folders, path) {
  * Returns all boxes within a mail account.
  * @return {object} [An object containing all mailboxes]
  */
-IMAPClient.prototype.getBoxes = function () {
+IMAPClient.prototype.getBoxes = async function () {
   return this.client.getBoxesAsync()
 }
 
@@ -119,11 +130,11 @@ IMAPClient.prototype.getBoxes = function () {
  */
 IMAPClient.prototype.openBox = async function (path, readOnly) {
   if (this.client.state === 'disconnected') this.client = await new IMAPClient(this.client._config, this.debug)
-  return new Promise(async (resolve, reject) => {
+  return new Promise((async (resolve, reject) => {
     let folder = await this.client.openBoxAsync(path, readOnly || false)
     this.currentPath = path
     resolve(folder)
-  }).call(this)
+  }).bind(this))
 }
 
 /**
@@ -145,13 +156,16 @@ IMAPClient.prototype.openBox = async function (path, readOnly) {
 
 IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqno, struct, onLoad) {
   // Ensure we have the right box open
-  if (this.currentPath !== path) this.openBox(path, readOnly)
+  if (this.currentPath !== path) this.mailbox = await this.openBox(path, readOnly)
   // There are two ways we're going to want to grab emails, either:
   //   'lowest:*'
   //   'seqno'
   // If we want the former, we expect the `grabNewer` boolean to be true.
   return new Promise((resolve, reject) => {
-    let f = client.seq.fetch(`${seqno}${grabNewer? `:*` : ``}`, struct)
+    if (!this.mailbox.messages.total) return resolve()
+    // Outlook puts folders in the trash, which we can't retrieve at the moment.
+    // if (path.toLowerCase().split('trash').length > 1) return resolve()
+    let f = this.client.seq.fetch(`${seqno}${grabNewer ? `:*` : ``}`, struct)
     f.on('message', (msg, seqno) => {
       let content, attributes
       msg.on('body', (stream, info) => {
@@ -168,7 +182,7 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
       })
       msg.once('end', async () => {
         let parsedContent = await simpleParser(content)
-        if (typeof onLoad === 'function') onLoad(parsedContent, attributes)
+        if (typeof onLoad === 'function') onLoad(seqno, parsedContent, attributes)
       })
     })
     f.once('error', (err) => {
@@ -192,14 +206,36 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
  * @return {undefined}
  */
 IMAPClient.prototype.updateAccount = async function (email) {
+  /*----------  GRAB USER MAILBOXES  ----------*/
   $('#doing').text('grabbing your mailboxes.')
-  let boxes = await this.client.getBoxes()
+  let boxes = await this.getBoxes()
   let boxesLinear = IMAPClient.linearBoxes(boxes)
 
+  /*----------  MERGE NEW FOLDERS WITH OLD  ----------*/
   let updateObject = await AccountManager.listAccount(email).folders || {}
-  updateObject = Utils.deepMerge(updateObject, Utils.removeCircular(mailboxes))
+  updateObject = Utils.deepMerge(updateObject, Utils.removeCircular(boxes))
+  logger.log(`Retrieved all mailboxes from ${email}`)
   
+  /*----------  GRAB USER EMAILS  ----------*/
+  $('#doing').text('getting your emails.')
+  let totalEmails = 0
 
+  boxesLinear.reverse()
+  boxesLinear = boxesLinear.filter((n) => { return n != undefined && JSON.stringify(n) != '[]' })
+
+  for (let i = 0; i < boxesLinear.length; i++) {
+    let path = IMAPClient.compilePath(boxesLinear[i])
+    let objectPath = IMAPClient.compileObjectPath(boxesLinear[i])
+    let highest = _.get(updateObject, objectPath.concat(['highest']), 1)
+    console.log(highest)
+    console.log(path)
+    await this.getEmails(path, true, true, highest, {
+      bodies: 'HEADER.FIELDS (TO FROM SUBJECT)',
+      envelope: true
+    }, function onLoad(seqno, msg, attributes) {
+      console.log(seqno, msg, attributes)
+    })
+  }
 
   throw "Function not finished"
 }

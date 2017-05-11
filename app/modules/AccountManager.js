@@ -9,13 +9,9 @@ function AccountManager () {
 	}))
 
   this.accounts.ensureIndex({ fieldName: 'user', unique: true })
-  this.addAccount = addAccount
-  this.listAccounts = listAccounts
-  this.editAccount = editAccount
-  this.removeAccount = removeAccount
 }
 
-async function addAccount (details) {
+AccountManager.prototype.addAccount = async function (details) {
   /*----------  OVERLAY PROCESSING MODAL  ----------*/
   $('.wrapper').html(`
     <span id="doing"></span> <span id="number"></span><br>
@@ -26,8 +22,6 @@ async function addAccount (details) {
   $('#doing').text('logging you in.')
   let client = await (new IMAPClient(details))
   logger.log(`Successfully logged in to user ${details.user}.`)
-
-  global.x = client
 
   /*----------  CREATE ACCCOUNT DATABASE  ----------*/
   $('#doing').text('creating a database for your mail.')
@@ -69,19 +63,19 @@ async function addAccount (details) {
   StateManager.update()
 }
 
-async function listAccounts () {
+AccountManager.prototype.listAccounts = async function () {
   return this.accounts.findAsync({})
 }
 
-async function listAccount (email) {
+AccountManager.prototype.listAccount = async function (email) {
   return (await this.accounts.findAsync({ user: email }))[0] || {}
 }
 
-async function editAccount (email, changes) {
+AccountManager.prototype.editAccount = async function (email, changes) {
   return this.accounts.updateAsync({ user: email }, { $set: changes })
 }
 
-async function removeAccount (email) {
+AccountManager.prototype.removeAccount = async function (email) {
 	return this.accounts.removeAsync({ user: email })
 }
 

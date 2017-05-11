@@ -3,7 +3,6 @@ const $ = require('jquery')
 function WelcomePage () {}
 
 WelcomePage.load = function () {
-  console.log("This loaded ;)")
 	if (!testLoaded('welcome')) return
 
 	logger.log('Loading up the welcome page...')
@@ -14,7 +13,6 @@ WelcomePage.load = function () {
   $('#login-form').on('submit', async function onLogin (e) {
     e.preventDefault()
     let details = Utils.getItemsFromForm('login-form')
-    console.log(AccountManager)
   	AccountManager.addAccount(details)
   })
 }

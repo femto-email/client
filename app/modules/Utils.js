@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const util = require('util')
 
 function Utils () {}
 
@@ -30,7 +31,7 @@ Utils.deepMerge = function (target, ...sources) {
  * @param  {object} object
  * @return {object}
  */
-Utils.removeCircular = (object) => {
+Utils.removeCircular = function (object) {
   var str = util.inspect(object, { depth: null })
   str = str
     .replace(/<Buffer[ \w\.]+>/ig, '"buffer"')
