@@ -49,7 +49,10 @@ body {
   align-items: center;
   height: 40px;
   padding: 2px 1rem 2px 1rem;
-  background-color: #FFF; }
+  background-color: #FFF;
+  max-width: 100%;
+  min-width: 100%;
+  width: 100%; }
   .mail-item:hover {
     filter: brightness(90%); }
   .mail-item label {
@@ -69,12 +72,14 @@ body {
   .mail-item .text {
     display: flex;
     align-items: center;
+    max-width: 100%;
+    min-width: 100%;
     width: 100%;
     height: 100%; }
     .mail-item .text .sender {
       display: flex;
       align-items: center;
-      width: 40%;
+      width: 35%;
       max-width: 40%;
       min-width: 40%;
       height: 100%; }
@@ -87,7 +92,7 @@ body {
     .mail-item .text .subject {
       display: flex;
       align-items: center;
-      width: 40%;
+      width: 35%;
       max-width: 40%;
       min-width: 40%;
       height: 100%; }
@@ -99,7 +104,25 @@ body {
         overflow: hidden; }
     .mail-item .text .date {
       width: 20%;
-      float: right; }
+      max-width: 20%;
+      min-width: 20%;
+      float: right;
+      position: relative;
+      right: 25.25px; }
 
 .padding {
   padding: 10px 10px 10px 10px; }
+
+.electron-in-page-search-window {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 300px !important;
+  height: 36px !important;
+  background-color: white !important; }
+
+.electron-in-page-search-window.search-inactive {
+  visibility: hidden; }
+
+.electron-in-page-search-window.search-active {
+  visibility: visible; }

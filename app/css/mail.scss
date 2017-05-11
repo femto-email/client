@@ -134,7 +134,8 @@ $wrapper-padding: 2em !default;
             max-width: 20%;
             min-width: 20%;
             float: right;
-            position: absolute;
+            position: relative;
+            right:25.25px;
         }
     }
 }
