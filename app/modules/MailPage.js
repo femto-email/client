@@ -56,12 +56,12 @@ MailPage.load = async function () {
 
 MailPage.generateFolderList = function (folders, journey, depth) {
   let html = ''
-  for (let prop in tree) {
-    temp = journey.concat({ name: prop, delimiter: tree[prop].delimiter })
+  for (let prop in folders) {
+    temp = journey.concat({ name: prop, delimiter: folders[prop].delimiter })
     if (depth) {
       html += `
         <div class="col s12 no-padding center-align">
-          <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop} ${MailPage.generateFolderList(tree[prop].children, temp, depth)}</div>
+          <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop} ${MailPage.generateFolderList(folders[prop].children, temp, depth)}</div>
         </div>
       `
     } else {
@@ -70,7 +70,7 @@ MailPage.generateFolderList = function (folders, journey, depth) {
           <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop}</div>
         </div>
       `
-      html += MailPage.generateFolderList(tree[prop].children, temp, depth)
+      html += MailPage.generateFolderList(folders[prop].children, temp, depth)
     }
   }
   return html
@@ -83,7 +83,7 @@ MailPage.linkFolders = function (item) {
   return "TODO"
 }
 
-MailPage.highLightFolder = function (folder) {
+MailPage.highlightFolder = function (folder) {
   // TO DO
   return "TODO"
 }
