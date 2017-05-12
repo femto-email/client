@@ -6,7 +6,6 @@ function MailPage () {}
 
 /*
 TODO:
-- Load emails into page
 - Set iterative refresh
 - Add iterative grab to retrieve emails without bodies
 - Add ability to click on emails to see body.
@@ -21,6 +20,11 @@ MailPage.load = async function () {
   /*----------  ACTIVATE MAIL BUTTON  ----------*/
   $('#compose-button').click(() => {
     ipcRenderer.send('open', { file: 'compose' })
+  })
+
+  /*----------  ACTIVATE RELOAD BUTTON  ----------*/
+  $('#refresh-button').click(() => {
+    MailPage.reload()
   })
 
   /*----------  ENSURE ACCOUNT SET IN STATE  ----------*/
@@ -137,6 +141,18 @@ MailPage.render = async function(page) {
 
   $('.load-more').off('click')
   $('.load-more').click((e) => { MailPage.render(page + 1) })
+}
+
+MailPage.reload = async function() {
+  let account = await AccountManager.findAccount(StateManager.state.account.email)
+  let client = await new IMAPClient({
+    user: account.user,
+    password: account.password,
+    host: account.imap.host,
+    port: account.imap.port,
+    tls: account.tls
+  })
+  client.updateAccount()
 }
 
 MailPage.retrieveEmailBodies = function() {

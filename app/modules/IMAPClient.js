@@ -178,7 +178,7 @@ IMAPClient.prototype.updateAccount = async function () {
   let hash = Utils.md5(email)
 
   /*----------  MERGE NEW FOLDERS WITH OLD  ----------*/
-  let updateObject = await AccountManager.findAccount(email).folders || {}
+  let updateObject = (await AccountManager.findAccount(email)).folders || {}
   updateObject = merge(updateObject, Utils.removeCircular(boxes))
   logger.log(`Retrieved all mailboxes from ${email}`)
   
