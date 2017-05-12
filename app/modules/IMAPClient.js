@@ -57,7 +57,6 @@ IMAPClient.compileObjectPath = function (path) {
     location.push(path[j].name)
     if (j !== path.length - 1) location.push('children')
   }
-  location.pop()
   return location
 }
 
@@ -127,6 +126,10 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
   //   'seqno'
   // If we want the former, we expect the `grabNewer` boolean to be true.
   return new Promise(function (resolve, reject) {
+    logger.log("Total: " + this.mailbox.messages.total)
+    logger.log("Seqno: " + seqno)
+    logger.log("grabNewer: " + grabNewer)
+    logger.log("Grabbing: " + `${seqno}${grabNewer ? `:*` : ``}`)
     if (!this.mailbox.messages.total) return resolve()
     // Outlook puts folders in the trash, which we can't retrieve at the moment.
     // if (path.toLowerCase().split('trash').length > 1) return resolve()
@@ -192,8 +195,13 @@ IMAPClient.prototype.updateAccount = async function () {
 
   for (let i = 0; i < boxesLinear.length; i++) {
     let path = IMAPClient.compilePath(boxesLinear[i])
+    console.log(path)
+    console.log(boxesLinear[i])
     let objectPath = IMAPClient.compileObjectPath(boxesLinear[i])
+    logger.log(objectPath)
+    console.log(updateObject)
     let highest = _.get(updateObject, objectPath.concat(['highest']), 1)
+    logger.log("Highest: " + highest)
     let isCurrentPath = StateManager.state && StateManager.state.account && IMAPClient.compilePath(StateManager.state.account.folder) == path
     let promises = []
 
@@ -238,8 +246,6 @@ IMAPClient.prototype.updateAccount = async function () {
   StateManager.change('state', 'mail')
   StateManager.change('account', { hash, email })
   StateManager.update()
-
-  throw "Function not finished"
 }
 
 /**

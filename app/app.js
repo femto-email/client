@@ -15,17 +15,20 @@ global.router = new Navigo(null, true, '#')
 global.SMTPClient = require('./modules/SMTPClient')
 global.IMAPClient = require('./modules/IMAPClient')
 
-
+// StateManager contains the current state, Threader handles email threading
+// and Utils contains many utility functions
 global.StateManager = require('./modules/StateManager')
 global.Threader = require('./modules/Threader')
 global.Utils = require('./modules/Utils')
 
+// MailStore and AccountManager store mail items and accounts respectively.
 global.MailStore = require('./modules/MailStore')
-
 global.AccountManager = require('./modules/AccountManager')
 
+// WelcomePage, SetupPage and MailPage all handle the rendering of specific pages.
 global.WelcomePage = require('./modules/WelcomePage')
 global.SetupPage = require('./modules/SetupPage')
+global.MailPage = require('./modules/MailPage')
 
 const { mail } = require('./modules/mail')
 
