@@ -79,4 +79,15 @@ AccountManager.prototype.removeAccount = async function (email) {
 	return this.accounts.removeAsync({ user: email })
 }
 
+AccountManager.prototype.getIMAP = async function (email) {
+  let account = await this.findAccount(email)
+  return await new IMAPClient({
+    user: account.user,
+    password: account.password,
+    host: account.imap.host,
+    port: account.imap.port,
+    tls: account.tls
+  })
+}
+
 module.exports = new AccountManager()

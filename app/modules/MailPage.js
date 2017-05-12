@@ -1,12 +1,12 @@
-const { ipcRenderer, remote } = require('electron')
-const searchInPage            = require('electron-in-page-search').default
-const $                       = require('jquery')
+const { ipcRenderer, remote }   = require('electron')
+const { timeout, TimeoutError } = require('promise-timeout')
+const searchInPage              = require('electron-in-page-search').default
+const $                         = require('jquery')
 
 function MailPage () {}
 
 /*
 TODO:
-- Set iterative refresh
 - Add iterative grab to retrieve emails without bodies
 - Add ability to click on emails to see body.
  */
@@ -129,7 +129,7 @@ MailPage.render = async function(page) {
   }
 
   if (mail.length === 0) $('#mail').html('This folder is empty ;(')
-  if (MailStore.countEmails(StateManager.state.account.email, StateManager.state.account.folder) > 250 * (page + 1)) {
+  if (await MailStore.countEmails(StateManager.state.account.email, StateManager.state.account.folder) > 250 * (page + 1)) {
     html += `<button class='load-more'>Load more...</button>`
     $('.load-more').remove()
   }
@@ -137,27 +137,64 @@ MailPage.render = async function(page) {
   $('#mail').append(html)
 
   $('.email-item').off('click')
-  $('.email-item').click((e) => { loadEmail(unescape(e.currentTarget.attributes['data-uid'].nodeValue)) })
+  $('.email-item').click((e) => { MailPage.renderEmail(unescape(e.currentTarget.attributes['data-uid'].nodeValue)) })
 
   $('.load-more').off('click')
   $('.load-more').click((e) => { MailPage.render(page + 1) })
 }
 
 MailPage.reload = async function() {
-  let account = await AccountManager.findAccount(StateManager.state.account.email)
-  let client = await new IMAPClient({
-    user: account.user,
-    password: account.password,
-    host: account.imap.host,
-    port: account.imap.port,
-    tls: account.tls
-  })
-  client.updateAccount()
+  (await AccountManager.getIMAP(StateManager.state.account.email)).updateAccount()
 }
 
-MailPage.retrieveEmailBodies = function() {
-  // TO DO
-  return "TODO"
+MailPage.renderEmail = async function (uid) {
+  let email = await MailStore.loadEmailBody(StateManager.state.account.email, uid)
+  console.log(email)
+}
+
+MailPage.retrieveEmailBodies = async function() {
+  let accounts = await AccountManager.listAccounts()
+  for (let i = 0; i < accounts.length; i++) {
+    let email = accounts[i].user
+    let toGrab = await MailStore.loadEmailsWithoutBody(email)
+    let total = toGrab.length;
+
+    if (total) {
+      let limit = 8
+      let currentIter = 0
+      let currentCount = 0
+
+      let promises = []
+      for (let j = 0; j < limit; j++) {
+        promises.push(AccountManager.getIMAP(email))
+      }
+      let clientsFree = await Promise.all(promises)
+
+      let interval = setInterval(async () => {
+        if (currentIter == total - 1) {
+          clearInterval(interval)
+          setTimeout(function () {
+            for (let i = 0; i < clientsFree.length; i++) {
+              clientsFree[i].client.end()
+            }
+          }, 20000)
+        } else if (currentCount < limit) {
+          logger.log(`Grabbing email body ${currentIter + 1} / ${total - 1}`)
+          currentCount++
+          currentIter++
+          let client = clientsFree.pop()
+          try { await timeout(client.getEmailBody(toGrab[currentIter].uid), 20000) } 
+          catch(e) {
+            if (e instanceof TimeoutError) logger.error('Timeout on one of our emails grabs...')
+            else throw e
+          }
+          clientsFree.push(client)
+
+          currentCount--
+        }
+      }, 50)
+    }
+  }
 }
 
 MailPage.enableSearch = function() {

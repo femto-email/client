@@ -77,6 +77,7 @@ Logger.prototype.success = function () { if (this.logLevel >= 2) this.print(argu
 Logger.prototype.log = function () { if (this.logLevel >= 3) this.print(arguments, 'log') }
 Logger.prototype.info = function () { if (this.logLevel >= 4) this.print(arguments, 'info') }
 Logger.prototype.debug = function () { if (this.logLevel >= 5) this.print(arguments, 'debug') }
+Logger.prototype.format = function () { return this.print(arguments, 'format') }
 
 Logger.prototype.group = function (title) { console.group(title) }
 Logger.prototype.groupEnd = function (title) { console.groupEnd(title) }
@@ -119,6 +120,11 @@ Logger.prototype.print = function (args, level) {
   }
 
   var log = level === 'error' ? console.error : console.log
+
+  if (level === 'format') {
+    return `${date} [${func || file}] ${message}`
+  }
+
   if (this.client) {
     log(`%c${date} %c[${func || file}] %c${message}`, `color:blue;`, func ? `color:green` : `color:orange`, this.clientColour[level])
   } else {

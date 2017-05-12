@@ -159,6 +159,22 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
   }.bind(this))
 }
 
+IMAPClient.prototype.getEmailBody = async function (uid) {
+  return new Promise(async function (resolve, reject) {
+    let email = this.client._config.user
+    let message = await MailStore.loadEmail(email, uid)
+
+    await this.getEmails(message.folder, true, false, message.seqno, {
+      bodies: '', struct: true, envelope: true
+    }, async function (seqno, content, attributes) {
+      MailStore.saveMailBody(email, uid, Object.assign({ seqno: seqno }, content, attributes))
+      await MailStore.updateEmailByUid(email, uid, { retrieved: true })
+      logger.log(`Added ${email}:${uid} to the file system.`)
+      resolve()
+    })
+  }.bind(this))
+}
+
 /**
  * Update all emails for a specific account, also used for the first
  * grab of emails.
@@ -227,9 +243,9 @@ IMAPClient.prototype.updateAccount = async function () {
   $('#doing').text('looking for threads.')
   let threads = Threader.applyThreads(await MailStore.findEmails(hash))
   for (let id in threads) {
-    await MailStore.updateEmail(email, id, { threadMsg: threads[id] })
+    await MailStore.updateEmailById(email, id, { threadMsg: threads[id] })
     for (let i = 0; i < threads[id].length; i++) {
-      await MailStore.updateEmail(email, threads[id][i], { isThreadChild: id })
+      await MailStore.updateEmailById(email, threads[id][i], { isThreadChild: id })
     }
   }
 
@@ -262,7 +278,7 @@ IMAPClient.prototype.logger = function () {
     if (this.debug) {
       logger.debug(string)
     }
-    this.jetpack.append(`./${this.currentDate}.log`, string)
+    this.jetpack.append(`./${this.currentDate}.log`, logger.format(string) + '\n')
   }.bind(this)
 }
 
