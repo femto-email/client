@@ -34,14 +34,16 @@ MailStore.loadEmail = async function (email, uid) {
 MailStore.createEmailDB = async function (email) {
   // Detect whether we need to hash it ourselves, or if it is
   // already hashed.
-  hash = ~email.indexOf('@') ? Utils.md5(email) : email
-  this[hash] = bluebird.promisifyAll(new Datastore({
-    filename: `${app.getPath('userData')}/db/${hash}.db`
-  }))
+  let hash = ~email.indexOf('@') ? Utils.md5(email) : email
+  if (typeof this[hash] === 'undefined') {
+    this[hash] = bluebird.promisifyAll(new Datastore({
+      filename: `${app.getPath('userData')}/db/${hash}.db`
+    }))
 
-  await this[hash].loadDatabaseAsync()
+    await this[hash].loadDatabaseAsync()
 
-  this[hash].ensureIndex({ fieldName: 'uid', unique: true })
+    this[hash].ensureIndex({ fieldName: 'uid', unique: true })
+  }
 }
 
 module.exports = MailStore
