@@ -20,6 +20,16 @@ MailPage.load = async function () {
   }
 
   let account = await AccountManager.findAccount(StateManager.state.account.user)
+  let folders = account.folders
+
+  $('#folders').html(MailPage.generateFolderList(folders))
 
   throw "Error, MailPage has not been finished yet."
 }
+
+MailPage.generateFolderList = function () {
+	// TO DO
+	return "TODO"
+}
+
+module.exports = MailPage

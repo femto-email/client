@@ -30,8 +30,6 @@ global.WelcomePage = require('./modules/WelcomePage')
 global.SetupPage = require('./modules/SetupPage')
 global.MailPage = require('./modules/MailPage')
 
-const { mail } = require('./modules/mail')
-
 ipcRenderer.on('send', async (event, arg) => {
   SMTPClient.send(AccountManager.findAccount(arg.from), arg)
 })
@@ -39,7 +37,7 @@ ipcRenderer.on('send', async (event, arg) => {
 router.on({
   '/setup': () => { Utils.time(SetupPage.load) },
   '/welcome': () => { Utils.time(WelcomePage.load) },
-  '/mail': () => { Utils.time(mail) }
+  '/mail': () => { Utils.time(MailPage.load) }
 }).resolve()
 
 router.navigate('/setup')

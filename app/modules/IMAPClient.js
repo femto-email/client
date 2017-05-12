@@ -195,13 +195,12 @@ IMAPClient.prototype.updateAccount = async function () {
 
   for (let i = 0; i < boxesLinear.length; i++) {
     let path = IMAPClient.compilePath(boxesLinear[i])
-    console.log(path)
-    console.log(boxesLinear[i])
+    logger.debug("Path:", path)
+    logger.debug("Linear Box Path:", boxesLinear[i])
     let objectPath = IMAPClient.compileObjectPath(boxesLinear[i])
-    logger.log(objectPath)
-    console.log(updateObject)
+    logger.debug("Object Path:", objectPath)
     let highest = _.get(updateObject, objectPath.concat(['highest']), 1)
-    logger.log("Highest: " + highest)
+    logger.debug("Highest: " + highest)
     let isCurrentPath = StateManager.state && StateManager.state.account && IMAPClient.compilePath(StateManager.state.account.folder) == path
     let promises = []
 
