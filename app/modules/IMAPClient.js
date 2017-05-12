@@ -74,10 +74,6 @@ IMAPClient.linearBoxes = function (folders, path) {
   return results
 }
 
-IMAPClient.render = function () {
-
-}
-
 /**
  * Returns all boxes within a mail account.
  * @return {object} [An object containing all mailboxes]
@@ -229,11 +225,11 @@ IMAPClient.prototype.updateAccount = async function () {
   /*----------  THREADING EMAILS  ----------*/
   $('#number').text('')
   $('#doing').text('looking for threads.')
-  let threads = Threader.applyThreads(await MailStore[hash].findAsync({}))
+  let threads = Threader.applyThreads(await MailStore.findEmails(hash))
   for (let id in threads) {
-    await MailStore[hash].updateAsync({ _id: id }, { $set: { threadMsg: threads[id] } }, {})
+    await MailStore.updateEmail(email, id, { threadMsg: threads[id] })
     for (let i = 0; i < threads[id].length; i++) {
-      await MailStore[hash].updateAsync({ _id: threads[id][i] }, { $set: { isThreadChild: id } }, {})
+      await MailStore.updateEmail(email, threads[id][i], { isThreadChild: id })
     }
   }
 

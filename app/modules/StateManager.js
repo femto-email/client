@@ -74,7 +74,7 @@ StateManager.prototype.style = function (titles) {
 StateManager.prototype.page = function (page, css) {
   logger.debug(`Switching page to ${page}`)
   $('#content').html(appDir.read(`./app/${page}.html`))
-  style(css)
+  this.style(css)
 }
 
 

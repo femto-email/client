@@ -46,4 +46,32 @@ MailStore.createEmailDB = async function (email) {
   }
 }
 
+MailStore.updateEmail = async function (email, id, changes) {
+  // Detect whether we need to hash it ourselves, or if it is
+  // already hashed.
+  let hash = ~email.indexOf('@') ? Utils.md5(email) : email
+  return await this[hash].updateAsync({ _id: id }, { $set: changes }, {})
+}
+
+MailStore.findEmails = async function (email, folder, limits, skip, limit) {
+  // Detect whether we need to hash it ourselves, or if it is
+  // already hashed.
+  let hash = ~email.indexOf('@') ? Utils.md5(email) : email
+  return await new Promise((resolve) => {
+    this[hash].find(
+      folder ? { folder: IMAPClient.compilePath(folder) } : {},
+      limits ? limits: {}
+    ).sort({ date: -1 }).skip(skip).limit(limit).exec((err, docs) => {
+      resolve(docs)
+    })
+  })
+}
+
+MailStore.countEmails = async function (email, folder) {
+  // Detect whether we need to hash it ourselves, or if it is
+  // already hashed.
+  let hash = ~email.indexOf('@') ? Utils.md5(email) : email
+  return await this[hash].countAsync({ folder: IMAPClient.compilePath(folder) })
+}
+
 module.exports = MailStore

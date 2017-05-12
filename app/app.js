@@ -5,7 +5,7 @@ console.log("%cStop!", "font: 2em sans-serif; color: yellow; background-color: r
 console.log("%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a feature or “hack” someone’s account, it is a scam and will give them access to your account.", "font: 1.5em sans-serif; color: grey;");
 
 require('dotenv').config()
-require('./helpers/switch')
+// require('./helpers/switch')
 require('./helpers/clean')
 
 global.app = remote.app
@@ -16,10 +16,15 @@ global.SMTPClient = require('./modules/SMTPClient')
 global.IMAPClient = require('./modules/IMAPClient')
 
 // StateManager contains the current state, Threader handles email threading
-// and Utils contains many utility functions
+// and Utils contains many utility functions.
 global.StateManager = require('./modules/StateManager')
 global.Threader = require('./modules/Threader')
 global.Utils = require('./modules/Utils')
+
+// Header creates and updates the top bar, Clean provides string escaping and
+// HTML cleaning tools.
+global.Header = require('./modules/Header')
+global.Clean = require('./modules/Clean')
 
 // MailStore and AccountManager store mail items and accounts respectively.
 global.MailStore = require('./modules/MailStore')
@@ -33,6 +38,8 @@ global.MailPage = require('./modules/MailPage')
 ipcRenderer.on('send', async (event, arg) => {
   SMTPClient.send(AccountManager.findAccount(arg.from), arg)
 })
+
+Header.load()
 
 router.on({
   '/setup': () => { Utils.time(SetupPage.load) },

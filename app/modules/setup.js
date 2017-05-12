@@ -31,16 +31,6 @@ SetupPage.load = function () {
   global.appDir = jetpack.cwd(app.getAppPath())
   global.storeDir = jetpack.cwd(app.getPath('userData'))
 
-  $(() => {
-    $('#header').html(appDir.read(`./app/header.html`))
-    document.getElementById('min-btn').addEventListener('click', function (e) { remote.BrowserWindow.getFocusedWindow().minimize() })
-    document.getElementById('max-btn').addEventListener('click', function (e) {
-      let remoteWindow = remote.BrowserWindow.getFocusedWindow()
-      remoteWindow.isMaximized() ? remoteWindow.unmaximize() : remoteWindow.maximize()
-    })
-    document.getElementById('close-btn').addEventListener('click', function (e) { remote.BrowserWindow.getFocusedWindow().close() })
-  })
-
   logger.log(`Application Paths Found:
     App Dir   - ${app.getAppPath()}
     Store Dir - ${app.getPath('userData')}

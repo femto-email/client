@@ -4,6 +4,14 @@ const $                       = require('jquery')
 
 function MailPage () {}
 
+/*
+TODO:
+- Load emails into page
+- Set iterative refresh
+- Add iterative grab to retrieve emails without bodies
+- Add ability to click on emails to see body.
+ */
+
 MailPage.load = async function () {
   if (!testLoaded('mail')) return
 
@@ -42,7 +50,7 @@ MailPage.load = async function () {
   /*----------  SET FOLDER LIST  ----------*/
   $('#folders').html(MailPage.generateFolderList(folders, [], false))
   MailPage.linkFolders($('#folders').children().children())
-  MailPage.highlightFolder(StateManager.state.account.folder)
+  MailPage.highlightFolder()
 
   /*----------  ADD MAIL ITEMS  ----------*/
   MailPage.render()
@@ -50,8 +58,6 @@ MailPage.load = async function () {
 
   /*----------  SEARCH IN MAIL WINDOW  ----------*/
   MailPage.enableSearch()
-
-  throw "Error, MailPage has not been finished yet."
 }
 
 MailPage.generateFolderList = function (folders, journey, depth) {
@@ -74,23 +80,63 @@ MailPage.generateFolderList = function (folders, journey, depth) {
     }
   }
   return html
-  // TO DO
-  return "TODO"
 }
 
-MailPage.linkFolders = function (item) {
-  // TO DO
-  return "TODO"
+MailPage.linkFolders = function (children) {
+  children.each((index, item) => {
+    $(`#${item.id.replace(/=/g, '\\=')}`).click((element) => {
+      logger.log(`Switching page to ${atob(element.target.id)}`)
+      StateManager.update('account', Object.assign(StateManager.state.account, {
+        folder: JSON.parse(atob(element.target.id))
+      }))
+      $(`.folder-tree`).removeClass('teal lighten-2')
+      $(`#${element.target.id.replace(/=/g, '\\=')}`).addClass('teal lighten-2')
+      MailPage.render()
+    })
+
+    let items = $(`#${item.id.replace(/=/g, '\\=')}`).children().children()
+    if (items.length) {
+      MailPage.linkFolders(items)
+    }
+  })
 }
 
-MailPage.highlightFolder = function (folder) {
-  // TO DO
-  return "TODO"
+MailPage.highlightFolder = function () {
+  $(`.folder-tree`).removeClass('teal lighten-2')
+  $(`#${btoa(JSON.stringify(StateManager.state.account.folder)).replace(/=/g, '\\=')}`).addClass('teal lighten-2')
 }
 
-MailPage.render = function() {
-  // TO DO
-  return "TODO"
+MailPage.render = async function(page) {
+  page = page || 0
+
+  let mail = await MailStore.findEmails(StateManager.state.account.email, StateManager.state.account.folder, { uid: 1, isThreadChild: 1 }, page * 250, 250)
+  Header.setLoc([StateManager.state.account.email].concat(StateManager.state.account.folder.map((val) => { return val.name })))
+
+  if (!page) {
+    $('#mail').html('')
+    $('#message-holder').html(`<div id="message"></div>`)
+  }
+
+  let html = ""
+  for (let i = 0; i < mail.length; i++) {
+    if (!mail[i].isThreadChild) {
+      html += `<e-mail class="email-item" data-uid="${escape(mail[i].uid)}"></e-mail>`
+    }
+  }
+
+  if (mail.length === 0) $('#mail').html('This folder is empty ;(')
+  if (MailStore.countEmails(StateManager.state.account.email, StateManager.state.account.folder) > 250 * (page + 1)) {
+    html += `<button class='load-more'>Load more...</button>`
+    $('.load-more').remove()
+  }
+
+  $('#mail').append(html)
+
+  $('.email-item').off('click')
+  $('.email-item').click((e) => { loadEmail(unescape(e.currentTarget.attributes['data-uid'].nodeValue)) })
+
+  $('.load-more').off('click')
+  $('.load-more').click((e) => { MailPage.render(page + 1) })
 }
 
 MailPage.retrieveEmailBodies = function() {
@@ -105,5 +151,47 @@ MailPage.enableSearch = function() {
     searchInWindow.openSearchWindow()
   })
 }
+
+customElements.define('e-mail', class extends HTMLElement {
+  constructor () {
+    super()
+
+    // Shadow root is it's *own* entire DOM.  This makes it impact less when
+    // we change and search through other parts of the DOM, *hopefully* making it
+    // slightly quicker.  It also allows us to use the cool <e-mail> tags.
+    // const shadowRoot = this.attachShadow({ mode: 'open' })
+    this.innerHTML = `
+      <div>Loading...</div>
+    `
+
+    // We're able to assume some values from the current state.
+    // However, we don't rely on it, preferring instead to find it in the email itself.
+    let email = this.getAttribute('data-email') ||
+                StateManager.state.account.email
+    let uid = unescape(this.getAttribute('data-uid'))
+
+    MailStore.loadEmail(email, uid).then((mail) => {
+      // Attach a shadow root to <e-mail>.
+      // NOTE: All of these *have* to be HTML escaped.  Consider using `Clean.escape(string)` which
+      // is globally accessible.
+      this.innerHTML = `
+        <div class="mail-item">
+          <div class="multi mail-checkbox"><input type="checkbox" id="${mail.uid}" />
+            <label for="${mail.uid}"></label>
+          </div>
+          <div class="text ${mail.flags.includes('\\Seen') ? `read` : `unread`}">
+            <div class="subject">
+              <div class="subject-text">${mail.threadMsg && mail.threadMsg.length ? `(${mail.threadMsg.length + 1})` : ``} ${Clean.escape(mail.subject)}</div>
+            </div>
+            <div class="sender">
+              <div class="sender-text">${Clean.escape(typeof mail.from !== 'undefined' ? mail.from.value[0].name || mail.from.value[0].address : 'No Sender...')}</div>
+            </div>
+            <div class="date teal-text right-align">${Utils.alterDate(mail.date)}</div>
+          </div>
+        </div>
+      `
+    })
+  }
+})
 
 module.exports = MailPage

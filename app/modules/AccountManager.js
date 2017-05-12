@@ -58,7 +58,7 @@ AccountManager.prototype.addAccount = async function (details) {
   await client.updateAccount()
 
   /*----------  SWITCH TO THAT USER  ----------*/
-  StateManager.change('account', { hash, user: details.user })
+  StateManager.change('account', { hash: user.hash, user: user.user })
   StateManager.change('state', 'mail')
   StateManager.update()
 }
