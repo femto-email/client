@@ -7,7 +7,6 @@ function MailPage () {}
 
 /*
 TODO:
-- Add iterative grab to retrieve emails without bodies
 - Add ability to click on emails to see body.
  */
 
