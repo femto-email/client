@@ -1,5 +1,7 @@
 const sanitizeHTML = require('sanitize-html')
 
+function Clean () {}
+
 const htmlAllowed = {
   allowedTags: [ 'html', 'meta', 'body', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p',
     'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
@@ -21,6 +23,25 @@ const htmlAllowed = {
   allowProtocolRelative: true
 }
 
-global.cleanHTML = (dirty) => {
+Clean.escape = function (string) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }
+
+  if (string) {
+    return string.replace(/[&<>"']/g, function (m) { return map[m] })
+  } else {
+    return undefined
+  }
+}
+
+Clean.cleanHTML = (dirty) => {
   return sanitizeHTML(dirty, htmlAllowed)
 }
+
+
+module.exports = Clean

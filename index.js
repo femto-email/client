@@ -3,8 +3,11 @@ const electron = require('electron')
 const { app, shell } = require('electron')
 const createWindow = require('./app/helpers/window')
 
+// Allow app to be accessible globally.
+global.app = app
+
 // adds global logging
-require('./app/helpers/Logger')
+require('./app/helpers/logger')
 
 // adds debug features like hotkeys for triggering dev tools and reload
 require('electron-debug')({ showDevTools: true })

@@ -1,24 +1,25 @@
 const $ = require('jquery')
 
-async function welcome () {
-  if (!testLoaded('welcome')) return
+function WelcomePage () {}
 
-  logger.debug(`We're loading up the welcome page now.`)
-  page('welcome', ['basic', 'welcome'])
+WelcomePage.load = function () {
+	if (!testLoaded('welcome')) return
 
-  if (process.env.NODE_ENV !== 'production') fillFields()
+	logger.log('Loading up the welcome page...')
+	StateManager.page('welcome', ['basic', 'welcome'])
+
+	if (process.env.NODE_ENV !== 'production') fillFields()
 
   $('#login-form').on('submit', async function onLogin (e) {
     e.preventDefault()
-    let details = getItemsFromForm('login-form')
-    users.addAccount(details)
+    let details = Utils.getItemsFromForm('login-form')
+  	AccountManager.addAccount(details)
   })
 }
 
 /**
  * When we're not in production, we can keep user information in a
  * .env file so that we don't have to enter it every time.
- *
  * @return {undefined}
  */
 function fillFields () {
@@ -31,4 +32,4 @@ function fillFields () {
   $('#secure').prop('checked', process.env.SECURE === 'true')
 }
 
-module.exports = { welcome }
+module.exports = WelcomePage
