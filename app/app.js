@@ -8,9 +8,8 @@ global.app = remote.app
 global.router = new Navigo(null, true, '#')
 
 require('dotenv').config()
-// require('./helpers/switch')
-require('./helpers/clean')
 require('./helpers/logger')
+// require('./helpers/switch')
 
 // SMTPClient is used for sending messages, IMAPClient for receiving.
 global.SMTPClient = require('./modules/SMTPClient')

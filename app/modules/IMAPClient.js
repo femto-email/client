@@ -164,10 +164,11 @@ IMAPClient.prototype.getEmailBody = async function (uid) {
     await this.getEmails(message.folder, true, false, message.seqno, {
       bodies: '', struct: true, envelope: true
     }, async function (seqno, content, attributes) {
-      MailStore.saveMailBody(email, uid, Object.assign({ seqno: seqno }, content, attributes))
+      let compiledContent = Object.assign({ seqno: seqno }, content, attributes)
+      MailStore.saveMailBody(email, uid, compiledContent)
       await MailStore.updateEmailByUid(email, uid, { retrieved: true })
       logger.log(`Added ${email}:${uid} to the file system.`)
-      resolve()
+      resolve(compiledContent)
     })
   }.bind(this))
 }
@@ -240,9 +241,9 @@ IMAPClient.prototype.updateAccount = async function () {
   $('#doing').text('looking for threads.')
   let threads = Threader.applyThreads(await MailStore.findEmails(hash))
   for (let id in threads) {
-    await MailStore.updateEmailById(email, id, { threadMsg: threads[id] })
+    await MailStore.updateEmailByUid(email, id, { threadMsg: threads[id] })
     for (let i = 0; i < threads[id].length; i++) {
-      await MailStore.updateEmailById(email, threads[id][i], { isThreadChild: id })
+      await MailStore.updateEmailByUid(email, threads[id][i], { isThreadChild: id })
     }
   }
 

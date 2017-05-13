@@ -10,7 +10,7 @@ Threader.applyThreads = (messages) => {
   let messageThreads = {}
   for (let i = 0; i < messages.length; i++) {
     if (messages[i].envelope.messageId) {
-      messageThreads[messages[i]._id] = {
+      messageThreads[messages[i].uid] = {
         messageId: messages[i].envelope.messageId,
         inReplyTo: messages[i].envelope.inReplyTo || undefined
       }

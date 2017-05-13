@@ -7,7 +7,7 @@ function MailPage () {}
 
 /*
 TODO:
-- Add ability to click on emails to see body.
+- If email doesn't exist, grab it immediately & then show it to the user.
  */
 
 MailPage.load = async function () {
@@ -34,7 +34,7 @@ MailPage.load = async function () {
     // we have to search through them, looking for one which contains the word "inbox".
     for (let folder in folders) {
       if (folder.toLowerCase() == 'inbox') {
-        StateManager.update('account', Object.assign(StateManager.state.account, {
+        StateManager.change('account', Object.assign(StateManager.state.account, {
           folder: [{ name: folder, delimiter: account.folders[folder].delimiter }]
         }))
       }
@@ -58,7 +58,7 @@ MailPage.load = async function () {
 
   /*----------  ADD MAIL ITEMS  ----------*/
   MailPage.render()
-  MailPage.retrieveEmailBodies()
+  // MailPage.retrieveEmailBodies()
 
   /*----------  SEARCH IN MAIL WINDOW  ----------*/
   MailPage.enableSearch()
@@ -90,7 +90,7 @@ MailPage.linkFolders = function (children) {
   children.each((index, item) => {
     $(`#${item.id.replace(/=/g, '\\=')}`).click((element) => {
       logger.log(`Switching page to ${atob(element.target.id)}`)
-      StateManager.update('account', Object.assign(StateManager.state.account, {
+      StateManager.change('account', Object.assign(StateManager.state.account, {
         folder: JSON.parse(atob(element.target.id))
       }))
       $(`.folder-tree`).removeClass('teal lighten-2')
@@ -147,11 +147,31 @@ MailPage.reload = async function() {
   (await AccountManager.getIMAP(StateManager.state.account.email)).updateAccount()
 }
 
-MailPage.renderEmail = async function (uid) {
+MailPage.renderEmail = async function (uid, number) {
+  let metadata = await MailStore.loadEmail(StateManager.state.account.email, uid)
+
+  if (!number) {
+    $('#message').html(`<div id="message-0"></div>`)
+    if (metadata.threadMsg) {
+      for (let i = 1; i < metadata.threadMsg.length + 1; i++) {
+        $('#message').append(`<hr><div id="message-${i}"></div>`)
+        MailPage.renderEmail(metadata.threadMsg[i - 1], i)
+      }
+    }
+  }
+  number = number || 0
+  let shadow = document.getElementById(`message-${number}`).createShadowRoot()
   let email = await MailStore.loadEmailBody(StateManager.state.account.email, uid)
+
+  if (typeof email === 'undefined') {
+    shadow.innerHTML = `This email has not been retrieved yet.  We're fast tracking it!`
+    let client = await AccountManager.getIMAP(StateManager.state.account.email)
+    email = await client.getEmailBody(uid)
+    client.client.end()
+  }
+
   let display = Clean.cleanHTML(email.html || email.textAsHtml || email.text)
-  $('#message').html(display)
-  console.log(email)
+  shadow.innerHTML = display
 }
 
 MailPage.retrieveEmailBodies = async function() {
