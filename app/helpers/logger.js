@@ -1,6 +1,7 @@
-var chalk = require('chalk')
 var stacktrace = require('stack-trace')
-var path = require('path')
+var jetpack    = require('fs-jetpack')
+var chalk      = require('chalk')
+var path       = require('path')
 
 var defaults = {
   'logLevel': 5,
@@ -28,7 +29,9 @@ var defaults = {
     log: 'color: Black',
     info: 'color: DodgerBlue',
     debug: 'color: DarkGray'
-  }
+  },
+  'fs': jetpack.cwd(app.getPath('userData'), 'logs'),
+  'currentDate': getDate()
 }
 
 function Logger (options) {
@@ -77,6 +80,7 @@ Logger.prototype.success = function () { if (this.logLevel >= 2) this.print(argu
 Logger.prototype.log = function () { if (this.logLevel >= 3) this.print(arguments, 'log') }
 Logger.prototype.info = function () { if (this.logLevel >= 4) this.print(arguments, 'info') }
 Logger.prototype.debug = function () { if (this.logLevel >= 5) this.print(arguments, 'debug') }
+Logger.prototype.format = function () { return this.print(arguments, 'format') }
 
 Logger.prototype.group = function (title) { console.group(title) }
 Logger.prototype.groupEnd = function (title) { console.groupEnd(title) }
@@ -119,11 +123,27 @@ Logger.prototype.print = function (args, level) {
   }
 
   var log = level === 'error' ? console.error : console.log
+
+  if (level === 'format') {
+    return `${date} [${func || file}] ${message}`
+  }
+
+  this.fs.append(`./FEMTO-${this.currentDate}.log`, `${date} [${func || file}] ${message}` + '\n')
+
   if (this.client) {
     log(`%c${date} %c[${func || file}] %c${message}`, `color:blue;`, func ? `color:green` : `color:orange`, this.clientColour[level])
   } else {
     log(`${this.colour.date(date)} [${func ? this.colour.function(func) : this.colour.file(file)}] ${this.colour[level](message)}`)
   }
 }
+
+function getDate() {
+  const today = new Date()
+  let day = today.getDate()
+  let month = today.getMonth() + 1
+  let year = today.getFullYear()
+  return `${year}-${month}-${day}`
+}
+
 
 global.logger = new Logger()
