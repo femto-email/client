@@ -51,7 +51,11 @@ MailStore.loadEmailsWithoutBody = async function (email) {
 }
 
 MailStore.loadEmailBody = async function (email, uid) {
+  const hash = ~email.indexOf('@') ? Utils.md5(email) : email
+  const hashuid = Utils.md5(uid)
+  const fs = jetpack.cwd(app.getPath('userData'), 'mail', hash)
 
+  return fs.read(`${hashuid}.json`, 'json')
 }
 
 /**

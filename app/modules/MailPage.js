@@ -25,12 +25,10 @@ MailPage.load = async function () {
   /*----------  RETRIEVE & SETUP ACCOUNT  ----------*/
   let account = await AccountManager.findAccount(StateManager.state.account.email)
   let folders = account.folders
-
-  console.log(account)
-
   await MailStore.createEmailDB(account.user)
 
   /*----------  ENSURE FOLDER SET IN STATE  ----------*/
+  console.log(typeof StateManager.state.account.folder)
   if (typeof StateManager.state.account.folder === 'undefined') {
     // Due to companies not all naming their main inbox "INBOX" (as defined in the RFC),
     // we have to search through them, looking for one which contains the word "inbox".
@@ -151,6 +149,8 @@ MailPage.reload = async function() {
 
 MailPage.renderEmail = async function (uid) {
   let email = await MailStore.loadEmailBody(StateManager.state.account.email, uid)
+  let display = Clean.cleanHTML(email.html || email.textAsHtml || email.text)
+  $('#message').html(display)
   console.log(email)
 }
 
@@ -162,7 +162,7 @@ MailPage.retrieveEmailBodies = async function() {
     let total = toGrab.length;
 
     if (total) {
-      let limit = 8
+      let limit = 10
       let currentIter = 0
       let currentCount = 0
 

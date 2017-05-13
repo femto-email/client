@@ -162,7 +162,7 @@ IMAPClient.prototype.getEmailBody = async function (uid) {
     let message = await MailStore.loadEmail(email, uid)
 
     await this.getEmails(message.folder, true, false, message.seqno, {
-      bodies: 'TEXT', struct: true, envelope: true
+      bodies: '', struct: true, envelope: true
     }, async function (seqno, content, attributes) {
       MailStore.saveMailBody(email, uid, Object.assign({ seqno: seqno }, content, attributes))
       await MailStore.updateEmailByUid(email, uid, { retrieved: true })
