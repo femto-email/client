@@ -246,5 +246,19 @@
         "port": 465
       }
     }
+  },
+  "debenclipper.com": {
+    "imap": {
+      "ssl": {
+        "host": "just94.justhost.com",
+        "port": 993
+      }
+    },
+    "smtp": {
+      "ssl": {
+        "host": "just94.justhost.com",
+        "port": 465
+      }
+    }
   }
 }

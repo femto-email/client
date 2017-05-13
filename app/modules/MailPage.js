@@ -5,11 +5,6 @@ const $                         = require('jquery')
 
 function MailPage () {}
 
-/*
-TODO:
-- If email doesn't exist, grab it immediately & then show it to the user.
- */
-
 MailPage.load = async function () {
   if (!testLoaded('mail')) return
 
@@ -28,7 +23,6 @@ MailPage.load = async function () {
   await MailStore.createEmailDB(account.user)
 
   /*----------  ENSURE FOLDER SET IN STATE  ----------*/
-  console.log(typeof StateManager.state.account.folder)
   if (typeof StateManager.state.account.folder === 'undefined') {
     // Due to companies not all naming their main inbox "INBOX" (as defined in the RFC),
     // we have to search through them, looking for one which contains the word "inbox".
@@ -58,7 +52,7 @@ MailPage.load = async function () {
 
   /*----------  ADD MAIL ITEMS  ----------*/
   MailPage.render()
-  // MailPage.retrieveEmailBodies()
+  MailPage.retrieveEmailBodies()
 
   /*----------  SEARCH IN MAIL WINDOW  ----------*/
   MailPage.enableSearch()
@@ -148,18 +142,20 @@ MailPage.reload = async function() {
 }
 
 MailPage.renderEmail = async function (uid, number) {
+  number = number || 0
   let metadata = await MailStore.loadEmail(StateManager.state.account.email, uid)
 
   if (!number) {
-    $('#message').html(`<div id="message-0"></div>`)
+    $(`e-mail div.mail-item div#message-holder div.message-wrapper`).remove()
+    let item = $(`e-mail[data-uid='${uid}'] div.mail-item div#message-holder`)
+    item.html(`<div class="message-wrapper" id="message-0"></div>`)
     if (metadata.threadMsg) {
       for (let i = 1; i < metadata.threadMsg.length + 1; i++) {
-        $('#message').append(`<hr><div id="message-${i}"></div>`)
+        item.append(`<hr><div class="message-wrapper" id="message-${i}"></div>`)
         MailPage.renderEmail(metadata.threadMsg[i - 1], i)
       }
     }
   }
-  number = number || 0
   let shadow = document.getElementById(`message-${number}`).createShadowRoot()
   let email = await MailStore.loadEmailBody(StateManager.state.account.email, uid)
 
@@ -192,7 +188,7 @@ MailPage.retrieveEmailBodies = async function() {
       }
       let clientsFree = await Promise.all(promises)
 
-      let interval = setInterval(async () => {
+      let interval = setInterval(async function retrieveEmail() {
         if (currentIter == total - 1) {
           clearInterval(interval)
           setTimeout(function () {
@@ -263,6 +259,7 @@ customElements.define('e-mail', class extends HTMLElement {
             </div>
             <div class="date teal-text right-align">${Utils.alterDate(mail.date)}</div>
           </div>
+          <div id="message-holder"></div>
         </div>
       `
     })
