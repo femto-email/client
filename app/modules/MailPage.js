@@ -16,25 +16,18 @@ MailPage.load = async function () {
   logger.debug(`We're loading up the mail page now.`)
   StateManager.page('mail', ['basic', 'mail'])
 
-  /*----------  ACTIVATE MAIL BUTTON  ----------*/
-  $('#compose-button').click(() => {
-    ipcRenderer.send('open', { file: 'compose' })
-  })
-
-  /*----------  ACTIVATE RELOAD BUTTON  ----------*/
-  $('#refresh-button').click(() => {
-    MailPage.reload()
-  })
-
   /*----------  ENSURE ACCOUNT SET IN STATE  ----------*/
   if (typeof StateManager.state.account === 'undefined') {
     let account = (await AccountManager.listAccounts())[0]
-    StateManager.change('account', Object.assign(StateManager.state.account, { hash: account.hash, user: account.user }))
+    StateManager.change('account', Object.assign(StateManager.state.account, { hash: account.hash, email: account.user }))
   }
 
   /*----------  RETRIEVE & SETUP ACCOUNT  ----------*/
   let account = await AccountManager.findAccount(StateManager.state.account.email)
   let folders = account.folders
+
+  console.log(account)
+
   await MailStore.createEmailDB(account.user)
 
   /*----------  ENSURE FOLDER SET IN STATE  ----------*/
@@ -49,6 +42,16 @@ MailPage.load = async function () {
       }
     }
   }
+
+  /*----------  ACTIVATE MAIL BUTTON  ----------*/
+  $('#compose-button').click(() => {
+    ipcRenderer.send('open', { file: 'compose' })
+  })
+
+  /*----------  ACTIVATE RELOAD BUTTON  ----------*/
+  $('#refresh-button').click(() => {
+    MailPage.reload()
+  })
 
   /*----------  SET FOLDER LIST  ----------*/
   $('#folders').html(MailPage.generateFolderList(folders, [], false))

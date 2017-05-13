@@ -4,12 +4,13 @@ const Navigo = require('navigo')
 console.log("%cStop!", "font: 2em sans-serif; color: yellow; background-color: red;");
 console.log("%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a feature or “hack” someone’s account, it is a scam and will give them access to your account.", "font: 1.5em sans-serif; color: grey;");
 
+global.app = remote.app
+global.router = new Navigo(null, true, '#')
+
 require('dotenv').config()
 // require('./helpers/switch')
 require('./helpers/clean')
-
-global.app = remote.app
-global.router = new Navigo(null, true, '#')
+require('./helpers/logger')
 
 // SMTPClient is used for sending messages, IMAPClient for receiving.
 global.SMTPClient = require('./modules/SMTPClient')

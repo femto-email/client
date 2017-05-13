@@ -48,7 +48,7 @@ AccountManager.prototype.addAccount = async function (details) {
   /*----------  SAVE ACCOUNT TO ACCOUNTS DB  ----------*/
   try {
     $('#doing').text('saving your account for the future.')
-  	await this.accounts.insertAsync(details)
+  	await this.accounts.insertAsync(user)
     logger.log(`Added ${details.user} to the accounts database.`)
   } catch(e) {
     logger.warning(`Huh, ${details.user} appeared to already be in the database?`)
@@ -58,7 +58,7 @@ AccountManager.prototype.addAccount = async function (details) {
   await client.updateAccount()
 
   /*----------  SWITCH TO THAT USER  ----------*/
-  StateManager.change('account', { hash: user.hash, user: user.user })
+  StateManager.change('account', { hash: user.hash, email: user.user })
   StateManager.change('state', 'mail')
   StateManager.update()
 }

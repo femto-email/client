@@ -14,9 +14,6 @@ const _            = require('lodash')
  * @return {promise}         [This promise resolves when the client connection finishes.]
  */
 function IMAPClient(details) {
-  // If debug mode is enabled, log all interactions with the IMAP server to
-  // console.  Otherwise, log them to a folder.
-  this.debug = process.env.DEBUG === 'true'
   // Jetpack is used in order to write to the log files, which are organised
   // by day (yyyy-mm-dd.log).
   this.jetpack = jetpack.cwd(app.getPath('userData'), 'logs')
@@ -89,7 +86,7 @@ IMAPClient.prototype.getBoxes = async function () {
  * @return {promise}          [A promise which resolves when the box has been opened]
  */
 IMAPClient.prototype.openBox = async function (path, readOnly) {
-  if (this.client.state === 'disconnected') this.client = await new IMAPClient(this.client._config, this.debug)
+  if (this.client.state === 'disconnected') this.client = await new IMAPClient(this.client._config)
   return new Promise((async (resolve, reject) => {
     let folder = await this.client.openBoxAsync(path, readOnly || false)
     this.currentPath = path
@@ -122,10 +119,10 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
   //   'seqno'
   // If we want the former, we expect the `grabNewer` boolean to be true.
   return new Promise(function (resolve, reject) {
-    logger.log("Total: " + this.mailbox.messages.total)
-    logger.log("Seqno: " + seqno)
-    logger.log("grabNewer: " + grabNewer)
-    logger.log("Grabbing: " + `${seqno}${grabNewer ? `:*` : ``}`)
+    // logger.log("Total: " + this.mailbox.messages.total)
+    // logger.log("Seqno: " + seqno)
+    // logger.log("grabNewer: " + grabNewer)
+    // logger.log("Grabbing: " + `${seqno}${grabNewer ? `:*` : ``}`)
     if (!this.mailbox.messages.total) return resolve()
     // Outlook puts folders in the trash, which we can't retrieve at the moment.
     // if (path.toLowerCase().split('trash').length > 1) return resolve()
@@ -165,7 +162,7 @@ IMAPClient.prototype.getEmailBody = async function (uid) {
     let message = await MailStore.loadEmail(email, uid)
 
     await this.getEmails(message.folder, true, false, message.seqno, {
-      bodies: '', struct: true, envelope: true
+      bodies: 'TEXT', struct: true, envelope: true
     }, async function (seqno, content, attributes) {
       MailStore.saveMailBody(email, uid, Object.assign({ seqno: seqno }, content, attributes))
       await MailStore.updateEmailByUid(email, uid, { retrieved: true })
@@ -207,12 +204,12 @@ IMAPClient.prototype.updateAccount = async function () {
 
   for (let i = 0; i < boxesLinear.length; i++) {
     let path = IMAPClient.compilePath(boxesLinear[i])
-    logger.debug("Path:", path)
-    logger.debug("Linear Box Path:", boxesLinear[i])
+    // logger.debug("Path:", path)
+    // logger.debug("Linear Box Path:", boxesLinear[i])
     let objectPath = IMAPClient.compileObjectPath(boxesLinear[i])
-    logger.debug("Object Path:", objectPath)
+    // logger.debug("Object Path:", objectPath)
     let highest = _.get(updateObject, objectPath.concat(['highest']), 1)
-    logger.debug("Highest: " + highest)
+    // logger.debug("Highest: " + highest)
     let isCurrentPath = StateManager.state && StateManager.state.account && IMAPClient.compilePath(StateManager.state.account.folder) == path
     let promises = []
 
@@ -275,10 +272,7 @@ IMAPClient.prototype.logger = function () {
       string = array.join('"')
     }
 
-    if (this.debug) {
-      logger.debug(string)
-    }
-    this.jetpack.append(`./${this.currentDate}.log`, logger.format(string) + '\n')
+    this.jetpack.append(`./IMAP-${this.currentDate}.log`, logger.format(string) + '\n')
   }.bind(this)
 }
 

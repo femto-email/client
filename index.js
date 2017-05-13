@@ -3,6 +3,9 @@ const electron = require('electron')
 const { app, shell } = require('electron')
 const createWindow = require('./app/helpers/window')
 
+// Allow app to be accessible globally.
+global.app = app
+
 // adds global logging
 require('./app/helpers/logger')
 
