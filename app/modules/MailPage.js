@@ -46,7 +46,9 @@ MailPage.load = async function () {
   })
 
   /*----------  SET FOLDER LIST  ----------*/
-  $('#folders').html(MailPage.generateFolderList(folders, [], false))
+  // The false here in the third argument position defines whether folders should have
+  // depth or not.
+  $('#folders').html(await MailPage.generateFolderList(undefined, folders, [], false))
   MailPage.linkFolders($('#folders').children().children())
   MailPage.highlightFolder()
 
@@ -58,23 +60,56 @@ MailPage.load = async function () {
   MailPage.enableSearch()
 }
 
-MailPage.generateFolderList = function (folders, journey, depth) {
+MailPage.generateFolderList = async function (email, folders, journey, depth) {
+  if (typeof email === 'undefined') {
+    let accounts = await AccountManager.listAccounts()
+    let html = ''
+    for (let i = 0; i < accounts.length; i++) {
+      if (depth) {
+        html += `
+          <div class="col s12 no-padding center-align">
+            <div class="waves-effect waves-teal btn-flat wide" id="${btoa(email)}">
+              ${accounts[i].name || accounts[i].user}
+        `
+      } else {
+        html += `
+          <div class="col s12 no-padding center-align">
+            <div class="waves-effect waves-teal btn-flat wide" id="${btoa(email)}">
+              ${accounts[i].name || accounts[i].user}
+            </div>
+          </div>
+        `
+      }
+      html += await MailPage.generateFolderList(accounts[i].user, accounts[i].folders, [], depth)
+      if (depth) {
+        html += `
+            </div>
+          </div>
+        `
+      }
+      // html += await MailPage.generateFolderList(accounts[i].user, accounts[i].folders, [], depth)
+    }
+    return html
+  }
   let html = ''
   for (let prop in folders) {
     temp = journey.concat({ name: prop, delimiter: folders[prop].delimiter })
+    let id = btoa(JSON.stringify(temp))
     if (depth) {
       html += `
         <div class="col s12 no-padding center-align">
-          <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop} ${MailPage.generateFolderList(folders[prop].children, temp, depth)}</div>
+          <div class="waves-effect waves-teal btn-flat wide folder-tree" id="${id}">
+            ${prop} ${await MailPage.generateFolderList(email, folders[prop].children, temp, depth)}
+          </div>
         </div>
       `
     } else {
       html += `
         <div class="col s12 no-padding center-align">
-          <div class="waves-effect waves-teal btn-flat wide no=padding folder-tree" id="${btoa(JSON.stringify(temp))}">${prop}</div>
+          <div class="waves-effect waves-teal btn-flat wide folder-tree" id="${id}">${prop}</div>
         </div>
       `
-      html += MailPage.generateFolderList(folders[prop].children, temp, depth)
+      html += await MailPage.generateFolderList(email, folders[prop].children, temp, depth)
     }
   }
   return html
