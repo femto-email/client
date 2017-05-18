@@ -64,9 +64,9 @@ $wrapper-padding: 2em !default;
 
 .mail-item {
     cursor: pointer;
-    display: flex;
+    // display: flex;
     align-items: center;
-    height: 40px;
+    // height: 40px;
     padding: 2px 1rem 2px 1rem;
     background-color: #FFF;
     max-width: 100%;
@@ -102,7 +102,7 @@ $wrapper-padding: 2em !default;
         .sender {
             display: flex;
             align-items: center;
-            width: 40%;
+            width: 25%;
             height: 100%; // padding: 0rem 1.5rem 0rem 1.5rem;
             .sender-text {
                 display: inline-block;
@@ -115,7 +115,7 @@ $wrapper-padding: 2em !default;
         .subject {
             display: flex;
             align-items: center;
-            width: 50%;
+            width: 60%;
             height: 100%; // padding: 0rem 1.5rem 0rem 1.5rem;
             .subject-text {
                 display: inline-block;
@@ -126,7 +126,7 @@ $wrapper-padding: 2em !default;
             }
         }
         .date {
-            width: 10%;
+            width: 15%;
             float: right;
             position: relative;
             right:25.25px;

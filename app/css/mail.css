@@ -45,9 +45,7 @@ body {
 
 .mail-item {
   cursor: pointer;
-  display: flex;
   align-items: center;
-  height: 40px;
   padding: 2px 1rem 2px 1rem;
   background-color: #FFF;
   max-width: 100%;
@@ -79,7 +77,7 @@ body {
     .mail-item .text .sender {
       display: flex;
       align-items: center;
-      width: 40%;
+      width: 25%;
       height: 100%; }
       .mail-item .text .sender .sender-text {
         display: inline-block;
@@ -90,7 +88,7 @@ body {
     .mail-item .text .subject {
       display: flex;
       align-items: center;
-      width: 50%;
+      width: 60%;
       height: 100%; }
       .mail-item .text .subject .subject-text {
         display: inline-block;
@@ -99,7 +97,7 @@ body {
         white-space: nowrap;
         overflow: hidden; }
     .mail-item .text .date {
-      width: 10%;
+      width: 15%;
       float: right;
       position: relative;
       right: 25.25px; }
