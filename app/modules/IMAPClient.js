@@ -62,8 +62,8 @@ IMAPClient.linearBoxes = function (folders, path) {
   let results = []
   path = path || []
   for (let i = 0; i < keys.length; i++) {
-    results = results.concat(this.linearBoxes(folders[keys[i]].children, path.concat({ 
-      delimiter: folders[keys[i]].delimiter, 
+    results = results.concat(this.linearBoxes(folders[keys[i]].children, path.concat({
+      delimiter: folders[keys[i]].delimiter,
       name: keys[i]
     })))
   }
@@ -76,6 +76,7 @@ IMAPClient.linearBoxes = function (folders, path) {
  * @return {object} [An object containing all mailboxes]
  */
 IMAPClient.prototype.getBoxes = async function () {
+  await this.check_client()
   return this.client.getBoxesAsync()
 }
 
@@ -86,7 +87,7 @@ IMAPClient.prototype.getBoxes = async function () {
  * @return {promise}          [A promise which resolves when the box has been opened]
  */
 IMAPClient.prototype.openBox = async function (path, readOnly) {
-  if (this.client.state === 'disconnected') this.client = await new IMAPClient(this.client._config)
+  await this.check_client()
   return new Promise((async (resolve, reject) => {
     let folder = await this.client.openBoxAsync(path, readOnly || false)
     this.currentPath = path
@@ -112,6 +113,7 @@ IMAPClient.prototype.openBox = async function (path, readOnly) {
 // }
 
 IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqno, struct, onLoad) {
+  await this.check_client()
   // Ensure we have the right box open
   if (this.currentPath !== path) this.mailbox = await this.openBox(path, readOnly)
   // There are two ways we're going to want to grab emails, either:
@@ -157,6 +159,7 @@ IMAPClient.prototype.getEmails = async function (path, readOnly, grabNewer, seqn
 }
 
 IMAPClient.prototype.getEmailBody = async function (uid) {
+  await this.check_client()
   return new Promise(async function (resolve, reject) {
     let email = this.client._config.user
     let message = await MailStore.loadEmail(email, uid)
@@ -186,6 +189,7 @@ IMAPClient.prototype.getEmailBody = async function (uid) {
 IMAPClient.prototype.updateAccount = async function () {
   /*----------  GRAB USER MAILBOXES  ----------*/
   $('#doing').text('grabbing your mailboxes.')
+  await this.check_client()
   let boxes = await this.getBoxes()
   let boxesLinear = IMAPClient.linearBoxes(boxes)
   let email = this.client._config.user
@@ -195,7 +199,7 @@ IMAPClient.prototype.updateAccount = async function () {
   let updateObject = (await AccountManager.findAccount(email)).folders || {}
   updateObject = merge(updateObject, Utils.removeCircular(boxes))
   logger.log(`Retrieved all mailboxes from ${email}`)
-  
+
   /*----------  GRAB USER EMAILS  ----------*/
   $('#doing').text('getting your emails.')
   let totalEmails = 0
@@ -287,6 +291,13 @@ IMAPClient.prototype.getDate = function () {
   let month = today.getMonth() + 1
   let year = today.getFullYear()
   return `${year}-${month}-${day}`
+}
+
+IMAPClient.prototype.check_client = async function () {
+  if (this.client.state === 'disconnected') {
+    logger.log('Client disconnected, reconnecting.')
+    this.client = await new IMAPClient(this.client._config)
+  }
 }
 
 module.exports = IMAPClient

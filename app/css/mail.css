@@ -1,47 +1,60 @@
 ::-webkit-scrollbar {
   width: 0.5em;
-  height: 0.5em; }
+  height: 0.5em;
+}
 
 ::-webkit-scrollbar-thumb {
   background: #DBDBDB;
-  border-radius: 10px; }
+  border-radius: 10px;
+}
 
 ::-webkit-scrollbar-track {
-  background: #ededed; }
+  background: #ededed;
+}
 
 body {
   scrollbar-face-color: #DBDBDB;
-  scrollbar-track-color: #ededed; }
+  scrollbar-track-color: #ededed;
+}
 
 .wrapper {
   padding: 2em 2em 0px 2em;
   min-height: 100%;
-  max-height: 100%; }
-  .wrapper .wide {
-    width: 100%; }
-  .wrapper .overflow {
-    height: calc(100vh - 30px - 2em);
-    overflow-y: auto; }
+  max-height: 100%;
+}
+.wrapper .wide {
+  width: 100%;
+}
+.wrapper .overflow {
+  height: calc(100vh - 30px - 2em);
+  overflow-y: auto;
+}
 
 .collection {
   padding: 0px;
-  border: 0px; }
+  border: 0px;
+}
 
 .collection-item {
-  min-height: 0px; }
-  .collection-item:hover {
-    filter: brightness(85%); }
+  min-height: 0px;
+}
+.collection-item:hover {
+  filter: brightness(85%);
+}
 
 #content {
   overflow: hidden;
   height: calc(100vh - 30px);
-  background-color: #F5F5F5; }
+  background-color: #F5F5F5;
+}
 
 .read {
-  color: #A0A0A0; }
+  color: #A0A0A0;
+}
 
 .unread {
-  font-weight: bolder; }
+  font-weight: bolder;
+}
 
 .mail-item {
   cursor: pointer;
@@ -50,60 +63,77 @@ body {
   background-color: #FFF;
   max-width: 100%;
   min-width: 100%;
-  width: 100%; }
-  .mail-item:hover {
-    filter: brightness(90%); }
-  .mail-item label {
-    padding-left: 1.7em; }
-  .mail-item .multi {
-    display: flex;
-    align-items: center;
-    display: inline-block;
-    height: 100%;
-    display: flex;
-    align-items: center; }
-  .mail-item .star {
-    display: flex;
-    align-items: center;
-    display: inline-block;
-    height: 100%; }
-  .mail-item .text {
-    display: flex;
-    align-items: center;
-    max-width: 100%;
-    min-width: 100%;
-    width: 100%;
-    height: 100%; }
-    .mail-item .text .sender {
-      display: flex;
-      align-items: center;
-      width: 25%;
-      height: 100%; }
-      .mail-item .text .sender .sender-text {
-        display: inline-block;
-        width: 100%;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden; }
-    .mail-item .text .subject {
-      display: flex;
-      align-items: center;
-      width: 60%;
-      height: 100%; }
-      .mail-item .text .subject .subject-text {
-        display: inline-block;
-        width: 100%;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden; }
-    .mail-item .text .date {
-      width: 15%;
-      float: right;
-      position: relative;
-      right: 25.25px; }
+  width: 100%;
+}
+.mail-item:hover {
+  filter: brightness(90%);
+}
+.mail-item label {
+  padding-left: 1.7em;
+}
+.mail-item .multi {
+  display: flex;
+  align-items: center;
+  display: inline-block;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.mail-item .star {
+  display: flex;
+  align-items: center;
+  display: inline-block;
+  height: 100%;
+}
+.mail-item .text {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+}
+.mail-item .text .sender {
+  display: flex;
+  align-items: center;
+  width: 25%;
+  height: 100%;
+}
+.mail-item .text .sender .sender-text {
+  display: inline-block;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.mail-item .text .subject {
+  display: flex;
+  align-items: center;
+  width: 60%;
+  height: 100%;
+}
+.mail-item .text .subject .subject-text {
+  display: inline-block;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.mail-item .text .date {
+  width: 15%;
+  float: right;
+  position: relative;
+  right: 25.25px;
+}
+
+.selected-mail-item {
+  cursor: inherit;
+  filter: brightness(100%) !important;
+}
 
 .padding {
-  padding: 10px 10px 10px 10px; }
+  padding: 10px 10px 10px 10px;
+}
 
 .electron-in-page-search-window {
   position: absolute !important;
@@ -111,10 +141,13 @@ body {
   right: 0 !important;
   width: 300px !important;
   height: 36px !important;
-  background-color: white !important; }
+  background-color: white !important;
+}
 
 .electron-in-page-search-window.search-inactive {
-  visibility: hidden; }
+  visibility: hidden;
+}
 
 .electron-in-page-search-window.search-active {
-  visibility: visible; }
+  visibility: visible;
+}

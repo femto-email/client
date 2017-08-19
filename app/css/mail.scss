@@ -134,6 +134,11 @@ $wrapper-padding: 2em !default;
     }
 }
 
+.selected-mail-item {
+  cursor: inherit;
+  filter: brightness(100%) !important;
+}
+
 .padding {
     padding: 10px 10px 10px 10px;
 }

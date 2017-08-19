@@ -50,15 +50,14 @@ function openWindow (file) {
   windows[index] = createWindow(file, {
     width, height,
     icon: 'build/128x128.png',
-    minWidth: 320, 
+    minWidth: 320,
     minHeight: 480,
     maximized: true,
     frame: false
   })
+
   windows[index].loadURL(`file://${__dirname}/app/${file}.html`)
-  windows[index].on('closed', ((i) => {
-    return () => { onClosed(i) }
-  })(index))
+  windows[index].on('closed', ((i) => () => { onClosed(i) })(index))
   windows[index].webContents.on('new-window', handleURL)
   windows[index].webContents.on('will-navigate', handleURL)
 }
