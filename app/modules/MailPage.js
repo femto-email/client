@@ -226,29 +226,29 @@ MailPage.retrieveEmailBodies = async function() {
       }
       let clientsFree = await Promise.all(promises)
 
-      // let interval = setInterval(async function retrieveEmail() {
-      //   if (currentIter == total - 1) {
-      //     clearInterval(interval)
-      //     setTimeout(function () {
-      //       for (let i = 0; i < clientsFree.length; i++) {
-      //         clientsFree[i].client.end()
-      //       }
-      //     }, 20000)
-      //   } else if (currentCount < limit) {
-      //     logger.log(`Grabbing email body ${currentIter + 1} / ${total - 1}`)
-      //     currentCount++
-      //     currentIter++
-      //     let client = clientsFree.pop()
-      //     try { await timeout(client.getEmailBody(toGrab[currentIter].uid), 20000) }
-      //     catch(e) {
-      //       if (e instanceof TimeoutError) logger.error('Timeout on one of our emails grabs...')
-      //       else throw e
-      //     }
-      //     clientsFree.push(client)
-      //
-      //     currentCount--
-      //   }
-      // }, 50)
+      let interval = setInterval(async function retrieveEmail() {
+        if (currentIter == total - 1) {
+          clearInterval(interval)
+          setTimeout(function () {
+            for (let i = 0; i < clientsFree.length; i++) {
+              clientsFree[i].client.end()
+            }
+          }, 20000)
+        } else if (currentCount < limit) {
+          logger.log(`Grabbing email body ${currentIter + 1} / ${total - 1}`)
+          currentCount++
+          currentIter++
+          let client = clientsFree.pop()
+          try { await timeout(client.getEmailBody(toGrab[currentIter].uid), 20000) }
+          catch(e) {
+            if (e instanceof TimeoutError) logger.error('Timeout on one of our emails grabs...')
+            else throw e
+          }
+          clientsFree.push(client)
+
+          currentCount--
+        }
+      }, 50)
     }
   }
 }

@@ -29,7 +29,11 @@ function IMAPClient(details) {
     )
 
     this.client.once('ready', () => { resolve(this) })
-    this.client.once('error', (err) => { throw err })
+    this.client.once('error', (err) => {
+      console.log(this.client)
+      console.log(this.client.state)
+      throw err
+    })
     this.client.connect()
   }).bind(this)) // Sets the Promise() `this` to the object `this`.
 }
