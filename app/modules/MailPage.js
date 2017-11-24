@@ -174,7 +174,7 @@ MailPage.render = async function(page) {
 
 MailPage.reload = async function() {
   logger.log('Reloading mail messages')
-  (await AccountManager.getIMAP(StateManager.state.account.email)).updateAccount()
+  ;(await AccountManager.getIMAP(StateManager.state.account.email)).updateAccount()
 }
 
 MailPage.renderEmail = async function (uid, number) {
